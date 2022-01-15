@@ -26,14 +26,14 @@ public final class Constants {
         public static final int FL_ID = 0;
         public static final int FR_ID = 1;
         public static final int BR_ID = 2;
-        public static final int BL_ID = 0;
+        public static final int BL_ID = 3;
 
-        public static final int flywheel_ID = 0;
-        public static final int transfer_ID = 0;
-        public static final int intake_ID = 0;
+        public static final int flywheel_ID = 4;
+        public static final int transfer_ID = 5;
+        public static final int intake_ID = 6;
 
-        public static final int ClimberR_ID = 0;
-        public static final int ClimberL_ID = 0;
+        public static final int ClimberR_ID = 7;
+        public static final int ClimberL_ID = 8;
 
 
     }

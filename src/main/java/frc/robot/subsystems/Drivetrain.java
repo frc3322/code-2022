@@ -144,9 +144,9 @@ public class Drivetrain extends SubsystemBase {
     // and write the simulated positions and velocities to our simulated encoder and gyro.
     // We negate the right side so that positive voltages make the right side
     // move forward.
-    m_drivetrainSimulator.setInputs(//leftVoltage, rightVoltage);
-        FL.get() * RobotController.getBatteryVoltage(),
-        -FR.get() * RobotController.getBatteryVoltage());
+    m_drivetrainSimulator.setInputs(leftVoltage, rightVoltage);
+        // FL.get() * RobotController.getBatteryVoltage(),
+        // -FR.get() * RobotController.getBatteryVoltage());
     m_drivetrainSimulator.update(0.020);
 
     m_leftEncoderSim.setPosition(m_drivetrainSimulator.getLeftPositionMeters());
@@ -198,8 +198,8 @@ public class Drivetrain extends SubsystemBase {
     FL.setVoltage(leftVolts);
     FR.setVoltage(-rightVolts);
 
-    //leftVoltage = leftVolts;
-   // rightVoltage = rightVolts;
+    leftVoltage = leftVolts;
+    rightVoltage = rightVolts;
     robotDrive.feed();
   }
   public void resetEncoders() {
@@ -245,15 +245,6 @@ public class Drivetrain extends SubsystemBase {
     return exampleTrajectory;
   }
 
-  public void putTrajToFieldWidget(){
-    m_fieldSim.getObject("traj1").setPoses(
-      /*new Pose2d(0.0, 0.0, new Rotation2d(0)),
-      new Pose2d(1.0, 1.0, new Rotation2d(0))*/
-    );
-    m_fieldSim.getObject("traj2").setPoses();
-    m_fieldSim.getObject("traj3").setPoses();
-  }
-
   public Trajectory getTrajFromFieldWidget(String traj, boolean reversed){
     Trajectory trajectory;
     try{
@@ -287,7 +278,8 @@ public class Drivetrain extends SubsystemBase {
   
     // Reset odometry to starting pose of trajectory.
     robotDrive.resetOdometry(trajectory.getInitialPose());
-    
+
+   
     // Run path following command, then stop at the end.
     return ramseteCommand.andThen(() -> robotDrive.tankDriveVolts(0, 0));
   }

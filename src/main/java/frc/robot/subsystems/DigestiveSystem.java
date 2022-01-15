@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
+//import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -22,7 +24,7 @@ public class DigestiveSystem extends SubsystemBase {
   private final RelativeEncoder transfer_ENC;
   private final RelativeEncoder flywheel_ENC;
 
-  
+  SparkMaxPIDController shooterControl;
 
   /** Creates a new Intake. */
   public DigestiveSystem() {
@@ -41,6 +43,37 @@ public class DigestiveSystem extends SubsystemBase {
 
   }
 
+  //Shooter methods
+  public void setupShooterPID(){
+
+    shooterControl.setP(0);
+    shooterControl.setI(0);
+    shooterControl.setD(0);
+
+  }
+
+  public void setSetpoint(double setpoint) {
+  
+    shooterControl.setReference(setpoint, CANSparkMax.ControlType.kVelocity);
+}
+
+
+public void setSpeed(double speed) {
+  flywheel.set(speed);
+}
+
+public void stop(){
+  flywheel.setVoltage(0);
+}
+
+//intake methods
+public void takeIn(double pwr){
+  intake.set(pwr);
+}
+
+public void stopIntake(){
+  intake.setVoltage(0);
+}
   
   @Override
   public void periodic() {

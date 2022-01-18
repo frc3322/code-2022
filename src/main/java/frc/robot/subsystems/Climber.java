@@ -28,11 +28,15 @@ public class Climber extends SubsystemBase {
 
     ClimberL_ENC = ClimberL.getEncoder();
     ClimberR_ENC  = ClimberR.getEncoder();
+    ClimberR.setInverted(true);
 
   }
 
 
-
+public void climb(double pwr){
+ ClimberL.set(pwr);
+ ClimberR.set(pwr);
+}
 
   @Override
   public void periodic() {

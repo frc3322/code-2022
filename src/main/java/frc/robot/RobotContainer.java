@@ -47,8 +47,8 @@ public class RobotContainer {
 
     JoystickButton bumper_left_upper = new JoystickButton(upperChassis, 5);
     
-    bumper_left_upper.whenPressed(new InstantCommand(() -> m_digestiveSystem.takeIn(.5)))
-    .whenReleased(new InstantCommand(() -> m_digestiveSystem.stopIntake()));
+    bumper_left_upper.whenPressed(new InstantCommand(() -> m_digestiveSystem.takeIn(0.5)))
+    .whenReleased(new InstantCommand(() -> m_digestiveSystem.takeIn(0)));
 
   }
 

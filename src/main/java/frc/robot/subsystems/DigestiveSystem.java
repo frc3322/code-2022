@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -71,10 +70,6 @@ public void takeIn(double pwr){
   intake.set(pwr);
 }
 
-public void stopIntake(){
-  intake.setVoltage(0);
-}
-  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

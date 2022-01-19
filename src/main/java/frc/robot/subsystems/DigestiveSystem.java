@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard; 
 import frc.robot.Constants.CAN;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -43,6 +44,7 @@ public class DigestiveSystem extends SubsystemBase {
     transfer_ENC = transfer.getEncoder();
     flywheel_ENC  = flywheel.getEncoder();
 
+    SmartDashboard.putNumber("flywheelSpeed", 0);
   }
 
   //Shooter methods
@@ -82,5 +84,11 @@ public void takeIn(double pwr){
       intake.set(0);
     }
 
+    double targetSpeed = SmartDashboard.getNumber("flywheelSpeed", 0.0);
+    if (flywheel_ENC.getVelocity() < targetSpeed) {
+      flywheel.set(1);
+    } else {
+      flywheel.set(0);
+    }
   }
 }

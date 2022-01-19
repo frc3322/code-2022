@@ -28,7 +28,7 @@ public class Climber extends SubsystemBase {
 
     ClimberL_ENC = ClimberL.getEncoder();
     ClimberR_ENC  = ClimberR.getEncoder();
-    ClimberR.setInverted(true);
+    //ClimberR.setInverted(true);
 
   }
 

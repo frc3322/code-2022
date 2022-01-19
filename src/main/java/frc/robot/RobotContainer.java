@@ -47,17 +47,17 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     JoystickButton bumper_left_upper = new JoystickButton(upperChassis, 5);
-    DPadButton dpad_down = new DPadButton(upperChassis, DPadButton.Direction.DOWN);
-    DPadButton dpad_up = new DPadButton(upperChassis, DPadButton.Direction.DOWN);
+    JoystickButton Y = new JoystickButton(upperChassis, 4);
+    JoystickButton A = new JoystickButton(upperChassis, 1);
 
 
     
     bumper_left_upper.whenPressed(new InstantCommand(() -> m_digestiveSystem.takeIn(0.5)))
     .whenReleased(new InstantCommand(() -> m_digestiveSystem.takeIn(0)));
 
-    dpad_down.whenPressed(new InstantCommand(() -> m_climber.climb(-0.5)))
+    A.whenPressed(new InstantCommand(() -> m_climber.climb(-0.5)))
     .whenReleased(new InstantCommand(() -> m_climber.climb(0)));
-    dpad_up.whenPressed(new InstantCommand(() -> m_climber.climb(0.5)))
+    Y.whenPressed(new InstantCommand(() -> m_climber.climb(0.5)))
     .whenReleased(new InstantCommand(() -> m_climber.climb(0)));
 
   }

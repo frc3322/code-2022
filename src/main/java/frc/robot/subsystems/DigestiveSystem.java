@@ -23,6 +23,9 @@ public class DigestiveSystem extends SubsystemBase {
   private final RelativeEncoder transfer_ENC;
   private final RelativeEncoder flywheel_ENC;
 
+  private boolean beam1Broken = false;
+  private boolean beam2Broken = false;
+
   SparkMaxPIDController shooterControl;
 
   /** Creates a new Intake. */
@@ -73,5 +76,11 @@ public void takeIn(double pwr){
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //run until beam1 not broken
+    //don't run if beam 2 broken.
+    if(beam2Broken||!beam1Broken){
+      intake.set(0);
+    }
+
   }
 }

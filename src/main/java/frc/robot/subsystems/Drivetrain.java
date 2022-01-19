@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
@@ -25,6 +26,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,6 +37,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -284,4 +287,21 @@ public class Drivetrain extends SubsystemBase {
     return ramseteCommand.andThen(() -> robotDrive.tankDriveVolts(0, 0));
   }
 
+  public Command turnToAngleCommand(double targetAngle) {
+    double Kp = SmartDashboard.getNumber("rotKp", 0);
+    double Ki = SmartDashboard.getNumber("rotKi", 0);
+    double Kd = SmartDashboard.getNumber("rotKd", 0);
+    double maxVel = SmartDashboard.getNumber("rotMaxVel", 0);
+    double maxAcc = SmartDashboard.getNumber("rotMaxAcc", 0);
+    ProfiledPIDController controller = new ProfiledPIDController(Kp, Ki, Kd, 
+                                                                new TrapezoidProfile.Constraints(maxVel, maxAcc)
+                                                                );
+    ProfiledPIDCommand command = new ProfiledPIDCommand(
+      controller, 
+      this::getHeading, 
+      targetAngle, 
+      (output, setpoint) -> tankDriveVolts(output, -output)
+    );
+    return command;
+  }
 }

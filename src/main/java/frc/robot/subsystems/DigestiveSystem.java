@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.BangBangController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard; 
 import frc.robot.Constants.CAN;
 import com.revrobotics.RelativeEncoder;
@@ -25,6 +27,10 @@ public class DigestiveSystem extends SubsystemBase {
   private final RelativeEncoder flywheel_ENC;
 
   SparkMaxPIDController shooterControl;
+  BangBangController bangBang = new BangBangController();
+  double kS = SmartDashboard.getNumber("ffkS", 0.0);
+  double kV = SmartDashboard.getNumber("ffkV", 0.0);
+  SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(kS, kV);
 
   /** Creates a new Intake. */
   public DigestiveSystem() {
@@ -79,10 +85,17 @@ public void stopIntake(){
   @Override
   public void periodic() {
     double targetSpeed = SmartDashboard.getNumber("flywheelSpeed", 0.0);
+
+/*
     if (flywheel_ENC.getVelocity() < targetSpeed) {
       flywheel.set(1);
     } else {
       flywheel.set(0);
     }
+*/
+//getting values for ff from smart dashboard
+flywheel.set(bangBang.calculate(flywheel_ENC.getVelocity(), targetSpeed) + 0.9 * feedForward.calculate(targetSpeed));
+
   }
+
 }

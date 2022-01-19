@@ -80,9 +80,9 @@ public void stopIntake(){
   public void periodic() {
     double targetSpeed = SmartDashboard.getNumber("flywheelSpeed", 0.0);
     if (flywheel_ENC.getVelocity() < targetSpeed) {
-      flywheel.setVoltage(1);
+      flywheel.set(1);
     } else {
-      flywheel.setVoltage(0);
+      flywheel.set(0);
     }
   }
 }

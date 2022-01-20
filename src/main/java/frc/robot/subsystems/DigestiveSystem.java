@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard; 
 import frc.robot.Constants.CAN;
+import frc.robot.Constants.shooterFF;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
@@ -29,9 +30,8 @@ public class DigestiveSystem extends SubsystemBase {
 
   SparkMaxPIDController shooterControl;
   BangBangController bangBang = new BangBangController();
-  double kS = SmartDashboard.getNumber("ffkS", 0.0);
-  double kV = SmartDashboard.getNumber("ffkV", 0.0);
-  SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(kS, kV);
+  
+  SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(shooterFF.Ks, shooterFF.Kv);
 
   /** Creates a new Intake. */
   public DigestiveSystem() {
@@ -92,7 +92,7 @@ public void stopIntake(){
   public void periodic() {
     double targetSpeed = SmartDashboard.getNumber("flywheel/Speed", 0.0);
 
-    setSpeed(SmartDashboard.getNumber("flywheel/Speed", 0.0));
+   // setSpeed(SmartDashboard.getNumber("flywheel/Speed", 0.0));
     SmartDashboard.putNumber("flywheel/Vel", flywheel_ENC.getVelocity());
     SmartDashboard.putNumber("flywheel/Pos", flywheel_ENC.getPosition());
 
@@ -105,6 +105,7 @@ public void stopIntake(){
 */
     //getting values for ff from smart dashboard
     //flywheel.set(bangBang.calculate(flywheel_ENC.getVelocity(), targetSpeed) + 0.9 * feedForward.calculate(targetSpeed));
+    flywheel1.set(feedForward.calculate(targetSpeed));
 
   }
 

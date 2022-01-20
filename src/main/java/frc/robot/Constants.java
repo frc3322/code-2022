@@ -20,6 +20,13 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
  */
 public final class Constants {
 
+    public static final class shooterFF{
+        public static final double Ks = 0.10525;
+        public static final double Kv = 0.12558;
+        public static final double Ka = 0.026326;
+
+    }
+   
     public static final class CAN{
 
         //fl = front left

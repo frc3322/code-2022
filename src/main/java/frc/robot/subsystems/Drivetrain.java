@@ -80,7 +80,7 @@ public class Drivetrain extends SubsystemBase {
     FR.restoreFactoryDefaults();
     BL.restoreFactoryDefaults();
     BR.restoreFactoryDefaults();
-
+//do we need to reverse one side?
     BL.follow(FL);
     BR.follow(FR);
 

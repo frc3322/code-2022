@@ -28,6 +28,9 @@ public class DigestiveSystem extends SubsystemBase {
   private final RelativeEncoder transfer_ENC;
   private final RelativeEncoder flywheel_ENC;
 
+  private boolean beam1Broken = false;
+  private boolean beam2Broken = false;
+
   SparkMaxPIDController shooterControl;
   BangBangController bangBang = new BangBangController();
   
@@ -84,10 +87,6 @@ public void takeIn(double pwr){
   intake.set(pwr);
 }
 
-public void stopIntake(){
-  intake.setVoltage(0);
-}
-  
   @Override
   public void periodic() {
     double targetSpeed = SmartDashboard.getNumber("flywheel/Speed", 0.0);
@@ -97,6 +96,14 @@ public void stopIntake(){
     SmartDashboard.putNumber("flywheel/Pos", flywheel_ENC.getPosition());
 
 /*
+    // This method will be called once per scheduler run
+    //run until beam1 not broken
+    //don't run if beam 2 broken.
+    if(beam2Broken||!beam1Broken){
+      intake.set(0);
+    }
+
+    double targetSpeed = SmartDashboard.getNumber("flywheelSpeed", 0.0);
     if (flywheel_ENC.getVelocity() < targetSpeed) {
       flywheel.set(1);
     } else {

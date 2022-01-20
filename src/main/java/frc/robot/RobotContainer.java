@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.DigestiveSystem;
 import frc.robot.subsystems.Climber;
+import frc.robot.DPadButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -46,9 +47,18 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     JoystickButton bumper_left_upper = new JoystickButton(upperChassis, 5);
+    JoystickButton Y = new JoystickButton(upperChassis, 4);
+    JoystickButton A = new JoystickButton(upperChassis, 1);
+
+
     
-    bumper_left_upper.whenPressed(new InstantCommand(() -> m_digestiveSystem.takeIn(.5)))
-    .whenReleased(new InstantCommand(() -> m_digestiveSystem.stopIntake()));
+    bumper_left_upper.whenPressed(new InstantCommand(() -> m_digestiveSystem.takeIn(0.5)))
+    .whenReleased(new InstantCommand(() -> m_digestiveSystem.takeIn(0)));
+
+    A.whenPressed(new InstantCommand(() -> m_climber.climb(-0.5)))
+    .whenReleased(new InstantCommand(() -> m_climber.climb(0)));
+    Y.whenPressed(new InstantCommand(() -> m_climber.climb(0.5)))
+    .whenReleased(new InstantCommand(() -> m_climber.climb(0)));
 
   }
 

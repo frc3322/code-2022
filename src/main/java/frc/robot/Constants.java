@@ -20,6 +20,13 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
  */
 public final class Constants {
 
+    public static final class shooterFF{
+        public static final double Ks = 0.10525;
+        public static final double Kv = 0.12558;
+        public static final double Ka = 0.026326;
+
+    }
+   
     public static final class CAN{
 
         //fl = front left
@@ -28,7 +35,8 @@ public final class Constants {
         public static final int BR_ID = 2;
         public static final int BL_ID = 3;
 
-        public static final int flywheel_ID = 4;
+        public static final int flywheel1_ID = 11;
+        public static final int flywheel2_ID = 10;
         public static final int transfer_ID = 5;
         public static final int intake_ID = 6;
 

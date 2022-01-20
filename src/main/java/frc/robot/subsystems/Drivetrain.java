@@ -135,7 +135,6 @@ public class Drivetrain extends SubsystemBase {
       gyro.getRotation2d(),
       FL_ENC.getPosition(),
       FR_ENC.getPosition());
-    m_fieldSim.setRobotPose(getPose());
   }
 
   @Override
@@ -155,6 +154,8 @@ public class Drivetrain extends SubsystemBase {
     m_rightEncoderSim.setVelocity(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
 
     m_gyroSim.set(-m_drivetrainSimulator.getHeading().getDegrees());
+    
+    m_fieldSim.setRobotPose(getPose());
   }
 
   /**

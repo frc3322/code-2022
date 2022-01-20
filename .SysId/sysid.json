@@ -1,0 +1,10 @@
+{
+  "SysId": {
+    "Analysis Type": "General Mechanism",
+    "NetworkTables Settings": {
+      "serverTeam": "10.33.22.2"
+    },
+    "mode": "Client",
+    "serverTeam": "3322"
+  }
+}

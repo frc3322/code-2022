@@ -28,7 +28,8 @@ public final class Constants {
         public static final int BR_ID = 2;
         public static final int BL_ID = 3;
 
-        public static final int flywheel_ID = 4;
+        public static final int flywheel1_ID = 11;
+        public static final int flywheel2_ID = 10;
         public static final int transfer_ID = 5;
         public static final int intake_ID = 6;
 

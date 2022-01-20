@@ -20,7 +20,8 @@ public class DigestiveSystem extends SubsystemBase {
 
   private final CANSparkMax intake = new CANSparkMax(CAN.intake_ID, MotorType.kBrushless);
   private final CANSparkMax transfer = new CANSparkMax(CAN.transfer_ID, MotorType.kBrushless);
-  private final CANSparkMax flywheel = new CANSparkMax(CAN.flywheel_ID, MotorType.kBrushless);
+  private final CANSparkMax flywheel1 = new CANSparkMax(CAN.flywheel1_ID, MotorType.kBrushless);
+  private final CANSparkMax flywheel2 = new CANSparkMax(CAN.flywheel2_ID, MotorType.kBrushless);
 
   private final RelativeEncoder intake_ENC;
   private final RelativeEncoder transfer_ENC;
@@ -37,17 +38,22 @@ public class DigestiveSystem extends SubsystemBase {
 
     intake.restoreFactoryDefaults();
     transfer.restoreFactoryDefaults();
-    flywheel.restoreFactoryDefaults();
+    flywheel1.restoreFactoryDefaults();
+    flywheel2.restoreFactoryDefaults();
 
     intake.setIdleMode(IdleMode.kCoast);
     transfer.setIdleMode(IdleMode.kCoast);
-    flywheel.setIdleMode(IdleMode.kCoast);
+    flywheel1.setIdleMode(IdleMode.kCoast);
+    flywheel2.setIdleMode(IdleMode.kCoast);
 
     intake_ENC = intake.getEncoder();
     transfer_ENC = transfer.getEncoder();
-    flywheel_ENC  = flywheel.getEncoder();
+    flywheel_ENC  = flywheel1.getEncoder();
 
-    SmartDashboard.putNumber("flywheelSpeed", 0);
+    SmartDashboard.putNumber("flywheel/Speed", 0);
+
+    flywheel1.setInverted(true);
+    flywheel2.follow(flywheel1, true);
   }
 
   //Shooter methods
@@ -66,11 +72,11 @@ public class DigestiveSystem extends SubsystemBase {
 
 
 public void setSpeed(double speed) {
-  flywheel.set(speed);
+  flywheel1.set(speed);
 }
 
 public void stop(){
-  flywheel.setVoltage(0);
+  flywheel1.setVoltage(0);
 }
 
 //intake methods
@@ -84,7 +90,11 @@ public void stopIntake(){
   
   @Override
   public void periodic() {
-    double targetSpeed = SmartDashboard.getNumber("flywheelSpeed", 0.0);
+    double targetSpeed = SmartDashboard.getNumber("flywheel/Speed", 0.0);
+
+    setSpeed(SmartDashboard.getNumber("flywheel/Speed", 0.0));
+    SmartDashboard.putNumber("flywheel/Vel", flywheel_ENC.getVelocity());
+    SmartDashboard.putNumber("flywheel/Pos", flywheel_ENC.getPosition());
 
 /*
     if (flywheel_ENC.getVelocity() < targetSpeed) {
@@ -93,8 +103,8 @@ public void stopIntake(){
       flywheel.set(0);
     }
 */
-//getting values for ff from smart dashboard
-flywheel.set(bangBang.calculate(flywheel_ENC.getVelocity(), targetSpeed) + 0.9 * feedForward.calculate(targetSpeed));
+    //getting values for ff from smart dashboard
+    //flywheel.set(bangBang.calculate(flywheel_ENC.getVelocity(), targetSpeed) + 0.9 * feedForward.calculate(targetSpeed));
 
   }
 

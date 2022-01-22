@@ -1,0 +1,46 @@
+{
+  "NetworkTables": {
+    "SmartDashboard": {
+      "flywheel": {
+        "open": true
+      },
+      "open": true,
+      "transfer": {
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/DigestiveSystem": "Subsystem",
+      "/LiveWindow/Drivetrain": "Subsystem",
+      "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/Field": "Field2d"
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client"
+  },
+  "Plots": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "height": 540,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/flywheel/RPM"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

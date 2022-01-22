@@ -44,7 +44,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.CANEncoderSim;
 
-import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.Drive;
 
 
 
@@ -98,15 +98,19 @@ public class Drivetrain extends SubsystemBase {
     robotDrive = new DifferentialDrive(FL, FR);
     m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
 
+    // the Field2d class lets us visualize our robot in the simulation GUI.
+    m_fieldSim = new Field2d();
+    SmartDashboard.putData("Field", m_fieldSim);
+
     if (RobotBase.isSimulation()) { // If our robot is simulated
       // This class simulates our drivetrain's motion around the field.
       m_drivetrainSimulator =
           new DifferentialDrivetrainSim(
-              DriveConstants.kDrivetrainPlant,
-              DriveConstants.kDriveGearbox,
-              DriveConstants.kDriveGearing,
-              DriveConstants.kTrackwidthMeters,
-              DriveConstants.kWheelDiameterMeters / 2.0,
+              Drive.kDrivetrainPlant,
+              Drive.kDriveGearbox,
+              Drive.kDriveGearing,
+              Drive.kTrackwidthMeters,
+              Drive.kWheelDiameterMeters / 2.0,
               null
               /*VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005)*/);
 
@@ -118,9 +122,6 @@ public class Drivetrain extends SubsystemBase {
           SimDeviceDataJNI.getSimValueHandle(
               SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]"), "Yaw"));
 
-      // the Field2d class lets us visualize our robot in the simulation GUI.
-      m_fieldSim = new Field2d();
-      SmartDashboard.putData("Field", m_fieldSim);
     }
 
   }
@@ -138,6 +139,8 @@ public class Drivetrain extends SubsystemBase {
       gyro.getRotation2d(),
       FL_ENC.getPosition(),
       FR_ENC.getPosition());
+
+    m_fieldSim.setRobotPose(m_odometry.getPoseMeters());
   }
 
   @Override
@@ -214,10 +217,10 @@ public class Drivetrain extends SubsystemBase {
     var autoVoltageConstraint =
     new DifferentialDriveVoltageConstraint(
         new SimpleMotorFeedforward(
-            DriveConstants.ksVolts,
-            DriveConstants.kvVoltSecondsPerMeter,
-            DriveConstants.kaVoltSecondsSquaredPerMeter),
-        DriveConstants.kDriveKinematics,
+            Drive.ksVolts,
+            Drive.kvVoltSecondsPerMeter,
+            Drive.kaVoltSecondsSquaredPerMeter),
+        Drive.kDriveKinematics,
         7);
   
     // Create config for trajectory
@@ -226,7 +229,7 @@ public class Drivetrain extends SubsystemBase {
         AutoConstants.kMaxSpeedMetersPerSecond,
         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
           // Add kinematics to ensure max speed is actually obeyed
-          .setKinematics(DriveConstants.kDriveKinematics)
+          .setKinematics(Drive.kDriveKinematics)
           // Apply the voltage constraint
           .addConstraint(autoVoltageConstraint)
           .setReversed(reversed);
@@ -269,13 +272,13 @@ public class Drivetrain extends SubsystemBase {
           new RamseteController(
               AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
           new SimpleMotorFeedforward(
-              DriveConstants.ksVolts,
-              DriveConstants.kvVoltSecondsPerMeter,
-              DriveConstants.kaVoltSecondsSquaredPerMeter),
-          DriveConstants.kDriveKinematics,
+              Drive.ksVolts,
+              Drive.kvVoltSecondsPerMeter,
+              Drive.kaVoltSecondsSquaredPerMeter),
+          Drive.kDriveKinematics,
           robotDrive::getWheelSpeeds,
-          new PIDController(DriveConstants.kPVel, 0, 0),
-          new PIDController(DriveConstants.kPVel, 0, 0),
+          new PIDController(Drive.kPVel, 0, 0),
+          new PIDController(Drive.kPVel, 0, 0),
           // RamseteCommand passes volts to the callback
           robotDrive::tankDriveVolts,
           robotDrive);

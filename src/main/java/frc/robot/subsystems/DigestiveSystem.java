@@ -6,10 +6,12 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.BangBangController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard; 
 import frc.robot.Constants.CAN;
-import frc.robot.Constants.shooterFF;
+import frc.robot.Constants.Shooter;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
@@ -31,10 +33,16 @@ public class DigestiveSystem extends SubsystemBase {
   private boolean beam1Broken = false;
   private boolean beam2Broken = false;
 
-  SparkMaxPIDController shooterControl;
-  BangBangController bangBang = new BangBangController();
+  //private double flywheelRPM = 0;
+
+  //private double lastPosition = 0;
+
+  //private Timer loopTime = new Timer();
+
+  PIDController flywheelPID = new PIDController(0.1, 0, 0);
+  BangBangController flywheelBangBang = new BangBangController();
   
-  SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(shooterFF.Ks, shooterFF.Kv);
+  SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Shooter.Ks, Shooter.Kv);
 
   /** Creates a new Intake. */
   public DigestiveSystem() {
@@ -53,25 +61,16 @@ public class DigestiveSystem extends SubsystemBase {
     transfer_ENC = transfer.getEncoder();
     flywheel_ENC  = flywheel1.getEncoder();
 
-    SmartDashboard.putNumber("flywheel/Speed", 0);
+    SmartDashboard.putNumber("flywheel/SpeedSetpoint", 0);
+    SmartDashboard.putNumber("flywheel/VoltageInput", 0);
+    SmartDashboard.putNumber("flywheel/kP", flywheelPID.getP());
+    SmartDashboard.putNumber("transfer/speed", 0);
 
     flywheel1.setInverted(true);
     flywheel2.follow(flywheel1, true);
+
+    // loopTime.start();
   }
-
-  //Shooter methods
-  public void setupShooterPID(){
-
-    shooterControl.setP(0);
-    shooterControl.setI(0);
-    shooterControl.setD(0);
-
-  }
-
-  public void setSetpoint(double setpoint) {
-  
-    shooterControl.setReference(setpoint, CANSparkMax.ControlType.kVelocity);
-}
 
 
 public void setSpeed(double speed) {
@@ -89,11 +88,20 @@ public void takeIn(double pwr){
 
   @Override
   public void periodic() {
-    double targetSpeed = SmartDashboard.getNumber("flywheel/Speed", 0.0);
+    double targetSpeed = SmartDashboard.getNumber("flywheel/SpeedSetpoint", 0.0);
 
-   // setSpeed(SmartDashboard.getNumber("flywheel/Speed", 0.0));
+   // setSpeed(SmartDashboard.getNumber("flywheel/SpeedSetpoint", 0.0));
     SmartDashboard.putNumber("flywheel/Vel", flywheel_ENC.getVelocity());
     SmartDashboard.putNumber("flywheel/Pos", flywheel_ENC.getPosition());
+    
+    
+    // flywheelRPM = ((flywheel_ENC.getPosition() - lastPosition) / loopTime.get()) * 60;
+    // loopTime.reset();
+    // lastPosition = flywheel_ENC.getPosition();
+
+    SmartDashboard.putNumber("flywheel/RPM", flywheel_ENC.getVelocity());
+
+    
 
 /*
     // This method will be called once per scheduler run
@@ -112,8 +120,25 @@ public void takeIn(double pwr){
 */
     //getting values for ff from smart dashboard
     //flywheel.set(bangBang.calculate(flywheel_ENC.getVelocity(), targetSpeed) + 0.9 * feedForward.calculate(targetSpeed));
-    flywheel1.set(feedForward.calculate(targetSpeed));
+    
+    //flywheel1.setVoltage(SmartDashboard.getNumber("flywheel/VoltageInput", 0));
+    transfer.set(SmartDashboard.getNumber("transfer/speed", 0));
 
+    double targetSpeedRPS = targetSpeed/60;
+    double currentSpeedRPS = flywheel_ENC.getVelocity()/60;
+    SmartDashboard.putNumber("flywheel/velRPS", currentSpeedRPS);
+    SmartDashboard.putNumber("flywheel/targetSpeedRPS", targetSpeedRPS);
+
+    flywheelPID.setP(SmartDashboard.getNumber("flywheel/kP", flywheelPID.getP()));
+
+    double ffEffort = feedForward.calculate(targetSpeedRPS);
+    double bbEffort = flywheelBangBang.calculate(currentSpeedRPS, targetSpeedRPS);
+    double totalEffort = ffEffort + bbEffort*0.25;
+    flywheel1.setVoltage(totalEffort);
+
+    SmartDashboard.putNumber("flywheel/ffEffort", ffEffort);
+    SmartDashboard.putNumber("flywheel/bbEffort", bbEffort);
+    SmartDashboard.putNumber("flywheel/totalControlEffort", totalEffort);
   }
 
 }

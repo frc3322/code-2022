@@ -20,10 +20,10 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
  */
 public final class Constants {
 
-    public static final class shooterFF{
-        public static final double Ks = 0.10525;
-        public static final double Kv = 0.12558;
-        public static final double Ka = 0.026326;
+    public static final class Shooter {
+        public static final double Ks = -0.033976;
+        public static final double Kv = 0.13123;
+        public static final double Ka = 0.013611;
 
     }
    
@@ -37,7 +37,7 @@ public final class Constants {
 
         public static final int flywheel1_ID = 11;
         public static final int flywheel2_ID = 10;
-        public static final int transfer_ID = 5;
+        public static final int transfer_ID = 14;
         public static final int intake_ID = 6;
 
         public static final int ClimberR_ID = 7;
@@ -46,7 +46,7 @@ public final class Constants {
 
     }
 
-    public static final class DriveConstants{
+    public static final class Drive {
 
         
         public static final double kTrackwidthMeters = 0.69; //0.66

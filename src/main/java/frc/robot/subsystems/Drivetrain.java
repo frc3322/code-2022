@@ -72,6 +72,9 @@ public class Drivetrain extends SubsystemBase {
   private SimDouble m_gyroSim;
   private double rightVoltage;
   private double leftVoltage;
+  
+  public PIDController drivePID;
+
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -125,9 +128,25 @@ public class Drivetrain extends SubsystemBase {
   public void drive(double speed, double rotation) {
     robotDrive.arcadeDrive(speed, rotation);
   }
+  public void setupDrivePID(){
 
+    drivePID.setP(0);
+    drivePID.setI(0);
+    drivePID.setD(0);
 
+  }
+  
+  // public void ldsjkdsfjh(double initAngle, double initTX){
+  //   double setpoint = (initAngle - initTX);
+  
+  //   double pidOut = limePID.calculate(getHeading(), setpoint);
+  //   drive(pidOut, 0);
+  // }
 
+public void turnToAngle(double angle){
+  double PIDOutput = drivePID.calculate(getHeading(), angle);
+  drive(0, PIDOutput);
+}
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

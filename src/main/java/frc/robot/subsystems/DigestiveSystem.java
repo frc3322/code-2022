@@ -57,13 +57,13 @@ public class DigestiveSystem extends SubsystemBase {
   }
 
   //Shooter methods
-  public void setupShooterPID(){
+  // public void setupShooterPID(){
 
-    shooterControl.setP(0);
-    shooterControl.setI(0);
-    shooterControl.setD(0);
+  //   shooterControl.setP(0);
+  //   shooterControl.setI(0);
+  //   shooterControl.setD(0);
 
-  }
+  // }
 
   public void setSetpoint(double setpoint) {
   

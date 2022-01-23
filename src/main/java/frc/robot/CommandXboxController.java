@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.util.EnumMap;
-
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -9,12 +7,9 @@ import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import java.util.EnumMap;
 
-
-/**
- * Taken from FRC 2485 WarlordsLib with permission
- * https://github.com/team2485/WarlordsLib
- */
+/** Taken from FRC 2485 WarlordsLib with permission https://github.com/team2485/WarlordsLib */
 
 /**
  * An alternative XboxController class used in command-based robot code. Provides JoystickButtons
@@ -186,5 +181,4 @@ public class CommandXboxController extends GenericHID {
   public double getRightTriggerAxis() {
     return getRawAxis(Axis.kRightTrigger.value);
   }
-
 }

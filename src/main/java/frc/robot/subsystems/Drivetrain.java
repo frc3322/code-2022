@@ -4,13 +4,10 @@
 
 package frc.robot.subsystems;
 
-import java.util.List;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.controller.PIDController;
@@ -43,6 +40,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
 import frc.robot.Robot;
+import java.util.List;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -100,31 +98,28 @@ public class Drivetrain extends SubsystemBase {
 
     if (RobotBase.isSimulation()) {
 
-      m_drivetrainSimulator = new DifferentialDrivetrainSim(
-          Drive.kDrivetrainPlant,
-          Drive.kDriveGearbox,
-          Drive.kDriveGearing,
-          Drive.kTrackwidthMeters,
-          Drive.kWheelDiameterMeters / 2.0,
-          null
-      /* VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005) */);
+      m_drivetrainSimulator =
+          new DifferentialDrivetrainSim(
+              Drive.kDrivetrainPlant,
+              Drive.kDriveGearbox,
+              Drive.kDriveGearing,
+              Drive.kTrackwidthMeters,
+              Drive.kWheelDiameterMeters / 2.0,
+              null
+              /* VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005) */ );
 
       m_leftEncoderSim = new CANEncoderSim(false, CAN.driveFL);
       m_rightEncoderSim = new CANEncoderSim(false, CAN.driveFR);
-      m_gyroSim = new SimDouble(
-          SimDeviceDataJNI.getSimValueHandle(
-              SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]"), "Yaw"));
-
+      m_gyroSim =
+          new SimDouble(
+              SimDeviceDataJNI.getSimValueHandle(
+                  SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]"), "Yaw"));
     }
-
   }
 
   @Override
   public void periodic() {
-    m_odometry.update(
-        gyro.getRotation2d(),
-        FL_ENC.getPosition(),
-        FR_ENC.getPosition());
+    m_odometry.update(gyro.getRotation2d(), FL_ENC.getPosition(), FR_ENC.getPosition());
 
     m_fieldSim.setRobotPose(m_odometry.getPoseMeters());
   }
@@ -191,18 +186,18 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public TrajectoryConfig getTrajConfig(boolean reversed) {
-    var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
-        new SimpleMotorFeedforward(
-            Drive.ksVolts,
-            Drive.kvVoltSecondsPerMeter,
-            Drive.kaVoltSecondsSquaredPerMeter),
-        Drive.kKinematics,
-        7);
+    var autoVoltageConstraint =
+        new DifferentialDriveVoltageConstraint(
+            new SimpleMotorFeedforward(
+                Drive.ksVolts, Drive.kvVoltSecondsPerMeter, Drive.kaVoltSecondsSquaredPerMeter),
+            Drive.kKinematics,
+            7);
 
     // Create config for trajectory
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+    TrajectoryConfig config =
+        new TrajectoryConfig(
+                AutoConstants.kMaxSpeedMetersPerSecond,
+                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
             // Add kinematics to ensure max speed is actually obeyed
             .setKinematics(Drive.kKinematics)
             // Apply the voltage constraint
@@ -213,15 +208,16 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Trajectory getExampleTraj() {
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at (1, 2) facing the +X direction
-        new Pose2d(1, 2, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(2, 3), new Translation2d(3, 1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(4, 2, new Rotation2d(0)),
-        // Pass config
-        getTrajConfig(false));
+    Trajectory exampleTrajectory =
+        TrajectoryGenerator.generateTrajectory(
+            // Start at (1, 2) facing the +X direction
+            new Pose2d(1, 2, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+            List.of(new Translation2d(2, 3), new Translation2d(3, 1)),
+            // End 3 meters straight ahead of where we started, facing forward
+            new Pose2d(4, 2, new Rotation2d(0)),
+            // Pass config
+            getTrajConfig(false));
 
     return exampleTrajectory;
   }
@@ -229,8 +225,9 @@ public class Drivetrain extends SubsystemBase {
   public Trajectory getTrajFromFieldWidget(String traj, boolean reversed) {
     Trajectory trajectory;
     try {
-      trajectory = TrajectoryGenerator.generateTrajectory(m_fieldSim.getObject(traj).getPoses(),
-          getTrajConfig(reversed));
+      trajectory =
+          TrajectoryGenerator.generateTrajectory(
+              m_fieldSim.getObject(traj).getPoses(), getTrajConfig(reversed));
       ;
     } catch (Exception NegativeArraySizeException) {
 
@@ -241,22 +238,20 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Command getRamseteCommand(Drivetrain robotDrive, Trajectory trajectory) {
-    RamseteCommand ramseteCommand = new RamseteCommand(
-        trajectory,
-        robotDrive::getPose,
-        new RamseteController(
-            AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(
-            Drive.ksVolts,
-            Drive.kvVoltSecondsPerMeter,
-            Drive.kaVoltSecondsSquaredPerMeter),
-        Drive.kKinematics,
-        robotDrive::getWheelSpeeds,
-        new PIDController(Drive.kPVel, 0, 0),
-        new PIDController(Drive.kPVel, 0, 0),
-        // RamseteCommand passes volts to the callback
-        robotDrive::tankDriveVolts,
-        robotDrive);
+    RamseteCommand ramseteCommand =
+        new RamseteCommand(
+            trajectory,
+            robotDrive::getPose,
+            new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
+            new SimpleMotorFeedforward(
+                Drive.ksVolts, Drive.kvVoltSecondsPerMeter, Drive.kaVoltSecondsSquaredPerMeter),
+            Drive.kKinematics,
+            robotDrive::getWheelSpeeds,
+            new PIDController(Drive.kPVel, 0, 0),
+            new PIDController(Drive.kPVel, 0, 0),
+            // RamseteCommand passes volts to the callback
+            robotDrive::tankDriveVolts,
+            robotDrive);
 
     // Reset odometry to starting pose of trajectory.
     robotDrive.resetOdometry(trajectory.getInitialPose());
@@ -271,13 +266,14 @@ public class Drivetrain extends SubsystemBase {
     double Kd = SmartDashboard.getNumber("rotKd", 0);
     double maxVel = SmartDashboard.getNumber("rotMaxVel", 0);
     double maxAcc = SmartDashboard.getNumber("rotMaxAcc", 0);
-    ProfiledPIDController controller = new ProfiledPIDController(Kp, Ki, Kd,
-        new TrapezoidProfile.Constraints(maxVel, maxAcc));
-    ProfiledPIDCommand command = new ProfiledPIDCommand(
-        controller,
-        this::getHeading,
-        targetAngle,
-        (output, setpoint) -> tankDriveVolts(output, -output));
+    ProfiledPIDController controller =
+        new ProfiledPIDController(Kp, Ki, Kd, new TrapezoidProfile.Constraints(maxVel, maxAcc));
+    ProfiledPIDCommand command =
+        new ProfiledPIDCommand(
+            controller,
+            this::getHeading,
+            targetAngle,
+            (output, setpoint) -> tankDriveVolts(output, -output));
 
     return command;
   }

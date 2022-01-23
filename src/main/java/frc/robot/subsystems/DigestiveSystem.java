@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -40,7 +39,8 @@ public class DigestiveSystem extends SubsystemBase {
   PIDController flywheelPID = new PIDController(0.1, 0, 0);
   BangBangController flywheelBangBang = new BangBangController();
 
-  SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRotation);
+  SimpleMotorFeedforward feedForward =
+      new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRotation);
 
   /** Creates a new Intake. */
   public DigestiveSystem() {
@@ -105,7 +105,7 @@ public class DigestiveSystem extends SubsystemBase {
      * if(beam2Broken||!beam1Broken){
      * intake.set(0);
      * }
-     * 
+     *
      * double targetSpeed = SmartDashboard.getNumber("flywheelSpeed", 0.0);
      * if (flywheel_ENC.getVelocity() < targetSpeed) {
      * flywheel.set(1);
@@ -136,5 +136,4 @@ public class DigestiveSystem extends SubsystemBase {
     SmartDashboard.putNumber("flywheel/bbEffort", bbEffort);
     SmartDashboard.putNumber("flywheel/totalControlEffort", totalEffort);
   }
-
 }

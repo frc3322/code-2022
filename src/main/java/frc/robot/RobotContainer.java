@@ -17,23 +17,21 @@ public class RobotContainer {
   private final DigestiveSystem digestiveSystem = new DigestiveSystem();
 
   private final CommandXboxController driverController = new CommandXboxController(0);
-  
-  private final Command driveCommand = new RunCommand(
-      () -> drivetrain.arcadeDrive(driverController.getLeftY(), driverController.getRightX()),
-      drivetrain);
 
+  private final Command driveCommand =
+      new RunCommand(
+          () -> drivetrain.arcadeDrive(driverController.getLeftY(), driverController.getRightX()),
+          drivetrain);
 
   public RobotContainer() {
     configureButtonBindings();
     drivetrain.setDefaultCommand(driveCommand);
-    
   }
 
-  private void configureButtonBindings() {
-    
-  }
+  private void configureButtonBindings() {}
 
   public Command getAutonomousCommand() {
-    return drivetrain.getRamseteCommand(drivetrain, drivetrain.getTrajFromFieldWidget("traj1", false));
+    return drivetrain.getRamseteCommand(
+        drivetrain, drivetrain.getTrajFromFieldWidget("traj1", false));
   }
 }

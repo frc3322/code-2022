@@ -40,9 +40,11 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
 import frc.robot.Robot;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 
-public class Drivetrain extends SubsystemBase {
+public class Drivetrain extends SubsystemBase implements Loggable {
 
   private final CANSparkMax FL = new CANSparkMax(CAN.driveFL, MotorType.kBrushless);
   private final CANSparkMax FR = new CANSparkMax(CAN.driveFR, MotorType.kBrushless);
@@ -67,8 +69,10 @@ public class Drivetrain extends SubsystemBase {
   // The Field2d class shows the field in the sim GUI
   private Field2d m_fieldSim;
   private SimDouble m_gyroSim;
-  private double rightVoltage;
-  private double leftVoltage;
+
+  @Log private double rightVoltage;
+
+  @Log private double leftVoltage;
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {

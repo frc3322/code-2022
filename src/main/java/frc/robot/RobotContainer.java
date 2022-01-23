@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DigestiveSystem;
 import frc.robot.subsystems.Drivetrain;
+import io.github.oblarg.oblog.Logger;
 
 public class RobotContainer {
 
@@ -24,6 +25,7 @@ public class RobotContainer {
           drivetrain);
 
   public RobotContainer() {
+    Logger.configureLoggingAndConfig(this, false);
     configureButtonBindings();
     drivetrain.setDefaultCommand(driveCommand);
   }
@@ -33,5 +35,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return drivetrain.getRamseteCommand(
         drivetrain, drivetrain.getTrajFromFieldWidget("traj1", false));
+  }
+
+  public void updateLogger() {
+    Logger.updateEntries();
   }
 }

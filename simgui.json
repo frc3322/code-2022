@@ -27,6 +27,12 @@
     }
   },
   "NetworkTables": {
+    "Shuffleboard": {
+      "Drivetrain": {
+        "open": true
+      },
+      "open": true
+    },
     "SmartDashboard": {
       "flywheel": {
         "open": true

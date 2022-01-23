@@ -4,18 +4,17 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Climber extends SubsystemBase {
 
-  private final CANSparkMax ClimberR = new CANSparkMax(CAN.ClimberR_ID, MotorType.kBrushless);
-  private final CANSparkMax ClimberL = new CANSparkMax(CAN.ClimberL_ID, MotorType.kBrushless);
+  private final CANSparkMax ClimberR = new CANSparkMax(CAN.climberL, MotorType.kBrushless);
+  private final CANSparkMax ClimberL = new CANSparkMax(CAN.climberR, MotorType.kBrushless);
 
   private final RelativeEncoder ClimberR_ENC;
   private final RelativeEncoder ClimberL_ENC;
@@ -27,16 +26,15 @@ public class Climber extends SubsystemBase {
     ClimberL.restoreFactoryDefaults();
 
     ClimberL_ENC = ClimberL.getEncoder();
-    ClimberR_ENC  = ClimberR.getEncoder();
-    //ClimberR.setInverted(true);
+    ClimberR_ENC = ClimberR.getEncoder();
+    // ClimberR.setInverted(true);
 
   }
 
-
-public void climb(double pwr){
- ClimberL.set(pwr);
- ClimberR.set(pwr);
-}
+  public void climb(double pwr) {
+    ClimberL.set(pwr);
+    ClimberR.set(pwr);
+  }
 
   @Override
   public void periodic() {

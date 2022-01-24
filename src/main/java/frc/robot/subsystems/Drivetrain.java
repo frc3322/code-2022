@@ -41,6 +41,7 @@ import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 
@@ -143,6 +144,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     m_fieldSim.setRobotPose(getPose());
   }
 
+  @Config
   public void arcadeDrive(double speed, double rotation) {
     robotDrive.arcadeDrive(speed, rotation);
 

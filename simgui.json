@@ -28,6 +28,9 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
+      "DigestiveSystem": {
+        "open": true
+      },
       "Drivetrain": {
         "open": true
       },
@@ -36,8 +39,7 @@
     "SmartDashboard": {
       "flywheel": {
         "open": true
-      },
-      "open": true
+      }
     }
   }
 }

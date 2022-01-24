@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.CommandXboxController;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Shooter;
 import io.github.oblarg.oblog.Loggable;
@@ -45,6 +46,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   SimpleMotorFeedforward feedForward =
       new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRotation);
+
+  private final CommandXboxController testController = new CommandXboxController(0);
 
   public DigestiveSystem() {
 
@@ -105,5 +108,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelTotalEffort = flywheelFFEffort + flywheelBBEffort * 0.25;
     flywheel1.setVoltage(flywheelTotalEffort);
 
+    setIntakeSpeedProp(testController.getLeftTriggerAxis());
+    setTransferSpeedProp(testController.getRightTriggerAxis());
   }
 }

@@ -52,28 +52,28 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final CANSparkMax BL = new CANSparkMax(CAN.driveBL, MotorType.kBrushless);
   private final CANSparkMax BR = new CANSparkMax(CAN.driveBR, MotorType.kBrushless);
 
-  private final RelativeEncoder FL_ENC;
-  private final RelativeEncoder FR_ENC;
-  private final RelativeEncoder BR_ENC;
-  private final RelativeEncoder BL_ENC;
+  private final RelativeEncoder FL_ENC = FL.getEncoder();
+  private final RelativeEncoder FR_ENC = FR.getEncoder();
+  private final RelativeEncoder BR_ENC = BL.getEncoder();
+  private final RelativeEncoder BL_ENC = BR.getEncoder();
 
   private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
-  private final DifferentialDrive robotDrive;
+  private final DifferentialDrive robotDrive = new DifferentialDrive(FL, FR);
 
-  private final DifferentialDriveOdometry m_odometry;
+  private final DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
 
   // These classes help us simulate our drivetrain
   private DifferentialDrivetrainSim m_drivetrainSimulator;
   private CANEncoderSim m_leftEncoderSim;
   private CANEncoderSim m_rightEncoderSim;
   // The Field2d class shows the field in the sim GUI
-  private Field2d m_fieldSim;
+  private Field2d m_fieldSim = new Field2d();
   private SimDouble m_gyroSim;
 
-  @Log private double rightVoltage;
+  @Log private double rightVoltage = 0;
 
-  @Log private double leftVoltage;
+  @Log private double leftVoltage = 0;
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -86,19 +86,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     BL.follow(FL);
     BR.follow(FR);
 
-    FL_ENC = FL.getEncoder();
-    FR_ENC = FR.getEncoder();
-    BL_ENC = BL.getEncoder();
-    BR_ENC = BR.getEncoder();
-
-    rightVoltage = 0;
-    leftVoltage = 0;
-
-    robotDrive = new DifferentialDrive(FL, FR);
-    m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
-
     // the Field2d class lets us visualize our robot in the simulation GUI.
-    m_fieldSim = new Field2d();
     SmartDashboard.putData("Field", m_fieldSim);
 
     if (RobotBase.isSimulation()) {

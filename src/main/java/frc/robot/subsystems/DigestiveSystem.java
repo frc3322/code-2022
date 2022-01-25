@@ -11,8 +11,15 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RelativeEncoderSim;
 import frc.robot.CommandXboxController;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Shooter;
@@ -24,12 +31,12 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   private final CANSparkMax intake = new CANSparkMax(CAN.intake, MotorType.kBrushless);
   private final CANSparkMax transfer = new CANSparkMax(CAN.transfer, MotorType.kBrushless);
-  private final CANSparkMax flywheel1 = new CANSparkMax(CAN.flywheelL, MotorType.kBrushless);
-  private final CANSparkMax flywheel2 = new CANSparkMax(CAN.flywheelR, MotorType.kBrushless);
+  private final CANSparkMax flywheelL = new CANSparkMax(CAN.flywheelL, MotorType.kBrushless);
+  private final CANSparkMax flywheelR = new CANSparkMax(CAN.flywheelR, MotorType.kBrushless);
 
-  private final RelativeEncoder intake_ENC = intake.getEncoder();
-  private final RelativeEncoder transfer_ENC = transfer.getEncoder();
-  private final RelativeEncoder flywheel_ENC = flywheel1.getEncoder();
+  private final RelativeEncoder intakeEncoder = intake.getEncoder();
+  private final RelativeEncoder transferEncoder = transfer.getEncoder();
+  private final RelativeEncoder flywheelEncoder = flywheelL.getEncoder();
 
   private boolean beam1Broken = false;
   private boolean beam2Broken = false;
@@ -37,32 +44,49 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   PIDController flywheelPID = new PIDController(0.1, 0, 0);
   BangBangController flywheelBangBang = new BangBangController();
 
-  @Config private double flywheelTargetSpeedRPM;
-  private double flywheelTargetSpeedRPS;
-  private double flywheelSpeedRPS;
+  @Config private double flywheelTargetVelRPM;
+  @Log private double flywheelVelRPM;
+  private double flywheelTargetVelRadPS;
+  private double flywheelVelRadPS;
   private double flywheelFFEffort;
   private double flywheelBBEffort;
   @Log private double flywheelTotalEffort;
 
   SimpleMotorFeedforward feedForward =
-      new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRotation);
+      new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRadian);
+
 
   private final CommandXboxController testController = new CommandXboxController(0);
+
+  private FlywheelSim flywheelSimulator;
+  private RelativeEncoderSim flywheelEncoderSim;
 
   public DigestiveSystem() {
 
     intake.restoreFactoryDefaults();
     transfer.restoreFactoryDefaults();
-    flywheel1.restoreFactoryDefaults();
-    flywheel2.restoreFactoryDefaults();
+    flywheelL.restoreFactoryDefaults();
+    flywheelR.restoreFactoryDefaults();
 
     intake.setIdleMode(IdleMode.kCoast);
     transfer.setIdleMode(IdleMode.kCoast);
-    flywheel1.setIdleMode(IdleMode.kCoast);
-    flywheel2.setIdleMode(IdleMode.kCoast);
+    flywheelL.setIdleMode(IdleMode.kCoast);
+    flywheelR.setIdleMode(IdleMode.kCoast);
 
-    flywheel1.setInverted(true);
-    flywheel2.follow(flywheel1, true);
+    flywheelL.setInverted(true);
+    flywheelR.follow(flywheelL, true);
+
+    if (RobotBase.isSimulation()) {
+
+      flywheelSimulator  = 
+          new FlywheelSim(
+              Shooter.kFlywheelPlant, 
+              Shooter.kFlywheelGearbox, 
+              Shooter.kFlywheelGearing);
+
+      flywheelEncoderSim = new RelativeEncoderSim(false, CAN.flywheelL);
+
+    }
 
   }
 
@@ -78,7 +102,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   @Config
   public void setFlywheelTargetSpeedRPM(double RPM) {
-    flywheelTargetSpeedRPM = RPM;
+    flywheelTargetVelRPM = RPM;
   }
 
   @Override
@@ -100,15 +124,26 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
      * }
      */
 
-    flywheelTargetSpeedRPS = flywheelTargetSpeedRPM / 60;
-    flywheelSpeedRPS = flywheel_ENC.getVelocity() / 60;
+    flywheelVelRPM = flywheelEncoder.getVelocity();
 
-    flywheelFFEffort = feedForward.calculate(flywheelTargetSpeedRPS);
-    flywheelBBEffort = flywheelBangBang.calculate(flywheelSpeedRPS, flywheelTargetSpeedRPS);
+    flywheelTargetVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelTargetVelRPM);
+    flywheelVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelVelRPM);
+
+    flywheelFFEffort = feedForward.calculate(flywheelTargetVelRadPS);
+    flywheelBBEffort = flywheelBangBang.calculate(flywheelVelRadPS, flywheelTargetVelRadPS);
     flywheelTotalEffort = flywheelFFEffort + flywheelBBEffort * 0.25;
-    flywheel1.setVoltage(flywheelTotalEffort);
+    flywheelL.setVoltage(flywheelTotalEffort);
 
     setIntakeSpeedProp(testController.getLeftTriggerAxis());
     setTransferSpeedProp(testController.getRightTriggerAxis());
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    flywheelSimulator.setInput(flywheelL.getAppliedOutput());
+    flywheelSimulator.update(0.020);
+
+    flywheelEncoderSim.setVelocity(flywheelSimulator.getAngularVelocityRPM());
+
   }
 }

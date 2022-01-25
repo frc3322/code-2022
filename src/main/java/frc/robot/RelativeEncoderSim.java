@@ -3,10 +3,10 @@ package frc.robot;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 
-public class CANEncoderSim {
+public class RelativeEncoderSim {
   private final SimDouble position, velocity;
 
-  public CANEncoderSim(boolean alt, int deviceID) {
+  public RelativeEncoderSim(boolean alt, int deviceID) {
     var device = new SimDeviceSim("SPARK MAX [" + deviceID + "]");
     position = device.getDouble(alt ? "Alt Encoder Position" : "Position");
     velocity = device.getDouble(alt ? "Alt Encoder Velocity" : "Velocity");

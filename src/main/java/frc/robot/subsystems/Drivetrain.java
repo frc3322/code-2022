@@ -35,7 +35,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.CANEncoderSim;
+import frc.robot.RelativeEncoderSim;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
@@ -65,8 +65,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   // These classes help us simulate our drivetrain
   private DifferentialDrivetrainSim m_drivetrainSimulator;
-  private CANEncoderSim m_leftEncoderSim;
-  private CANEncoderSim m_rightEncoderSim;
+  private RelativeEncoderSim m_leftEncoderSim;
+  private RelativeEncoderSim m_rightEncoderSim;
   // The Field2d class shows the field in the sim GUI
   private Field2d m_fieldSim = new Field2d();
   private SimDouble m_gyroSim;
@@ -86,6 +86,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     BL.follow(FL);
     BR.follow(FR);
 
+    FR.setInverted(true);
+
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", m_fieldSim);
 
@@ -101,8 +103,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
               null
               /* VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005) */ );
 
-      m_leftEncoderSim = new CANEncoderSim(false, CAN.driveFL);
-      m_rightEncoderSim = new CANEncoderSim(false, CAN.driveFR);
+      m_leftEncoderSim = new RelativeEncoderSim(false, CAN.driveFL);
+      m_rightEncoderSim = new RelativeEncoderSim(false, CAN.driveFR);
       m_gyroSim =
           new SimDouble(
               SimDeviceDataJNI.getSimValueHandle(
@@ -119,7 +121,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   @Override
   public void simulationPeriodic() {
-    m_drivetrainSimulator.setInputs(leftVoltage, rightVoltage);
+    m_drivetrainSimulator.setInputs(FL.getAppliedOutput(), -FR.getAppliedOutput());
     m_drivetrainSimulator.update(0.020);
 
     m_leftEncoderSim.setPosition(m_drivetrainSimulator.getLeftPositionMeters());

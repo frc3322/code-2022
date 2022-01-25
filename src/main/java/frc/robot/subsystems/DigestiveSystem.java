@@ -14,15 +14,11 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RelativeEncoderSim;
 import frc.robot.CommandXboxController;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Shooter;
+import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -55,7 +51,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   SimpleMotorFeedforward feedForward =
       new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRadian);
 
-
   private final CommandXboxController testController = new CommandXboxController(0);
 
   private FlywheelSim flywheelSimulator;
@@ -78,16 +73,12 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
     if (RobotBase.isSimulation()) {
 
-      flywheelSimulator  = 
+      flywheelSimulator =
           new FlywheelSim(
-              Shooter.kFlywheelPlant, 
-              Shooter.kFlywheelGearbox, 
-              Shooter.kFlywheelGearing);
+              Shooter.kFlywheelPlant, Shooter.kFlywheelGearbox, Shooter.kFlywheelGearing);
 
       flywheelEncoderSim = new RelativeEncoderSim(false, CAN.flywheelL);
-
     }
-
   }
 
   @Config
@@ -144,6 +135,5 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelSimulator.update(0.020);
 
     flywheelEncoderSim.setVelocity(flywheelSimulator.getAngularVelocityRPM());
-
   }
 }

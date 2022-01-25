@@ -35,10 +35,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RelativeEncoderSim;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
+import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
@@ -61,7 +61,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   private final DifferentialDrive robotDrive = new DifferentialDrive(FL, FR);
 
-  private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+  private final DifferentialDriveOdometry odometry =
+      new DifferentialDriveOdometry(gyro.getRotation2d());
 
   // These classes help us simulate our drivetrain
   private DifferentialDrivetrainSim drivetrainSimulator;

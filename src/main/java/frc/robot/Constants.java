@@ -15,13 +15,12 @@ public final class Constants {
 
   public static final class Shooter {
     public static final double ksVolts = -0.033976;
-    public static final double kvVoltSecondsPerRadian = 0.13123 / (2*Math.PI);
-    public static final double kaVoltSecondsSquaredPerRadian = 0.013611 / (2*Math.PI);
+    public static final double kvVoltSecondsPerRadian = 0.13123 / (2 * Math.PI);
+    public static final double kaVoltSecondsSquaredPerRadian = 0.013611 / (2 * Math.PI);
 
-    public static final LinearSystem<N1, N1, N1> kFlywheelPlant = 
+    public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
         LinearSystemId.identifyVelocitySystem(
-            kvVoltSecondsPerRadian, 
-            kaVoltSecondsSquaredPerRadian);
+            kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
 
     public static final DCMotor kFlywheelGearbox = DCMotor.getNEO(2);
 

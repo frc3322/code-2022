@@ -61,15 +61,15 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   private final DifferentialDrive robotDrive = new DifferentialDrive(FL, FR);
 
-  private final DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+  private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
 
   // These classes help us simulate our drivetrain
-  private DifferentialDrivetrainSim m_drivetrainSimulator;
-  private RelativeEncoderSim m_leftEncoderSim;
-  private RelativeEncoderSim m_rightEncoderSim;
+  private DifferentialDrivetrainSim drivetrainSimulator;
+  private RelativeEncoderSim leftEncoderSim;
+  private RelativeEncoderSim rightEncoderSim;
   // The Field2d class shows the field in the sim GUI
-  private Field2d m_fieldSim = new Field2d();
-  private SimDouble m_gyroSim;
+  private Field2d fieldSim = new Field2d();
+  private SimDouble gyroSim;
 
   @Log private double rightVoltage = 0;
 
@@ -89,11 +89,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     FR.setInverted(true);
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
-    SmartDashboard.putData("Field", m_fieldSim);
+    SmartDashboard.putData("Field", fieldSim);
 
     if (RobotBase.isSimulation()) {
 
-      m_drivetrainSimulator =
+      drivetrainSimulator =
           new DifferentialDrivetrainSim(
               Drive.kDrivetrainPlant,
               Drive.kDriveGearbox,
@@ -103,9 +103,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
               null
               /* VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005) */ );
 
-      m_leftEncoderSim = new RelativeEncoderSim(false, CAN.driveFL);
-      m_rightEncoderSim = new RelativeEncoderSim(false, CAN.driveFR);
-      m_gyroSim =
+      leftEncoderSim = new RelativeEncoderSim(false, CAN.driveFL);
+      rightEncoderSim = new RelativeEncoderSim(false, CAN.driveFR);
+      gyroSim =
           new SimDouble(
               SimDeviceDataJNI.getSimValueHandle(
                   SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]"), "Yaw"));
@@ -114,24 +114,24 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   @Override
   public void periodic() {
-    m_odometry.update(gyro.getRotation2d(), FL_ENC.getPosition(), FR_ENC.getPosition());
+    odometry.update(gyro.getRotation2d(), FL_ENC.getPosition(), FR_ENC.getPosition());
 
-    m_fieldSim.setRobotPose(m_odometry.getPoseMeters());
+    fieldSim.setRobotPose(odometry.getPoseMeters());
   }
 
   @Override
   public void simulationPeriodic() {
-    m_drivetrainSimulator.setInputs(FL.getAppliedOutput(), -FR.getAppliedOutput());
-    m_drivetrainSimulator.update(0.020);
+    drivetrainSimulator.setInputs(FL.getAppliedOutput(), -FR.getAppliedOutput());
+    drivetrainSimulator.update(0.020);
 
-    m_leftEncoderSim.setPosition(m_drivetrainSimulator.getLeftPositionMeters());
-    m_leftEncoderSim.setVelocity(m_drivetrainSimulator.getLeftVelocityMetersPerSecond());
-    m_rightEncoderSim.setPosition(m_drivetrainSimulator.getRightPositionMeters());
-    m_rightEncoderSim.setVelocity(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
+    leftEncoderSim.setPosition(drivetrainSimulator.getLeftPositionMeters());
+    leftEncoderSim.setVelocity(drivetrainSimulator.getLeftVelocityMetersPerSecond());
+    rightEncoderSim.setPosition(drivetrainSimulator.getRightPositionMeters());
+    rightEncoderSim.setVelocity(drivetrainSimulator.getRightVelocityMetersPerSecond());
 
-    m_gyroSim.set(-m_drivetrainSimulator.getHeading().getDegrees());
+    gyroSim.set(-drivetrainSimulator.getHeading().getDegrees());
 
-    m_fieldSim.setRobotPose(getPose());
+    fieldSim.setRobotPose(getPose());
   }
 
   @Config
@@ -146,11 +146,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public double getDrawnCurrentAmps() {
-    return m_drivetrainSimulator.getCurrentDrawAmps();
+    return drivetrainSimulator.getCurrentDrawAmps();
   }
 
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return odometry.getPoseMeters();
   }
 
   public double getHeading() {
@@ -163,8 +163,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    m_drivetrainSimulator.setPose(pose);
-    m_odometry.resetPosition(pose, gyro.getRotation2d());
+    drivetrainSimulator.setPose(pose);
+    odometry.resetPosition(pose, gyro.getRotation2d());
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
@@ -223,7 +223,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     try {
       trajectory =
           TrajectoryGenerator.generateTrajectory(
-              m_fieldSim.getObject(traj).getPoses(), getTrajConfig(reversed));
+              fieldSim.getObject(traj).getPoses(), getTrajConfig(reversed));
       ;
     } catch (Exception NegativeArraySizeException) {
 

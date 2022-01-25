@@ -35,10 +35,10 @@ public class CommandXboxController extends GenericHID {
     }
   }
 
-  private final EnumMap<Button, JoystickButton> m_buttons =
+  private final EnumMap<Button, JoystickButton> buttons =
       new EnumMap<Button, JoystickButton>(Button.class);
 
-  private final EnumMap<XboxPOV, POVButton> m_povButtons =
+  private final EnumMap<XboxPOV, POVButton> povButtons =
       new EnumMap<XboxPOV, POVButton>(XboxPOV.class);
 
   public CommandXboxController(final int port) {
@@ -56,75 +56,75 @@ public class CommandXboxController extends GenericHID {
   }
 
   public JoystickButton leftBumper() {
-    return m_buttons.computeIfAbsent(Button.kLeftBumper, this::build);
+    return buttons.computeIfAbsent(Button.kLeftBumper, this::build);
   }
 
   public JoystickButton rightBumper() {
-    return m_buttons.computeIfAbsent(Button.kRightBumper, this::build);
+    return buttons.computeIfAbsent(Button.kRightBumper, this::build);
   }
 
   public JoystickButton leftStick() {
-    return m_buttons.computeIfAbsent(Button.kLeftStick, this::build);
+    return buttons.computeIfAbsent(Button.kLeftStick, this::build);
   }
 
   public JoystickButton rightStick() {
-    return m_buttons.computeIfAbsent(Button.kRightStick, this::build);
+    return buttons.computeIfAbsent(Button.kRightStick, this::build);
   }
 
   public JoystickButton a() {
-    return m_buttons.computeIfAbsent(Button.kA, this::build);
+    return buttons.computeIfAbsent(Button.kA, this::build);
   }
 
   public JoystickButton b() {
-    return m_buttons.computeIfAbsent(Button.kB, this::build);
+    return buttons.computeIfAbsent(Button.kB, this::build);
   }
 
   public JoystickButton x() {
-    return m_buttons.computeIfAbsent(Button.kX, this::build);
+    return buttons.computeIfAbsent(Button.kX, this::build);
   }
 
   public JoystickButton y() {
-    return m_buttons.computeIfAbsent(Button.kY, this::build);
+    return buttons.computeIfAbsent(Button.kY, this::build);
   }
 
   public JoystickButton back() {
-    return m_buttons.computeIfAbsent(Button.kBack, this::build);
+    return buttons.computeIfAbsent(Button.kBack, this::build);
   }
 
   public JoystickButton start() {
-    return m_buttons.computeIfAbsent(Button.kStart, this::build);
+    return buttons.computeIfAbsent(Button.kStart, this::build);
   }
 
   public POVButton upperPOV() {
-    return m_povButtons.computeIfAbsent(XboxPOV.kUpper, this::build);
+    return povButtons.computeIfAbsent(XboxPOV.kUpper, this::build);
   }
 
   public POVButton upperRightPOV() {
-    return m_povButtons.computeIfAbsent(XboxPOV.kUpperRight, this::build);
+    return povButtons.computeIfAbsent(XboxPOV.kUpperRight, this::build);
   }
 
   public POVButton rightPOV() {
-    return m_povButtons.computeIfAbsent(XboxPOV.kRight, this::build);
+    return povButtons.computeIfAbsent(XboxPOV.kRight, this::build);
   }
 
   public POVButton lowerRightPOV() {
-    return m_povButtons.computeIfAbsent(XboxPOV.kLowerRight, this::build);
+    return povButtons.computeIfAbsent(XboxPOV.kLowerRight, this::build);
   }
 
   public POVButton lowerPOV() {
-    return m_povButtons.computeIfAbsent(XboxPOV.kLower, this::build);
+    return povButtons.computeIfAbsent(XboxPOV.kLower, this::build);
   }
 
   public POVButton lowerLeftPOV() {
-    return m_povButtons.computeIfAbsent(XboxPOV.kLowerLeft, this::build);
+    return povButtons.computeIfAbsent(XboxPOV.kLowerLeft, this::build);
   }
 
   public POVButton leftPOV() {
-    return m_povButtons.computeIfAbsent(XboxPOV.kLeft, this::build);
+    return povButtons.computeIfAbsent(XboxPOV.kLeft, this::build);
   }
 
   public POVButton upperLeftPOV() {
-    return m_povButtons.computeIfAbsent(XboxPOV.kUpperLeft, this::build);
+    return povButtons.computeIfAbsent(XboxPOV.kUpperLeft, this::build);
   }
   /**
    * Get the X axis value of left side of the controller.

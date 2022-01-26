@@ -44,6 +44,11 @@ public final class Constants {
     public static final int climberR = 8;
   }
 
+  public static final class DIO {
+    public static final int breakBeamA = 0;
+    public static final int breakBeamB = 2;
+  }
+
   public static final class Drive {
     public static final double kTrackwidthMeters = 0.69; // 0.66
     public static final DifferentialDriveKinematics kKinematics =

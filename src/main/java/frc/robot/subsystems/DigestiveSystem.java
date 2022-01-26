@@ -12,11 +12,13 @@ import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CommandXboxController;
 import frc.robot.Constants.CAN;
+import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
 import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
@@ -34,8 +36,12 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   private final RelativeEncoder transferEncoder = transfer.getEncoder();
   private final RelativeEncoder flywheelEncoder = flywheelL.getEncoder();
 
-  private boolean beam1Broken = false;
-  private boolean beam2Broken = false;
+  private final DigitalInput breakBeamMouth = new DigitalInput(DIO.breakBeamA);
+  private final DigitalInput breakBeamStomach = new DigitalInput(DIO.breakBeamB);
+  @Log
+  private boolean beamMouthBroken = false;
+  @Log
+  private boolean beamStomachBroken = false;
 
   PIDController flywheelPID = new PIDController(0.1, 0, 0);
   BangBangController flywheelBangBang = new BangBangController();
@@ -114,6 +120,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
      * flywheel.set(0);
      * }
      */
+    beamMouthBroken = breakBeamMouth.get();
+    beamStomachBroken = breakBeamStomach.get();
 
     flywheelVelRPM = flywheelEncoder.getVelocity();
 

@@ -15,6 +15,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CommandXboxController;
 import frc.robot.Constants.CAN;
@@ -38,10 +41,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   private final DigitalInput breakBeamMouth = new DigitalInput(DIO.breakBeamA);
   private final DigitalInput breakBeamStomach = new DigitalInput(DIO.breakBeamB);
-  @Log
-  private boolean beamMouthBroken = false;
-  @Log
-  private boolean beamStomachBroken = false;
+  @Log private boolean ballInMouth = false;
+  @Log private boolean stomachFull = false;
 
   PIDController flywheelPID = new PIDController(0.1, 0, 0);
   BangBangController flywheelBangBang = new BangBangController();
@@ -77,6 +78,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelL.setInverted(true);
     flywheelR.follow(flywheelL, true);
 
+    this.setDefaultCommand(new RunCommand(this::digestBalls, this));
+
     if (RobotBase.isSimulation()) {
 
       flywheelSimulator =
@@ -102,6 +105,28 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelTargetVelRPM = RPM;
   }
 
+  private void digestBalls() {
+    ballInMouth = !breakBeamMouth.get();
+    stomachFull = !breakBeamStomach.get();
+    transfer.set(ballInMouth && !stomachFull ? .2 : 0);
+  }
+
+  private void shoot() {
+    if (Math.abs(flywheelEncoder.getVelocity() - Shooter.targetRPM) < 10) {
+      transfer.set(.2);
+    }
+  }
+
+  public Command getShootCommand() {
+    return new RunCommand(this::shoot)
+                          .beforeStarting(() -> setFlywheelTargetSpeedRPM(Shooter.targetRPM))
+                          .andThen(() -> setFlywheelTargetSpeedRPM(0));
+  }
+
+  public Command getIntakeCommand() {
+    return new StartEndCommand(() -> intake.set(0.5), () -> intake.set(0));
+  }
+
   @Override
   public void periodic() {
 
@@ -120,8 +145,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
      * flywheel.set(0);
      * }
      */
-    beamMouthBroken = breakBeamMouth.get();
-    beamStomachBroken = breakBeamStomach.get();
 
     flywheelVelRPM = flywheelEncoder.getVelocity();
 
@@ -133,8 +156,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelTotalEffort = flywheelFFEffort + flywheelBBEffort * 0.25;
     flywheelL.setVoltage(flywheelTotalEffort);
 
-    setIntakeSpeedProp(testController.getLeftTriggerAxis());
-    setTransferSpeedProp(testController.getRightTriggerAxis());
+    ////////////setIntakeSpeedProp(testController.getLeftTriggerAxis());
+    ////////////setTransferSpeedProp(testController.getRightTriggerAxis());
   }
 
   @Override

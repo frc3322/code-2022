@@ -25,6 +25,8 @@ public final class Constants {
     public static final DCMotor kFlywheelGearbox = DCMotor.getNEO(2);
 
     public static final double kFlywheelGearing = 1;
+
+    public static final int targetRPM = 240;
   }
 
   public static final class CAN {

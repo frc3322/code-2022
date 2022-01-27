@@ -30,7 +30,10 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(driveCommand);
   }
 
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    driverController.x().whenHeld(digestiveSystem.getShootCommand());
+    driverController.a().whenHeld(digestiveSystem.getIntakeCommand());
+  }
 
   public Command getAutonomousCommand() {
     return drivetrain.getRamseteCommand(

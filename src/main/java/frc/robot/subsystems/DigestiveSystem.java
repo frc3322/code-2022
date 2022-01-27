@@ -41,8 +41,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   private final DigitalInput breakBeamMouth = new DigitalInput(DIO.breakBeamA);
   private final DigitalInput breakBeamStomach = new DigitalInput(DIO.breakBeamB);
-  @Log private boolean ballInMouth = false;
-  @Log private boolean stomachFull = false;
+  private boolean ballInMouth = false;
+  private boolean stomachFull = false;
 
   PIDController flywheelPID = new PIDController(0.1, 0, 0);
   BangBangController flywheelBangBang = new BangBangController();
@@ -54,6 +54,9 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   private double flywheelFFEffort;
   private double flywheelBBEffort;
   @Log private double flywheelTotalEffort;
+
+  @Log private double intakeSpeedProp;
+  @Log private double transferSpeedProp;
 
   SimpleMotorFeedforward feedForward =
       new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRadian);
@@ -78,7 +81,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelL.setInverted(true);
     flywheelR.follow(flywheelL, true);
 
-    this.setDefaultCommand(new RunCommand(this::digestBalls, this));
+    setDefaultCommand(new RunCommand(this::digestBalls, this));
 
     if (RobotBase.isSimulation()) {
 
@@ -90,41 +93,50 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     }
   }
 
-  @Config
   public void setIntakeSpeedProp(double prop) {
     intake.set(prop);
+    intakeSpeedProp = prop;
   }
 
-  @Config
   public void setTransferSpeedProp(double prop) {
     transfer.set(prop);
+    transferSpeedProp = prop;
   }
 
-  @Config
   public void setFlywheelTargetSpeedRPM(double RPM) {
     flywheelTargetVelRPM = RPM;
   }
 
+  @Config
+  private void setStomachFull(boolean in) {
+    stomachFull = in;
+  }
+
+  @Config
+  private void setBallInMouth(boolean in) {
+    ballInMouth = in;
+  }
+
   private void digestBalls() {
-    ballInMouth = !breakBeamMouth.get();
-    stomachFull = !breakBeamStomach.get();
-    transfer.set(ballInMouth && !stomachFull ? .2 : 0);
+    // ballInMouth = !breakBeamMouth.get();
+    // stomachFull = !breakBeamStomach.get();
+    setTransferSpeedProp(ballInMouth && !stomachFull ? .2 : 0);
   }
 
   private void shoot() {
-    if (Math.abs(flywheelEncoder.getVelocity() - Shooter.targetRPM) < 10) {
-      transfer.set(.2);
+    if (Math.abs(flywheelEncoder.getVelocity() - Shooter.targetRPM) < 100) {
+      setTransferSpeedProp(0.2);
     }
   }
 
   public Command getShootCommand() {
-    return new RunCommand(this::shoot)
-                          .beforeStarting(() -> setFlywheelTargetSpeedRPM(Shooter.targetRPM))
-                          .andThen(() -> setFlywheelTargetSpeedRPM(0));
+    return new RunCommand(this::shoot, this)
+        .beforeStarting(() -> setFlywheelTargetSpeedRPM(Shooter.targetRPM))
+        .andThen(() -> setFlywheelTargetSpeedRPM(0));
   }
 
   public Command getIntakeCommand() {
-    return new StartEndCommand(() -> intake.set(0.5), () -> intake.set(0));
+    return new StartEndCommand(() -> setIntakeSpeedProp(0.5), () -> setIntakeSpeedProp(0)).withInterrupt(() -> stomachFull);
   }
 
   @Override
@@ -156,8 +168,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelTotalEffort = flywheelFFEffort + flywheelBBEffort * 0.25;
     flywheelL.setVoltage(flywheelTotalEffort);
 
-    ////////////setIntakeSpeedProp(testController.getLeftTriggerAxis());
-    ////////////setTransferSpeedProp(testController.getRightTriggerAxis());
+    //////////// setIntakeSpeedProp(testController.getLeftTriggerAxis());
+    //////////// setTransferSpeedProp(testController.getRightTriggerAxis());
   }
 
   @Override

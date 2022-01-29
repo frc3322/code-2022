@@ -19,7 +19,9 @@
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Mech2d": "Mechanism2d"
+      "/SmartDashboard/Mech2d": "Mechanism2d",
+      "/SmartDashboard/ProfiledPIDAngleCommand": "Command",
+      "/SmartDashboard/Turn to Angle": "Command"
     },
     "windows": {
       "/SmartDashboard/Field": {
@@ -31,7 +33,7 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
-      "DigestiveSystem": {
+      "Drivetrain": {
         "open": true
       },
       "open": true

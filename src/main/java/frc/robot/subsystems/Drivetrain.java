@@ -79,6 +79,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double rightVoltage = 0;
 
   @Log private double leftVoltage = 0;
+  private double lastYawRad;
+  private double angVelRad;
+
+  @Log private double heading;
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -131,6 +135,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     limelightAngleX = llpython[0];
     limelightAngleY = llpython[1];
+
+    heading = getHeading();
   }
 
   @Override
@@ -169,6 +175,13 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   public double getHeading() {
     return -gyro.getYaw();
+  }
+
+  public double getAngularVelocityRad() {
+    double angularVelRad = (Math.toRadians(getHeading()) - lastYawRad) / 0.02;
+    lastYawRad = Math.toRadians(getHeading());
+    angVelRad = angularVelRad;
+    return angularVelRad;
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
@@ -270,21 +283,4 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return ramseteCommand.andThen(() -> robotDrive.tankDriveVolts(0, 0));
   }
 
-  public Command turnToAngleCommand(double targetAngle) {
-    double Kp = SmartDashboard.getNumber("rotKp", 0);
-    double Ki = SmartDashboard.getNumber("rotKi", 0);
-    double Kd = SmartDashboard.getNumber("rotKd", 0);
-    double maxVel = SmartDashboard.getNumber("rotMaxVel", 0);
-    double maxAcc = SmartDashboard.getNumber("rotMaxAcc", 0);
-    ProfiledPIDController controller =
-        new ProfiledPIDController(Kp, Ki, Kd, new TrapezoidProfile.Constraints(maxVel, maxAcc));
-    ProfiledPIDCommand command =
-        new ProfiledPIDCommand(
-            controller,
-            this::getHeading,
-            targetAngle,
-            (output, setpoint) -> tankDriveVolts(output, -output));
-
-    return command;
-  }
 }

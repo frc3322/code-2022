@@ -57,6 +57,8 @@ public final class Constants {
         new DifferentialDriveKinematics(kTrackwidthMeters);
 
     public static final double kWheelDiameterMeters = 0.15; // 6*0.0254
+    public static final DifferentialDriveKinematics kDriveKinematics =
+        new DifferentialDriveKinematics(kTrackwidthMeters);
 
     public static final boolean kGyroReversed = true;
 
@@ -78,6 +80,9 @@ public final class Constants {
     public static final double kDriveGearing = 8; // 242.0/2480.0
 
     public static final double kPVel = 8.5; // 10.0
+
+    public static double kPAngle = 0.8;
+    public static double kDAngle = 0.8;
   }
 
   public static final class AutoConstants {

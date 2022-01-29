@@ -1,6 +1,7 @@
 {
   "SysId": {
     "Analysis Type": "General Mechanism",
+    "AnalyzerJSONLocation": "C:\\Users\\twhel\\Documents\\Robotics\\sysid-char\\sysid_data20220129-111904.json",
     "NetworkTables Settings": {
       "serverTeam": "10.33.22.2"
     },

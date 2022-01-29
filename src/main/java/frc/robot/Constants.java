@@ -52,19 +52,19 @@ public final class Constants {
   }
 
   public static final class Drive {
-    public static final double kTrackwidthMeters = 0.69; // 0.66
+    public static final double kTrackwidthMeters = 0.8; // 0.66
     public static final DifferentialDriveKinematics kKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
 
-    public static final double kWheelDiameterMeters = 0.15; // 6*0.0254
+    public static final double kWheelDiameterMeters = 0.1524; // 0.15
     public static final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
 
     public static final boolean kGyroReversed = true;
 
-    public static final double ksVolts = 0.22; // 0.161
-    public static final double kvVoltSecondsPerMeter = 1.98; // 3.05
-    public static final double kaVoltSecondsSquaredPerMeter = 0.2; // 0.475
+    public static final double ksVolts = 0.20747; // 0.20747   0.22
+    public static final double kvVoltSecondsPerMeter = 2.819; // 2.819 1.98
+    public static final double kaVoltSecondsSquaredPerMeter = 0.30444; // 0.30444  0.2
 
     public static final double kvVoltSecondsPerRadian = 1.5;
     public static final double kaVoltSecondsSquaredPerRadian = 0.3;
@@ -77,17 +77,17 @@ public final class Constants {
             kaVoltSecondsSquaredPerRadian);
 
     public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
-    public static final double kDriveGearing = 8; // 242.0/2480.0
+    public static final double kDriveGearing = 10.71; // 8
 
-    public static final double kPVel = 8.5; // 10.0
+    public static final double kPVel = 0.3; // 8.5  1.8422
 
     public static double kPAngle = 0.8;
     public static double kDAngle = 0.8;
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxSpeedMetersPerSecond = 1.5;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and
     // seconds

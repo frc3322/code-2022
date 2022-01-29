@@ -11,7 +11,6 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,7 +21,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -30,10 +28,12 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
@@ -84,6 +84,15 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   @Log private double heading;
 
+  @Log private double leftPosition;
+  @Log private double rightPosition;
+
+  @Log private double leftVel;
+  @Log private double rightVel;
+
+  @Log private double xPosition;
+  @Log private double yPosition;
+
   /** Creates a new Drivetrain. */
   public Drivetrain() {
 
@@ -91,11 +100,18 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     FR.restoreFactoryDefaults();
     BL.restoreFactoryDefaults();
     BR.restoreFactoryDefaults();
+
     // do we need to reverse one side?
     BL.follow(FL);
     BR.follow(FR);
 
-    FR.setInverted(true);
+    FL.setInverted(true);
+
+    FL_ENC.setPositionConversionFactor(0.4788 / 10.71); // 10.71 gearing reduction and 0.4788 meters per rotation
+    FR_ENC.setPositionConversionFactor(0.4788 / 10.71);
+
+    FL_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60); // 10.71 gearing reduction and 0.4788 meters per rotation and convert to per second
+    FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
@@ -103,14 +119,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     if (RobotBase.isSimulation()) {
 
       drivetrainSimulator =
-          new DifferentialDrivetrainSim(
-              Drive.kDrivetrainPlant,
-              Drive.kDriveGearbox,
-              Drive.kDriveGearing,
-              Drive.kTrackwidthMeters,
-              Drive.kWheelDiameterMeters / 2.0,
-              null
-              /* VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005) */ );
+          DifferentialDrivetrainSim.createKitbotSim(
+              KitbotMotor.kDoubleNEOPerSide, // 2 NEOs per side.
+              KitbotGearing.k10p71, // 10.71:1
+              KitbotWheelSize.kSixInch, // 6" diameter wheels.
+              null // No measurement noise.
+              );
 
       leftEncoderSim = new RelativeEncoderSim(false, CAN.driveFL);
       rightEncoderSim = new RelativeEncoderSim(false, CAN.driveFR);
@@ -119,13 +133,25 @@ public class Drivetrain extends SubsystemBase implements Loggable {
               SimDeviceDataJNI.getSimValueHandle(
                   SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]"), "Yaw"));
     }
+
+    robotDrive.setSafetyEnabled(false);
+
   }
 
   @Override
   public void periodic() {
-    odometry.update(gyro.getRotation2d(), FL_ENC.getPosition(), FR_ENC.getPosition());
+    leftPosition = -FL_ENC.getPosition();
+    rightPosition = -FR_ENC.getPosition();
+
+    odometry.update(gyro.getRotation2d(), leftPosition, rightPosition);
 
     fieldSim.setRobotPose(odometry.getPoseMeters());
+
+    leftVel = getWheelSpeeds().leftMetersPerSecond;
+    rightVel = getWheelSpeeds().rightMetersPerSecond;
+
+    xPosition = odometry.getPoseMeters().getX();
+    yPosition = odometry.getPoseMeters().getY();
 
     double[] llpython =
         NetworkTableInstance.getDefault()
@@ -174,7 +200,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public double getHeading() {
-    return -gyro.getYaw();
+    return gyro.getRotation2d().getDegrees();
   }
 
   public double getAngularVelocityRad() {
@@ -185,17 +211,21 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(FL_ENC.getVelocity(), FR_ENC.getVelocity());
+    return new DifferentialDriveWheelSpeeds(-FL_ENC.getVelocity(), -FR_ENC.getVelocity());
   }
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    drivetrainSimulator.setPose(pose);
     odometry.resetPosition(pose, gyro.getRotation2d());
+
+    if (RobotBase.isSimulation()) {
+      drivetrainSimulator.setPose(pose);
+    }
   }
 
+  @Config
   public void tankDriveVolts(double leftVolts, double rightVolts) {
-    FL.setVoltage(leftVolts);
+    FL.setVoltage(-leftVolts);
     FR.setVoltage(-rightVolts);
 
     leftVoltage = leftVolts;
@@ -206,6 +236,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   public void resetEncoders() {
     FL_ENC.setPosition(0);
     FR_ENC.setPosition(0);
+  }
+
+  public void resetPoseAndSensors() {
+    resetOdometry(new Pose2d(0, 0, new Rotation2d(0, 0)));
+    resetEncoders();
+    gyro.reset();
   }
 
   public TrajectoryConfig getTrajConfig(boolean reversed) {
@@ -261,6 +297,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public Command getRamseteCommand(Drivetrain robotDrive, Trajectory trajectory) {
+    RamseteController disabledRamsete = new RamseteController();
+    disabledRamsete.setEnabled(false);
+
     RamseteCommand ramseteCommand =
         new RamseteCommand(
             trajectory,
@@ -276,11 +315,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
             robotDrive::tankDriveVolts,
             robotDrive);
 
-    // Reset odometry to starting pose of trajectory.
-    robotDrive.resetOdometry(trajectory.getInitialPose());
-
     // Run path following command, then stop at the end.
-    return ramseteCommand.andThen(() -> robotDrive.tankDriveVolts(0, 0));
+    return ramseteCommand
+        .beforeStarting(() -> robotDrive.resetOdometry(trajectory.getInitialPose()))
+        .andThen(() -> robotDrive.tankDriveVolts(0, 0));
   }
-
 }

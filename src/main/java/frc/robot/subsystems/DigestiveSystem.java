@@ -136,7 +136,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   public Command getIntakeCommand() {
-    return new StartEndCommand(() -> setIntakeSpeedProp(0.5), () -> setIntakeSpeedProp(0)).withInterrupt(() -> stomachFull);
+    return new StartEndCommand(() -> setIntakeSpeedProp(0.5), () -> setIntakeSpeedProp(0))
+        .withInterrupt(() -> stomachFull);
   }
 
   @Override

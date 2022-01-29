@@ -35,7 +35,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
@@ -124,11 +123,14 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     fieldSim.setRobotPose(odometry.getPoseMeters());
 
-    double[] llpython = NetworkTableInstance.getDefault().getTable("limelight").getEntry("llpython").getDoubleArray(new double[8]);
+    double[] llpython =
+        NetworkTableInstance.getDefault()
+            .getTable("limelight")
+            .getEntry("llpython")
+            .getDoubleArray(new double[8]);
 
     limelightAngleX = llpython[0];
     limelightAngleY = llpython[1];
-    
   }
 
   @Override

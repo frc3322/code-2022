@@ -24,6 +24,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -34,6 +35,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
@@ -60,6 +62,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
   private final DifferentialDrive robotDrive = new DifferentialDrive(FL, FR);
+
+  @Log private double limelightAngleX = 0;
+  @Log private double limelightAngleY = 0;
 
   private final DifferentialDriveOdometry odometry =
       new DifferentialDriveOdometry(gyro.getRotation2d());
@@ -118,11 +123,17 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     odometry.update(gyro.getRotation2d(), FL_ENC.getPosition(), FR_ENC.getPosition());
 
     fieldSim.setRobotPose(odometry.getPoseMeters());
+
+    double[] llpython = NetworkTableInstance.getDefault().getTable("limelight").getEntry("llpython").getDoubleArray(new double[8]);
+
+    limelightAngleX = llpython[0];
+    limelightAngleY = llpython[1];
+    
   }
 
   @Override
   public void simulationPeriodic() {
-    drivetrainSimulator.setInputs(FL.getAppliedOutput(), -FR.getAppliedOutput());
+    drivetrainSimulator.setInputs(leftVoltage, rightVoltage);
     drivetrainSimulator.update(0.020);
 
     leftEncoderSim.setPosition(drivetrainSimulator.getLeftPositionMeters());

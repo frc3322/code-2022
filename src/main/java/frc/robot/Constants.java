@@ -30,15 +30,15 @@ public final class Constants {
   public static final class CAN {
 
     // fl = front left
-    public static final int driveFL = 0;
-    public static final int driveFR = 1;
+    public static final int driveFL = 5;
+    public static final int driveFR = 36;
     public static final int driveBR = 2;
-    public static final int driveBL = 3;
+    public static final int driveBL = 6;
 
     public static final int flywheelL = 11;
     public static final int flywheelR = 10;
     public static final int transfer = 14;
-    public static final int intake = 6;
+    public static final int intake = 99;
 
     public static final int climberL = 7;
     public static final int climberR = 8;

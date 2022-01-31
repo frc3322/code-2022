@@ -79,7 +79,7 @@ public final class Constants {
     public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
     public static final double kDriveGearing = 10.71; // 8
 
-    public static final double kPVel = 0.3; // 8.5  1.8422
+    public static final double kPVel = 6; // 8.5  1.8422
 
     public static double kPAngle = 0.8;
     public static double kDAngle = 0.8;

@@ -93,6 +93,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double xPosition;
   @Log private double yPosition;
 
+  // Account for different wheel directions between sim and test chassis
+  private double wheelDirection = -1;
+
   /** Creates a new Drivetrain. */
   public Drivetrain() {
 
@@ -115,6 +118,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
+    fieldSim.getObject("Example Trajectory").setTrajectory(getExampleTraj());
+
+    robotDrive.setSafetyEnabled(false);
 
     if (RobotBase.isSimulation()) {
 
@@ -132,16 +138,16 @@ public class Drivetrain extends SubsystemBase implements Loggable {
           new SimDouble(
               SimDeviceDataJNI.getSimValueHandle(
                   SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]"), "Yaw"));
-    }
 
-    robotDrive.setSafetyEnabled(false);
+      wheelDirection = 1;
+    }
 
   }
 
   @Override
   public void periodic() {
-    leftPosition = -FL_ENC.getPosition();
-    rightPosition = -FR_ENC.getPosition();
+    leftPosition = wheelDirection * FL_ENC.getPosition();
+    rightPosition = wheelDirection * FR_ENC.getPosition();
 
     odometry.update(gyro.getRotation2d(), leftPosition, rightPosition);
 
@@ -211,7 +217,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(-FL_ENC.getVelocity(), -FR_ENC.getVelocity());
+    return new DifferentialDriveWheelSpeeds(wheelDirection * FL_ENC.getVelocity(), wheelDirection * FR_ENC.getVelocity());
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -225,8 +231,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   @Config
   public void tankDriveVolts(double leftVolts, double rightVolts) {
-    FL.setVoltage(-leftVolts);
-    FR.setVoltage(-rightVolts);
+    
+
+    FL.setVoltage(wheelDirection * leftVolts);
+    FR.setVoltage(wheelDirection * rightVolts);
 
     leftVoltage = leftVolts;
     rightVoltage = rightVolts;
@@ -287,7 +295,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
       trajectory =
           TrajectoryGenerator.generateTrajectory(
               fieldSim.getObject(traj).getPoses(), getTrajConfig(reversed));
-      ;
     } catch (Exception NegativeArraySizeException) {
 
       trajectory = getExampleTraj();

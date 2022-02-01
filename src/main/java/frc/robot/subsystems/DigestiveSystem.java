@@ -143,22 +143,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
 
-    /*
-     * // This method will be called once per scheduler run
-     * //run until beam1 not broken
-     * //don't run if beam 2 broken.
-     * if(beam2Broken||!beam1Broken){
-     * intake.set(0);
-     * }
-     *
-     * double targetSpeed = SmartDashboard.getNumber("flywheelSpeed", 0.0);
-     * if (flywheel_ENC.getVelocity() < targetSpeed) {
-     * flywheel.set(1);
-     * } else {
-     * flywheel.set(0);
-     * }
-     */
-
     flywheelVelRPM = flywheelEncoder.getVelocity();
 
     flywheelTargetVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelTargetVelRPM);
@@ -169,8 +153,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelTotalEffort = flywheelFFEffort + flywheelBBEffort * 0.25;
     flywheelL.setVoltage(flywheelTotalEffort);
 
-    //////////// setIntakeSpeedProp(testController.getLeftTriggerAxis());
-    //////////// setTransferSpeedProp(testController.getRightTriggerAxis());
+    // setIntakeSpeedProp(testController.getLeftTriggerAxis());
+    // setTransferSpeedProp(testController.getRightTriggerAxis());
   }
 
   @Override

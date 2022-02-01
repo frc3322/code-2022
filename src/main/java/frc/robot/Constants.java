@@ -52,7 +52,7 @@ public final class Constants {
   }
 
   public static final class Drive {
-    public static final double kTrackwidthMeters = 0.8; // 0.66
+    public static final double kTrackwidthMeters = 0.703; // 0.66
     public static final DifferentialDriveKinematics kKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
 
@@ -66,15 +66,14 @@ public final class Constants {
     public static final double kvVoltSecondsPerMeter = 2.819; // 2.819 1.98
     public static final double kaVoltSecondsSquaredPerMeter = 0.30444; // 0.30444  0.2
 
-    public static final double kvVoltSecondsPerRadian = 1.5;
-    public static final double kaVoltSecondsSquaredPerRadian = 0.3;
+    // TODO: Find these values
+  
+  public static final double kvAngularVoltSecondsPerRadian = 1.3894*.5*kTrackwidthMeters;
+    public static final double kaAngularVoltSecondsSquaredPerRadian = 0.17271*.5*kTrackwidthMeters;
+    public static final double ksAngularVolts = 0.45806;
 
-    public static final LinearSystem<N2, N2, N2> kDrivetrainPlant =
-        LinearSystemId.identifyDrivetrainSystem(
-            kvVoltSecondsPerMeter,
-            kaVoltSecondsSquaredPerMeter,
-            kvVoltSecondsPerRadian,
-            kaVoltSecondsSquaredPerRadian);
+
+
 
     public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
     public static final double kDriveGearing = 10.71; // 8

@@ -10,7 +10,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,6 +23,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -34,6 +37,7 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSiz
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
@@ -55,8 +59,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   private final RelativeEncoder FL_ENC = FL.getEncoder();
   private final RelativeEncoder FR_ENC = FR.getEncoder();
-  private final RelativeEncoder BR_ENC = BL.getEncoder();
-  private final RelativeEncoder BL_ENC = BR.getEncoder();
 
   private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
@@ -65,8 +67,13 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double limelightAngleX = 0;
   @Log private double limelightAngleY = 0;
 
+  private double angleSetpoint = 0;
+
   private final DifferentialDriveOdometry odometry =
       new DifferentialDriveOdometry(gyro.getRotation2d());
+
+  private final SimpleMotorFeedforward angleFF = new SimpleMotorFeedforward(Drive.ksAngularVolts, Drive.kvAngularVoltSecondsPerRadian, Drive.kaAngularVoltSecondsSquaredPerRadian);
+  private final ProfiledPIDController turnToAngleController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(1.5, 1.5));
 
   // These classes help us simulate our drivetrain
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -250,6 +257,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     resetOdometry(new Pose2d(0, 0, new Rotation2d(0, 0)));
     resetEncoders();
     gyro.reset();
+  }
+
+  public void turnToAngleCommand(){
+
   }
 
   public TrajectoryConfig getTrajConfig(boolean reversed) {

@@ -50,6 +50,7 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 public class Drivetrain extends SubsystemBase implements Loggable {
 
@@ -139,7 +140,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     // second
     FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
 
-    SmartDashboard.putData("turnToAngle", (SequentialCommandGroup) turnToAngleCommand(90));
+    SmartDashboard.putData("turnToAngle", (SequentialCommandGroup) turnToAngleCommand(() -> 90));
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
@@ -293,7 +294,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     turnToAngleController.setPID(P, I, D);
   }
 
-  public void setTurnToAngleGoal(double goal) {
+  public void setTurnToAngleGoalSource(DoubleSupplier goalSource) {
+    double goal = goalSource.getAsDouble();
     double goalRad = Math.toRadians(goal);
     turnToAngleController.reset(getHeadingRad(), getAngVelRad());
     turnToAngleController.setGoal(new TrapezoidProfile.State(goalRad, 0));
@@ -315,8 +317,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     tankDriveVolts(-(FF + PID), FF + PID);
   }
 
-  public Command turnToAngleCommand(double goal) {
-    return new InstantCommand(() -> setTurnToAngleGoal(goal))
+  public Command turnToAngleCommand(DoubleSupplier goalSource) {
+    return new InstantCommand(() -> setTurnToAngleGoalSource(goalSource))
         .andThen(new RunCommand(this::turnToAngle, this));
   }
 

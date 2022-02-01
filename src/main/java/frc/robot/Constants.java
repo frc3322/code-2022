@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -67,13 +66,11 @@ public final class Constants {
     public static final double kaVoltSecondsSquaredPerMeter = 0.30444; // 0.30444  0.2
 
     // TODO: Find these values
-  
-  public static final double kvAngularVoltSecondsPerRadian = 1.3894*.5*kTrackwidthMeters;
-    public static final double kaAngularVoltSecondsSquaredPerRadian = 0.17271*.5*kTrackwidthMeters;
+
+    public static final double kvAngularVoltSecondsPerRadian = 1.3894 * .5 * kTrackwidthMeters;
+    public static final double kaAngularVoltSecondsSquaredPerRadian =
+        0.17271 * .5 * kTrackwidthMeters;
     public static final double ksAngularVolts = 0.45806;
-
-
-
 
     public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
     public static final double kDriveGearing = 10.71; // 8

@@ -10,7 +10,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
-import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -37,8 +36,10 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSiz
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
@@ -72,8 +73,14 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final DifferentialDriveOdometry odometry =
       new DifferentialDriveOdometry(gyro.getRotation2d());
 
-  private final SimpleMotorFeedforward angleFF = new SimpleMotorFeedforward(Drive.ksAngularVolts, Drive.kvAngularVoltSecondsPerRadian, Drive.kaAngularVoltSecondsSquaredPerRadian);
-  private final ProfiledPIDController turnToAngleController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(1.5, 1.5));
+  private final SimpleMotorFeedforward angleFF =
+      new SimpleMotorFeedforward(
+          Drive.ksAngularVolts,
+          Drive.kvAngularVoltSecondsPerRadian,
+          Drive.kaAngularVoltSecondsSquaredPerRadian);
+
+  private final ProfiledPIDController turnToAngleController =
+      new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(12.0, 8.0));
 
   // These classes help us simulate our drivetrain
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -86,11 +93,13 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double rightVoltage = 0;
 
   @Log private double leftVoltage = 0;
-  
+
   @Log private double heading;
   @Log private double headingRad;
   @Log private double angVelRad;
   private double lastYawRad;
+
+  private double turnToAngleLastVel;
 
   @Log private double leftPosition;
   @Log private double rightPosition;
@@ -118,11 +127,17 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     FL.setInverted(true);
 
-    FL_ENC.setPositionConversionFactor(0.4788 / 10.71); // 10.71 gearing reduction and 0.4788 meters per rotation
+    FL_ENC.setPositionConversionFactor(
+        0.4788 / 10.71); // 10.71 gearing reduction and 0.4788 meters per rotation
     FR_ENC.setPositionConversionFactor(0.4788 / 10.71);
 
-    FL_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60); // 10.71 gearing reduction and 0.4788 meters per rotation and convert to per second
+    FL_ENC.setVelocityConversionFactor(
+        0.4788 / 10.71
+            / 60); // 10.71 gearing reduction and 0.4788 meters per rotation and convert to per
+    // second
     FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
+
+    SmartDashboard.putData("turnToAngle", (SequentialCommandGroup) turnToAngleCommand(90));
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
@@ -149,7 +164,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
       wheelDirection = 1;
     }
-
   }
 
   @Override
@@ -230,7 +244,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(wheelDirection * FL_ENC.getVelocity(), wheelDirection * FR_ENC.getVelocity());
+    return new DifferentialDriveWheelSpeeds(
+        wheelDirection * FL_ENC.getVelocity(), wheelDirection * FR_ENC.getVelocity());
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -244,7 +259,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   @Config
   public void tankDriveVolts(double leftVolts, double rightVolts) {
-    
 
     FL.setVoltage(wheelDirection * leftVolts);
     FR.setVoltage(wheelDirection * rightVolts);
@@ -265,8 +279,36 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     gyro.reset();
   }
 
-  public void turnToAngleCommand(){
+  @Config
+  public void setTurnToAnglePID(double P, double I, double D){
+    turnToAngleController.setPID(P, I, D);
+  }
 
+  public void setTurnToAngleGoal(double goal) {
+    double goalRad = Math.toRadians(goal);
+    turnToAngleController.reset(getHeadingRad(), getAngVelRad());
+    turnToAngleController.setGoal(new TrapezoidProfile.State(goalRad, 0));
+  }
+
+  public void turnToAngle() {
+    double velSetpoint = turnToAngleController.getSetpoint().velocity;
+    double accelSetpoint = (velSetpoint - turnToAngleLastVel) / 0.02;
+    turnToAngleLastVel = velSetpoint;
+
+    double FF = angleFF.calculate(velSetpoint);
+    double PID = turnToAngleController.calculate(getHeadingRad());
+
+    SmartDashboard.putNumber("TurnToAngle/velSetpoint", velSetpoint);
+    SmartDashboard.putNumber("TurnToAngle/accelSetpoint", accelSetpoint);
+    SmartDashboard.putNumber("TurnToAngle/FF", FF);
+    SmartDashboard.putNumber("TurnToAngle/PID", PID);
+
+    tankDriveVolts(-(FF + PID), FF + PID);
+  }
+
+  public Command turnToAngleCommand(double goal) {
+    return new InstantCommand(() -> setTurnToAngleGoal(goal))
+        .andThen(new RunCommand(this::turnToAngle, this));
   }
 
   public TrajectoryConfig getTrajConfig(boolean reversed) {

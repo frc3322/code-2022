@@ -37,7 +37,8 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return drivetrain.getRamseteCommand(drivetrain, drivetrain.getTrajFromFieldWidget("traj1", false));
+    return drivetrain.getRamseteCommand(
+        drivetrain, drivetrain.getTrajFromFieldWidget("traj1", false));
   }
 
   public void updateLogger() {

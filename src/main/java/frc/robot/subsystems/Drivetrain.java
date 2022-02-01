@@ -97,7 +97,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double heading;
   @Log private double headingRad;
   @Log private double angVelRad;
-  private double lastYawRad;
+  @Log private double angAccelRad;
+  private double lastHeadingRad;
+  private double lastAngVelRad;
 
   private double turnToAngleLastVel;
 
@@ -193,6 +195,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     heading = getHeading();
     headingRad = getHeadingRad();
     angVelRad = getAngVelRad();
+    angAccelRad = getAngAccelRad();
   }
 
   @Override
@@ -238,9 +241,15 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public double getAngVelRad() {
-    double angVel = (getHeadingRad() - lastYawRad) / 0.02;
-    lastYawRad = getHeadingRad();
+    double angVel = (getHeadingRad() - lastHeadingRad) / 0.02;
+    lastHeadingRad = getHeadingRad();
     return angVel;
+  }
+
+  public double getAngAccelRad() {
+    double angAccel = (angVelRad - lastAngVelRad) / 0.02;
+    lastAngVelRad = angVelRad;
+    return angAccel;
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
@@ -295,7 +304,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double accelSetpoint = (velSetpoint - turnToAngleLastVel) / 0.02;
     turnToAngleLastVel = velSetpoint;
 
-    double FF = angleFF.calculate(velSetpoint);
+    double FF = angleFF.calculate(velSetpoint, accelSetpoint);
     double PID = turnToAngleController.calculate(getHeadingRad());
 
     SmartDashboard.putNumber("TurnToAngle/velSetpoint", velSetpoint);

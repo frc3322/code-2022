@@ -86,10 +86,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double rightVoltage = 0;
 
   @Log private double leftVoltage = 0;
-  private double lastYawRad;
-  private double angVelRad;
-
+  
   @Log private double heading;
+  @Log private double headingRad;
+  @Log private double angVelRad;
+  private double lastYawRad;
 
   @Log private double leftPosition;
   @Log private double rightPosition;
@@ -176,6 +177,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     limelightAngleY = llpython[1];
 
     heading = getHeading();
+    headingRad = getHeadingRad();
+    angVelRad = getAngVelRad();
   }
 
   @Override
@@ -216,11 +219,14 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return gyro.getRotation2d().getDegrees();
   }
 
-  public double getAngularVelocityRad() {
-    double angularVelRad = (Math.toRadians(getHeading()) - lastYawRad) / 0.02;
-    lastYawRad = Math.toRadians(getHeading());
-    angVelRad = angularVelRad;
-    return angularVelRad;
+  public double getHeadingRad() {
+    return Math.toRadians(getHeading());
+  }
+
+  public double getAngVelRad() {
+    double angVel = (getHeadingRad() - lastYawRad) / 0.02;
+    lastYawRad = getHeadingRad();
+    return angVel;
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {

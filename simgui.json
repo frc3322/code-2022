@@ -37,6 +37,9 @@
       "DigestiveSystem": {
         "open": true
       },
+      "Drivetrain": {
+        "open": true
+      },
       "open": true
     },
     "SmartDashboard": {

@@ -81,7 +81,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
           Drive.kaAngularVoltSecondsSquaredPerRadian);
 
   private final ProfiledPIDController turnToAngleController =
-      new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(12.0, 8.0));
+      new ProfiledPIDController(10, 0, 0.06, new TrapezoidProfile.Constraints(12.0, 8.0));
 
   // These classes help us simulate our drivetrain
   private DifferentialDrivetrainSim drivetrainSimulator;

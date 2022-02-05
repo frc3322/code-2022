@@ -80,8 +80,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
           Drive.kvAngularVoltSecondsPerRadian,
           Drive.kaAngularVoltSecondsSquaredPerRadian);
 
-  private final ProfiledPIDController turnToAngleController =
-      new ProfiledPIDController(10, 0, 0.06, new TrapezoidProfile.Constraints(12.0, 8.0));
+  // P = 12, D = 0.06
+  private final ProfiledPIDController profiledTurnToAngleController =
+      new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(12.0, 8.0));
+
+  private final PIDController turnToAngleController = 
+      new PIDController(0, 0, 0);
 
   // These classes help us simulate our drivetrain
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -140,7 +144,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     // second
     FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
 
-    SmartDashboard.putData("turnToAngle", (SequentialCommandGroup) turnToAngleCommand(() -> 90));
+    SmartDashboard.putData("turnToAngleProfiled", (SequentialCommandGroup) profiledTurnToAngleCommand(() -> getLimelightAngleX() + getHeading()));
+    SmartDashboard.putData("turnToLimelight", (RunCommand) turnToLimelightCommand());
+    SmartDashboard.putNumber("TurnToAngle/kP", 0);
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
@@ -190,8 +196,20 @@ public class Drivetrain extends SubsystemBase implements Loggable {
             .getEntry("llpython")
             .getDoubleArray(new double[8]);
 
-    limelightAngleX = llpython[0];
-    limelightAngleY = llpython[1];
+    double limelightTX = 
+        NetworkTableInstance.getDefault()
+            .getTable("limelight")
+            .getEntry("tx")
+            .getDouble(0);
+
+    double limelightTY = 
+        NetworkTableInstance.getDefault()
+            .getTable("limelight")
+            .getEntry("ty")
+            .getDouble(0);
+
+    limelightAngleX = -limelightTX; //llpython[0]
+    limelightAngleY = limelightTY; //llpython[1]
 
     heading = getHeading();
     headingRad = getHeadingRad();
@@ -216,6 +234,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   @Config
   public void arcadeDrive(double speed, double rotation) {
+    SmartDashboard.putNumber("rotation prop", rotation);
     robotDrive.arcadeDrive(speed, rotation);
 
     if (Robot.isSimulation()) {
@@ -245,6 +264,14 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double angVel = (getHeadingRad() - lastHeadingRad) / 0.02;
     lastHeadingRad = getHeadingRad();
     return angVel;
+  }
+
+  public double getLimelightAngleX() {
+    return limelightAngleX;
+  }
+
+  public double getLimelightAngleY() {
+    return limelightAngleY;
   }
 
   public double getAngAccelRad() {
@@ -290,36 +317,53 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   @Config
+  public void setProfiledTurnToAnglePID(double P, double I, double D){
+    profiledTurnToAngleController.setPID(P, I, D);
+  }
+
+  @Config
   public void setTurnToAnglePID(double P, double I, double D){
     turnToAngleController.setPID(P, I, D);
   }
 
-  public void setTurnToAngleGoalSource(DoubleSupplier goalSource) {
+  public void setProfiledTurnToAngleGoalSource(DoubleSupplier goalSource) {
     double goal = goalSource.getAsDouble();
     double goalRad = Math.toRadians(goal);
-    turnToAngleController.reset(getHeadingRad(), getAngVelRad());
-    turnToAngleController.setGoal(new TrapezoidProfile.State(goalRad, 0));
+    profiledTurnToAngleController.reset(getHeadingRad(), getAngVelRad());
+    profiledTurnToAngleController.setGoal(new TrapezoidProfile.State(goalRad, 0));
   }
 
-  public void turnToAngle() {
-    double velSetpoint = turnToAngleController.getSetpoint().velocity;
+  public void profiledTurnToAngle(DoubleSupplier goalSource) {
+    double velSetpoint = profiledTurnToAngleController.getSetpoint().velocity;
     double accelSetpoint = (velSetpoint - turnToAngleLastVel) / 0.02;
     turnToAngleLastVel = velSetpoint;
 
+    profiledTurnToAngleController.calculate(getHeadingRad());
     double FF = angleFF.calculate(velSetpoint, accelSetpoint);
-    double PID = turnToAngleController.calculate(getHeadingRad());
+    double kP = SmartDashboard.getNumber("TurnToAngle/kP", 0);
+    double PID = kP * getLimelightAngleX();
 
     SmartDashboard.putNumber("TurnToAngle/velSetpoint", velSetpoint);
     SmartDashboard.putNumber("TurnToAngle/accelSetpoint", accelSetpoint);
     SmartDashboard.putNumber("TurnToAngle/FF", FF);
     SmartDashboard.putNumber("TurnToAngle/PID", PID);
+    SmartDashboard.putNumber("TurnToAngle/AngleGoal", profiledTurnToAngleController.getGoal().position);
 
     tankDriveVolts(-(FF + PID), FF + PID);
   }
 
-  public Command turnToAngleCommand(DoubleSupplier goalSource) {
-    return new InstantCommand(() -> setTurnToAngleGoalSource(goalSource))
-        .andThen(new RunCommand(this::turnToAngle, this));
+  public void turnToLimelight() {
+    double PID = turnToAngleController.calculate(getLimelightAngleX(), 0);
+    tankDriveVolts(PID, -PID);
+  }
+
+  public Command profiledTurnToAngleCommand(DoubleSupplier goalSource) {
+    return new InstantCommand(() -> setProfiledTurnToAngleGoalSource(goalSource))
+        .andThen(new RunCommand(() -> profiledTurnToAngle(goalSource), this)/*.withInterrupt(() -> turnToAngleController.atGoal())*/);
+  }
+
+  public Command turnToLimelightCommand() {
+    return new RunCommand(this::turnToLimelight);
   }
 
   public TrajectoryConfig getTrajConfig(boolean reversed) {

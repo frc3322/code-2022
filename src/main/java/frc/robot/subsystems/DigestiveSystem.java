@@ -41,8 +41,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   private final DigitalInput breakBeamMouth = new DigitalInput(DIO.breakBeamA);
   private final DigitalInput breakBeamStomach = new DigitalInput(DIO.breakBeamB);
-  private boolean ballInMouth = false;
-  private boolean stomachFull = false;
+  @Log private boolean ballInMouth = false;
+  @Log private boolean stomachFull = false;
 
   PIDController flywheelPID = new PIDController(0.1, 0, 0);
   BangBangController flywheelBangBang = new BangBangController();
@@ -81,7 +81,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelL.setInverted(true);
     flywheelR.follow(flywheelL, true);
 
-    setDefaultCommand(new RunCommand(this::digestBalls, this));
+    //setDefaultCommand(new RunCommand(this::digestBalls, this));
 
     if (RobotBase.isSimulation()) {
 
@@ -98,6 +98,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     intakeSpeedProp = prop;
   }
 
+  @Config
   public void setTransferSpeedProp(double prop) {
     transfer.set(prop);
     transferSpeedProp = prop;
@@ -107,19 +108,17 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelTargetVelRPM = RPM;
   }
 
-  @Config
-  private void setStomachFull(boolean in) {
-    stomachFull = in;
-  }
+  // @Config
+  // private void setStomachFull(boolean in) {
+  //   stomachFull = in;
+  // }
 
-  @Config
-  private void setBallInMouth(boolean in) {
-    ballInMouth = in;
-  }
+  // @Config
+  // private void setBallInMouth(boolean in) {
+  //   ballInMouth = in;
+  // }
 
   private void digestBalls() {
-    // ballInMouth = !breakBeamMouth.get();
-    // stomachFull = !breakBeamStomach.get();
     setTransferSpeedProp(ballInMouth && !stomachFull ? .2 : 0);
   }
 
@@ -142,6 +141,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   @Override
   public void periodic() {
+    ballInMouth = !breakBeamMouth.get();
+    stomachFull = !breakBeamStomach.get();
 
     flywheelVelRPM = flywheelEncoder.getVelocity();
 

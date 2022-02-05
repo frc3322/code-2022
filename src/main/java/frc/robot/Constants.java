@@ -61,7 +61,7 @@ public final class Constants {
     public static final int climberL = 45;
     public static final int climberR = 40;
   }
-  
+
   public static final class DIO {
     public static final int breakBeamA = 0;
     public static final int breakBeamB = 2;
@@ -84,10 +84,11 @@ public final class Constants {
 
     // TODO: Find these values
 
-    public static final double kvAngularVoltSecondsPerRadian = 1.5 * .5 * kTrackwidthMeters; //1.3894
+    public static final double kvAngularVoltSecondsPerRadian =
+        1.5 * .5 * kTrackwidthMeters; // 1.3894
     public static final double kaAngularVoltSecondsSquaredPerRadian =
-        0.2 * .5 * kTrackwidthMeters; //0.17271
-    public static final double ksAngularVolts = 0.5; //0.45806
+        0.2 * .5 * kTrackwidthMeters; // 0.17271
+    public static final double ksAngularVolts = 0.5; // 0.45806
 
     public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
     public static final double kDriveGearing = 10.71; // 8

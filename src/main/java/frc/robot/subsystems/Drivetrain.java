@@ -84,8 +84,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final ProfiledPIDController profiledTurnToAngleController =
       new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(12.0, 8.0));
 
-  private final PIDController turnToAngleController = 
-      new PIDController(0, 0, 0);
+  private final PIDController turnToAngleController = new PIDController(0, 0, 0);
 
   // These classes help us simulate our drivetrain
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -144,7 +143,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     // second
     FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
 
-    SmartDashboard.putData("turnToAngleProfiled", (SequentialCommandGroup) profiledTurnToAngleCommand(() -> getLimelightAngleX() + getHeading()));
+    SmartDashboard.putData(
+        "turnToAngleProfiled",
+        (SequentialCommandGroup)
+            profiledTurnToAngleCommand(() -> getLimelightAngleX() + getHeading()));
     SmartDashboard.putData("turnToLimelight", (RunCommand) turnToLimelightCommand());
     SmartDashboard.putNumber("TurnToAngle/kP", 0);
 
@@ -196,20 +198,14 @@ public class Drivetrain extends SubsystemBase implements Loggable {
             .getEntry("llpython")
             .getDoubleArray(new double[8]);
 
-    double limelightTX = 
-        NetworkTableInstance.getDefault()
-            .getTable("limelight")
-            .getEntry("tx")
-            .getDouble(0);
+    double limelightTX =
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
 
-    double limelightTY = 
-        NetworkTableInstance.getDefault()
-            .getTable("limelight")
-            .getEntry("ty")
-            .getDouble(0);
+    double limelightTY =
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
-    limelightAngleX = -limelightTX; //llpython[0]
-    limelightAngleY = limelightTY; //llpython[1]
+    limelightAngleX = -limelightTX; // llpython[0]
+    limelightAngleY = limelightTY; // llpython[1]
 
     heading = getHeading();
     headingRad = getHeadingRad();
@@ -317,12 +313,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   @Config
-  public void setProfiledTurnToAnglePID(double P, double I, double D){
+  public void setProfiledTurnToAnglePID(double P, double I, double D) {
     profiledTurnToAngleController.setPID(P, I, D);
   }
 
   @Config
-  public void setTurnToAnglePID(double P, double I, double D){
+  public void setTurnToAnglePID(double P, double I, double D) {
     turnToAngleController.setPID(P, I, D);
   }
 
@@ -347,7 +343,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     SmartDashboard.putNumber("TurnToAngle/accelSetpoint", accelSetpoint);
     SmartDashboard.putNumber("TurnToAngle/FF", FF);
     SmartDashboard.putNumber("TurnToAngle/PID", PID);
-    SmartDashboard.putNumber("TurnToAngle/AngleGoal", profiledTurnToAngleController.getGoal().position);
+    SmartDashboard.putNumber(
+        "TurnToAngle/AngleGoal", profiledTurnToAngleController.getGoal().position);
 
     tankDriveVolts(-(FF + PID), FF + PID);
   }
@@ -359,7 +356,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   public Command profiledTurnToAngleCommand(DoubleSupplier goalSource) {
     return new InstantCommand(() -> setProfiledTurnToAngleGoalSource(goalSource))
-        .andThen(new RunCommand(() -> profiledTurnToAngle(goalSource), this)/*.withInterrupt(() -> turnToAngleController.atGoal())*/);
+        .andThen(
+            new RunCommand(
+                () -> profiledTurnToAngle(goalSource),
+                this) /*.withInterrupt(() -> turnToAngleController.atGoal())*/);
   }
 
   public Command turnToLimelightCommand() {

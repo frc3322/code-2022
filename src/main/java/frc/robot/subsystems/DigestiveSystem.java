@@ -74,14 +74,14 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelR.restoreFactoryDefaults();
 
     intake.setIdleMode(IdleMode.kCoast);
-    transfer.setIdleMode(IdleMode.kCoast);
+    transfer.setIdleMode(IdleMode.kBrake);
     flywheelL.setIdleMode(IdleMode.kCoast);
     flywheelR.setIdleMode(IdleMode.kCoast);
 
-    flywheelL.setInverted(true);
+    
     flywheelR.follow(flywheelL, true);
 
-    //setDefaultCommand(new RunCommand(this::digestBalls, this));
+    setDefaultCommand(new RunCommand(this::digestBalls, this));
 
     if (RobotBase.isSimulation()) {
 
@@ -119,19 +119,24 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   // }
 
   private void digestBalls() {
-    setTransferSpeedProp(ballInMouth && !stomachFull ? .2 : 0);
+    setTransferSpeedProp(ballInMouth && !stomachFull ? 0.5 : 0);
   }
 
   private void shoot() {
     if (Math.abs(flywheelEncoder.getVelocity() - Shooter.targetRPM) < 100) {
-      setTransferSpeedProp(0.2);
+      setTransferSpeedProp(0.5);
     }
+  }
+
+  @Config
+  private void setFlywheelSpeedProp(double speed){
+    flywheelL.set(speed);
   }
 
   public Command getShootCommand() {
     return new RunCommand(this::shoot, this)
-        .beforeStarting(() -> setFlywheelTargetSpeedRPM(Shooter.targetRPM))
-        .andThen(() -> setFlywheelTargetSpeedRPM(0));
+        .beforeStarting(() -> setFlywheelTargetSpeedRPM(Shooter.targetRPM));
+       
   }
 
   public Command getIntakeCommand() {
@@ -150,8 +155,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelVelRPM);
 
     flywheelFFEffort = feedForward.calculate(flywheelTargetVelRadPS);
-    flywheelBBEffort = flywheelBangBang.calculate(flywheelVelRadPS, flywheelTargetVelRadPS);
-    flywheelTotalEffort = flywheelFFEffort + flywheelBBEffort * 0.25;
+    flywheelBBEffort = 0;//flywheelBangBang.calculate(flywheelVelRadPS, flywheelTargetVelRadPS);
+    flywheelTotalEffort = flywheelFFEffort;//+ flywheelBBEffort * 0.25;
     flywheelL.setVoltage(flywheelTotalEffort);
 
     // setIntakeSpeedProp(testController.getLeftTriggerAxis());

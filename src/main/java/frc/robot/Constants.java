@@ -25,20 +25,20 @@ public final class Constants {
 
     public static final double kFlywheelGearing = 1;
 
-    public static final int targetRPM = 2000;
+    public static final int targetRPM = 1000;
   }
 
   public static final class CAN {
 
     // fl = front left
-    public static final int driveFL = 5;
-    public static final int driveFR = 36;
-    public static final int driveBR = 2;
-    public static final int driveBL = 6;
+    public static final int driveFL = 20;
+    public static final int driveFR = 30; //36
+    public static final int driveBR = 25;
+    public static final int driveBL = 15;
 
-    public static final int flywheelL = 11;
-    public static final int flywheelR = 10;
-    public static final int transfer = 14;
+    public static final int flywheelL = 10;
+    public static final int flywheelR = 5;
+    public static final int transfer = 36;
     public static final int intake = 99;
 
     public static final int climberL = 7;

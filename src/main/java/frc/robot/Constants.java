@@ -32,7 +32,7 @@ public final class Constants {
 
     // fl = front left
     public static final int driveFL = 20;
-    public static final int driveFR = 30; //36
+    public static final int driveFR = 30; // 36
     public static final int driveBR = 25;
     public static final int driveBL = 15;
 

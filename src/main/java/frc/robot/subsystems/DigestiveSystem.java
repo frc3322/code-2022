@@ -78,7 +78,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelL.setIdleMode(IdleMode.kCoast);
     flywheelR.setIdleMode(IdleMode.kCoast);
 
-    
     flywheelR.follow(flywheelL, true);
 
     setDefaultCommand(new RunCommand(this::digestBalls, this));
@@ -129,14 +128,13 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   @Config
-  private void setFlywheelSpeedProp(double speed){
+  private void setFlywheelSpeedProp(double speed) {
     flywheelL.set(speed);
   }
 
   public Command getShootCommand() {
     return new RunCommand(this::shoot, this)
         .beforeStarting(() -> setFlywheelTargetSpeedRPM(Shooter.targetRPM));
-       
   }
 
   public Command getIntakeCommand() {
@@ -155,8 +153,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelVelRPM);
 
     flywheelFFEffort = feedForward.calculate(flywheelTargetVelRadPS);
-    flywheelBBEffort = 0;//flywheelBangBang.calculate(flywheelVelRadPS, flywheelTargetVelRadPS);
-    flywheelTotalEffort = flywheelFFEffort;//+ flywheelBBEffort * 0.25;
+    flywheelBBEffort = 0; // flywheelBangBang.calculate(flywheelVelRadPS, flywheelTargetVelRadPS);
+    flywheelTotalEffort = flywheelFFEffort; // + flywheelBBEffort * 0.25;
     flywheelL.setVoltage(flywheelTotalEffort);
 
     // setIntakeSpeedProp(testController.getLeftTriggerAxis());

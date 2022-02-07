@@ -7,8 +7,11 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
+import frc.robot.Constants.DIO;
 
 public class Climber extends SubsystemBase {
 
@@ -17,6 +20,9 @@ public class Climber extends SubsystemBase {
 
   private final RelativeEncoder ClimberR_ENC;
   private final RelativeEncoder ClimberL_ENC;
+
+  private final DigitalInput bottomLimit = new DigitalInput(DIO.breakBeamA);
+  private final DigitalInput topLimit = new DigitalInput(DIO.breakBeamB);
 
   /** Creates a new Climber. */
   public Climber() {
@@ -28,6 +34,14 @@ public class Climber extends SubsystemBase {
     ClimberR_ENC = ClimberR.getEncoder();
     // ClimberR.setInverted(true);
 
+  }
+
+  public void setPropL(double pwr) {
+    ClimberL.set(pwr);
+  }
+
+  public void setPropR(double pwr) {
+    ClimberR.set(pwr);
   }
 
   public void climb(double pwr) {

@@ -25,7 +25,7 @@ public final class Constants {
 
     public static final double kFlywheelGearing = 1;
 
-    public static final int targetRPM = 1000;
+    public static final int targetRPM = 4900;
   }
 
   public static final class CAN {
@@ -39,7 +39,7 @@ public final class Constants {
     public static final int flywheelL = 10;
     public static final int flywheelR = 5;
     public static final int transfer = 36;
-    public static final int intake = 99;
+    public static final int intake = 50;
 
     public static final int climberL = 7;
     public static final int climberR = 8;

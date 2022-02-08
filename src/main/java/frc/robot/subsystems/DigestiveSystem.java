@@ -74,6 +74,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelR.restoreFactoryDefaults();
 
     intake.setIdleMode(IdleMode.kCoast);
+    intake.setInverted(true);
     transfer.setIdleMode(IdleMode.kBrake);
     flywheelL.setIdleMode(IdleMode.kCoast);
     flywheelR.setIdleMode(IdleMode.kCoast);
@@ -138,7 +139,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   public Command getIntakeCommand() {
-    return new StartEndCommand(() -> setIntakeSpeedProp(0.5), () -> setIntakeSpeedProp(0))
+    return new StartEndCommand(() -> setIntakeSpeedProp(0.7), () -> setIntakeSpeedProp(0))
         .withInterrupt(() -> stomachFull);
   }
 

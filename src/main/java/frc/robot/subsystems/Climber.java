@@ -5,13 +5,14 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DIO;
+import io.github.oblarg.oblog.annotations.Config;
 
 public class Climber extends SubsystemBase {
 
@@ -21,25 +22,27 @@ public class Climber extends SubsystemBase {
   private final RelativeEncoder ClimberR_ENC;
   private final RelativeEncoder ClimberL_ENC;
 
-  private final DigitalInput bottomLimit = new DigitalInput(DIO.breakBeamA);
-  private final DigitalInput topLimit = new DigitalInput(DIO.breakBeamB);
+  
+
+  //private final DigitalInput bottomLimit = new DigitalInput(DIO.breakBeamA);
+  //private final DigitalInput topLimit = new DigitalInput(DIO.breakBeamB);
 
   /** Creates a new Climber. */
   public Climber() {
 
     ClimberR.restoreFactoryDefaults();
     ClimberL.restoreFactoryDefaults();
+    ClimberL.setIdleMode(IdleMode.kCoast); // remove later
+    ClimberR.setIdleMode(IdleMode.kCoast); // remove later
 
     ClimberL_ENC = ClimberL.getEncoder();
     ClimberR_ENC = ClimberR.getEncoder();
     // ClimberR.setInverted(true);
 
   }
-
   public void setPropL(double pwr) {
     ClimberL.set(pwr);
   }
-
   public void setPropR(double pwr) {
     ClimberR.set(pwr);
   }

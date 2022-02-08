@@ -41,26 +41,13 @@ public final class Constants {
     public static final int transfer = 36;
     public static final int intake = 50;
 
-    public static final int climberL = 7;
-    public static final int climberR = 8;
-  }
-
-  public static final class NewCAN {
-
-    // fl = front left
-    public static final int driveFL = 20;
-    public static final int driveFR = 30;
-    public static final int driveBR = 25;
-    public static final int driveBL = 15;
-
-    public static final int flywheelL = 10;
-    public static final int flywheelR = 5;
-    public static final int transfer = 35;
-    public static final int intake = 50;
-
     public static final int climberL = 45;
     public static final int climberR = 40;
   }
+
+  // public static final class NewCAN {
+
+  // } eff u thor
 
   public static final class DIO {
     public static final int breakBeamA = 0;

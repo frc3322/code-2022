@@ -15,6 +15,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -44,16 +45,19 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private boolean ballInMouth = false;
   @Log private boolean stomachFull = false;
 
-  PIDController flywheelPID = new PIDController(0.1, 0, 0);
+  PIDController flywheelPID = new PIDController(0.001500, 0, 0);
   BangBangController flywheelBangBang = new BangBangController();
 
-  @Config private double flywheelTargetVelRPM;
+  private double flywheelTargetVelRPM = 5000;
   @Log private double flywheelVelRPM;
   private double flywheelTargetVelRadPS;
   private double flywheelVelRadPS;
   private double flywheelFFEffort;
   private double flywheelBBEffort;
+  @Log private double flywheelPIDEffort;
   @Log private double flywheelTotalEffort;
+  private double flywheelFFScalar = 1.0;
+  private double flywheelBBScalar = 12;
 
   @Log private double intakeSpeedProp;
   @Log private double transferSpeedProp;
@@ -93,19 +97,34 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     }
   }
 
+  @Config
+  public void setFlywheelPID(double P, double I, double D) {
+    flywheelPID.setPID(P, I, D);
+  }
+
   public void setIntakeSpeedProp(double prop) {
     intake.set(prop);
     intakeSpeedProp = prop;
   }
 
-  @Config
   public void setTransferSpeedProp(double prop) {
     transfer.set(prop);
     transferSpeedProp = prop;
   }
 
+  //@Config
   public void setFlywheelTargetSpeedRPM(double RPM) {
     flywheelTargetVelRPM = RPM;
+  }
+
+  //@Config
+  public void setFlywheelFFScalar(double prop) {
+    flywheelFFScalar = prop;
+  }
+
+  //@Config
+  public void setFlywheelBBScalar(double prop) {
+    flywheelBBScalar = prop;
   }
 
   // @Config
@@ -119,23 +138,38 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   // }
 
   private void digestBalls() {
-    setTransferSpeedProp(ballInMouth && !stomachFull ? 0.5 : 0);
+    setTransferSpeedProp(ballInMouth && !stomachFull ? 0.75 : 0);
   }
 
   private void shoot() {
-    if (Math.abs(flywheelEncoder.getVelocity() - Shooter.targetRPM) < 100) {
-      setTransferSpeedProp(0.5);
+    if (Math.abs(flywheelEncoder.getVelocity() - flywheelTargetVelRPM) < 100) {
+      setTransferSpeedProp(0.75);
     }
+
+    flywheelTargetVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelTargetVelRPM);
+    flywheelVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelVelRPM);
+
+    flywheelFFEffort = feedForward.calculate(flywheelTargetVelRadPS);
+    flywheelBBEffort = flywheelBangBang.calculate(flywheelVelRadPS, flywheelTargetVelRadPS);
+
+    flywheelPIDEffort = 0;
+
+    if(flywheelEncoder.getVelocity() < flywheelTargetVelRPM) {
+      flywheelPIDEffort = flywheelPID.calculate(flywheelEncoder.getVelocity(), flywheelTargetVelRPM);
+    }
+
+    flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
+    flywheelL.setVoltage(flywheelTotalEffort);
   }
 
-  @Config
-  private void setFlywheelSpeedProp(double speed) {
+  //@Config
+  public void setFlywheelSpeedProp(double speed) {
     flywheelL.set(speed);
   }
 
   public Command getShootCommand() {
     return new RunCommand(this::shoot, this)
-        .beforeStarting(() -> setFlywheelTargetSpeedRPM(Shooter.targetRPM));
+        .beforeStarting(() -> setFlywheelTargetSpeedRPM(flywheelTargetVelRPM));
   }
 
   public Command getIntakeCommand() {
@@ -149,14 +183,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     stomachFull = !breakBeamStomach.get();
 
     flywheelVelRPM = flywheelEncoder.getVelocity();
-
-    flywheelTargetVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelTargetVelRPM);
-    flywheelVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelVelRPM);
-
-    flywheelFFEffort = feedForward.calculate(flywheelTargetVelRadPS);
-    flywheelBBEffort = 0; // flywheelBangBang.calculate(flywheelVelRadPS, flywheelTargetVelRadPS);
-    flywheelTotalEffort = flywheelFFEffort; // + flywheelBBEffort * 0.25;
-    flywheelL.setVoltage(flywheelTotalEffort);
 
     // setIntakeSpeedProp(testController.getLeftTriggerAxis());
     // setTransferSpeedProp(testController.getRightTriggerAxis());

@@ -32,10 +32,10 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     driverController
-        .x()
+        .a()
         .whenHeld(digestiveSystem.getShootCommand())
-        .whenReleased(() -> digestiveSystem.setFlywheelTargetSpeedRPM(0));
-    driverController.a().whenHeld(digestiveSystem.getIntakeCommand());
+        .whenReleased(() -> digestiveSystem.setFlywheelSpeedProp(0));
+    driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
     driverController.y().whenPressed(() -> drivetrain.resetPoseAndSensors());
   }
 

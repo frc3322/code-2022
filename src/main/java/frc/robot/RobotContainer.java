@@ -31,12 +31,14 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    driverController
-        .a()
+    driverController.a()
         .whenHeld(digestiveSystem.getShootCommand())
         .whenReleased(() -> digestiveSystem.setFlywheelSpeedProp(0));
     driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
     driverController.y().whenPressed(() -> drivetrain.resetPoseAndSensors());
+    driverController.b()
+        .whenPressed(() -> digestiveSystem.setIntakeSpeedProp(-0.7), digestiveSystem)
+        .whenReleased(() -> digestiveSystem.setIntakeSpeedProp(0), digestiveSystem);
   }
 
   public Command getAutonomousCommand() {

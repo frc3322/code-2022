@@ -18,6 +18,7 @@ public class RobotContainer {
   private final DigestiveSystem digestiveSystem = new DigestiveSystem();
 
   private final CommandXboxController driverController = new CommandXboxController(0);
+  private final CommandXboxController testController = new CommandXboxController(1);
 
   private final Command driveCommand =
       new RunCommand(
@@ -28,17 +29,19 @@ public class RobotContainer {
     Logger.configureLoggingAndConfig(this, false);
     configureButtonBindings();
     drivetrain.setDefaultCommand(driveCommand);
+    climber.setDefaultCommand(new RunCommand(() -> climber.setPropL(testController.getRightY()),climber)); //very dangerous, horrible decision, pls change, eff u thor
   }
 
   private void configureButtonBindings() {
-    driverController.a()
-        .whenHeld(digestiveSystem.getShootCommand())
+    driverController
+        .a()
+        .whenHeld(
+          digestiveSystem.getSpinUpCommand(() -> drivetrain.getLimelightAngleY())
+          .andThen(digestiveSystem.getShootCommand().alongWith(drivetrain.turnToLimelightCommand())))
         .whenReleased(() -> digestiveSystem.setFlywheelSpeedProp(0));
     driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
     driverController.y().whenPressed(() -> drivetrain.resetPoseAndSensors());
-    driverController.b()
-        .whenPressed(() -> digestiveSystem.setIntakeSpeedProp(-0.7), digestiveSystem)
-        .whenReleased(() -> digestiveSystem.setIntakeSpeedProp(0), digestiveSystem);
+    
   }
 
   public Command getAutonomousCommand() {

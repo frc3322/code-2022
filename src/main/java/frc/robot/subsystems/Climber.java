@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DIO;
 import io.github.oblarg.oblog.annotations.Config;
+import io.github.oblarg.oblog.annotations.Log;
 
 public class Climber extends SubsystemBase {
 
@@ -22,7 +23,8 @@ public class Climber extends SubsystemBase {
   private final RelativeEncoder ClimberR_ENC;
   private final RelativeEncoder ClimberL_ENC;
 
-  
+  @Log private double lEncVal;
+  @Log private double rEncVal;
 
   //private final DigitalInput bottomLimit = new DigitalInput(DIO.breakBeamA);
   //private final DigitalInput topLimit = new DigitalInput(DIO.breakBeamB);
@@ -32,12 +34,18 @@ public class Climber extends SubsystemBase {
 
     ClimberR.restoreFactoryDefaults();
     ClimberL.restoreFactoryDefaults();
-    ClimberL.setIdleMode(IdleMode.kCoast); // remove later
-    ClimberR.setIdleMode(IdleMode.kCoast); // remove later
+    ClimberL.setIdleMode(IdleMode.kBrake); 
+    ClimberR.setIdleMode(IdleMode.kBrake); 
 
-    ClimberL_ENC = ClimberL.getEncoder();
-    ClimberR_ENC = ClimberR.getEncoder();
-    // ClimberR.setInverted(true);
+    ClimberL.setInverted(true);
+    ClimberR.follow(ClimberL, true);
+
+    ClimberL_ENC = ClimberL.getEncoder(); 
+    //ClimberL_ENC.setPosition(0);
+    ClimberR_ENC = ClimberR.getEncoder(); 
+    //ClimberL_ENC.setPosition(0);
+
+    //ClimberR.setInverted(true);
 
   }
   public void setPropL(double pwr) {
@@ -54,6 +62,8 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
+    lEncVal = ClimberL_ENC.getPosition();
+    rEncVal = ClimberR_ENC.getPosition();
     // This method will be called once per scheduler run
   }
 }

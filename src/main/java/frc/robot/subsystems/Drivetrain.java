@@ -84,7 +84,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final ProfiledPIDController profiledTurnToAngleController =
       new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(12.0, 8.0));
 
-  private final PIDController turnToAngleController = new PIDController(0, 0, 0);
+  private final PIDController turnToAngleController = new PIDController(0.15, 0, 0.015);
 
   // These classes help us simulate our drivetrain
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -228,7 +228,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     fieldSim.setRobotPose(getPose());
   }
 
-  @Config
+  //@Config
   public void arcadeDrive(double speed, double rotation) {
     SmartDashboard.putNumber("rotation prop", rotation);
     robotDrive.arcadeDrive(speed, rotation);
@@ -290,7 +290,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     }
   }
 
-  @Config
+  //@Config
   public void tankDriveVolts(double leftVolts, double rightVolts) {
 
     FL.setVoltage(wheelDirection * leftVolts);
@@ -312,12 +312,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     gyro.reset();
   }
 
-  @Config
+  //@Config
   public void setProfiledTurnToAnglePID(double P, double I, double D) {
     profiledTurnToAngleController.setPID(P, I, D);
   }
 
-  @Config
+  //@Config
   public void setTurnToAnglePID(double P, double I, double D) {
     turnToAngleController.setPID(P, I, D);
   }
@@ -363,7 +363,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public Command turnToLimelightCommand() {
-    return new RunCommand(this::turnToLimelight);
+    return new RunCommand(this::turnToLimelight, this);
   }
 
   public TrajectoryConfig getTrajConfig(boolean reversed) {

@@ -146,12 +146,15 @@ public class Drivetrain extends SubsystemBase implements Loggable {
         "turnToAngleProfiled",
         (SequentialCommandGroup)
             profiledTurnToAngleCommand(() -> getLimelightAngleX() + getHeading()));
-    SmartDashboard.putData("turnToLimelight", (RunCommand) turnToLimelightCommand());
+    SmartDashboard.putData("turnToLimelight", (RunCommand) getTurnToLimelightCommand());
     SmartDashboard.putNumber("TurnToAngle/kP", 0);
+
+    turnToAngleController.setTolerance(2, 1);
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
-    fieldSim.getObject("Example Trajectory").setTrajectory(getExampleTraj());
+    // fieldSim.getObject("Example Trajectory").setTrajectory(getExampleTraj());
+    fieldSim.getObject("Blah Trajectory").setTrajectory(getBlahTraj());
 
     robotDrive.setSafetyEnabled(false);
 
@@ -312,13 +315,27 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   // @Config
-  public void setProfiledTurnToAnglePID(double P, double I, double D) {
-    profiledTurnToAngleController.setPID(P, I, D);
+  public void setTurnToAnglePID(double P, double I, double D) {
+    turnToAngleController.setPID(P, I, D);
+  }
+
+  public void turnToLimelight() {
+    double PID = turnToAngleController.calculate(getLimelightAngleX(), 0);
+    tankDriveVolts(PID, -PID);
+  }
+
+  public Command getTurnToLimelightCommand() {
+    return new RunCommand(this::turnToLimelight, this)
+        /*.withInterrupt(() -> turnToAngleController.atSetpoint())*/;
+  }
+  
+  public Boolean getTurnToAngleAtSetpoint() {
+    return turnToAngleController.atSetpoint();
   }
 
   // @Config
-  public void setTurnToAnglePID(double P, double I, double D) {
-    turnToAngleController.setPID(P, I, D);
+  public void setProfiledTurnToAnglePID(double P, double I, double D) {
+    profiledTurnToAngleController.setPID(P, I, D);
   }
 
   public void setProfiledTurnToAngleGoalSource(DoubleSupplier goalSource) {
@@ -348,21 +365,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     tankDriveVolts(-(FF + PID), FF + PID);
   }
 
-  public void turnToLimelight() {
-    double PID = turnToAngleController.calculate(getLimelightAngleX(), 0);
-    tankDriveVolts(PID, -PID);
-  }
-
   public Command profiledTurnToAngleCommand(DoubleSupplier goalSource) {
     return new InstantCommand(() -> setProfiledTurnToAngleGoalSource(goalSource))
         .andThen(
-            new RunCommand(
-                () -> profiledTurnToAngle(goalSource),
-                this) /*.withInterrupt(() -> turnToAngleController.atGoal())*/);
-  }
-
-  public Command turnToLimelightCommand() {
-    return new RunCommand(this::turnToLimelight, this);
+            new RunCommand(() -> profiledTurnToAngle(goalSource), this)
+                .withInterrupt(() -> profiledTurnToAngleController.atGoal()));
   }
 
   public TrajectoryConfig getTrajConfig(boolean reversed) {
@@ -400,6 +407,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
             getTrajConfig(false));
 
     return exampleTrajectory;
+  }
+
+  public Trajectory getBlahTraj() {
+    Trajectory blah = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(1, 2, new Rotation2d(0)), new Pose2d(1, 3, new Rotation2d(0))), getTrajConfig(false));
+    return blah;
   }
 
   public Trajectory getTrajFromFieldWidget(String traj, boolean reversed) {

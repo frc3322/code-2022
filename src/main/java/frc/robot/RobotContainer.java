@@ -29,19 +29,25 @@ public class RobotContainer {
     Logger.configureLoggingAndConfig(this, false);
     configureButtonBindings();
     drivetrain.setDefaultCommand(driveCommand);
-    climber.setDefaultCommand(new RunCommand(() -> climber.setPropL(testController.getRightY()),climber)); //very dangerous, horrible decision, pls change, eff u thor
+    climber.setDefaultCommand(
+        new RunCommand(
+            () -> climber.setPropL(testController.getRightY()),
+            climber)); // very dangerous, horrible decision, pls change, eff u thor
   }
 
   private void configureButtonBindings() {
     driverController
         .a()
         .whenHeld(
-          digestiveSystem.getSpinUpCommand(() -> drivetrain.getLimelightAngleY())
-          .andThen(digestiveSystem.getShootCommand().alongWith(drivetrain.turnToLimelightCommand())))
+            digestiveSystem
+                .getSpinUpLLCommand(() -> drivetrain.getLimelightAngleY())
+                .andThen(
+                    digestiveSystem
+                        .getShootCommand()
+                        .alongWith(drivetrain.turnToLimelightCommand())))
         .whenReleased(() -> digestiveSystem.setFlywheelSpeedProp(0));
     driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
     driverController.y().whenPressed(() -> drivetrain.resetPoseAndSensors());
-    
   }
 
   public Command getAutonomousCommand() {

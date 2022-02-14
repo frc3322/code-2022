@@ -47,7 +47,6 @@ import frc.robot.Constants.Drive;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -228,7 +227,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     fieldSim.setRobotPose(getPose());
   }
 
-  //@Config
+  // @Config
   public void arcadeDrive(double speed, double rotation) {
     SmartDashboard.putNumber("rotation prop", rotation);
     robotDrive.arcadeDrive(speed, rotation);
@@ -290,7 +289,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     }
   }
 
-  //@Config
+  // @Config
   public void tankDriveVolts(double leftVolts, double rightVolts) {
 
     FL.setVoltage(wheelDirection * leftVolts);
@@ -312,12 +311,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     gyro.reset();
   }
 
-  //@Config
+  // @Config
   public void setProfiledTurnToAnglePID(double P, double I, double D) {
     profiledTurnToAngleController.setPID(P, I, D);
   }
 
-  //@Config
+  // @Config
   public void setTurnToAnglePID(double P, double I, double D) {
     turnToAngleController.setPID(P, I, D);
   }

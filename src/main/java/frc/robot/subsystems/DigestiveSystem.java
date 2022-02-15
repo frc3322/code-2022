@@ -60,7 +60,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private double flywheelTotalEffort;
   private double flywheelFFScalar = 1.0;
   private double flywheelBBScalar = 12;
-  private double flywheelVoltage = 0;
+  @Log private double flywheelVoltage = 0;
 
   @Log private double intakeSpeedProp;
   @Log private double transferSpeedProp;
@@ -150,7 +150,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     }
 
     flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
-    flywheelL.setVoltage(flywheelTotalEffort);
+    setFlywheelVoltage(flywheelTotalEffort);
   }
 
   @Log
@@ -197,7 +197,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   @Override
   public void simulationPeriodic() {
-    flywheelSimulator.setInput(flywheelL.getAppliedOutput());
+    flywheelSimulator.setInput(flywheelVoltage);
     flywheelSimulator.update(0.020);
 
     flywheelEncoderSim.setVelocity(flywheelSimulator.getAngularVelocityRPM());

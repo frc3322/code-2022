@@ -16,7 +16,6 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -151,7 +150,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
-    fieldSim.getObject("FirstTrajectory").setTrajectory(getFirstTraj());
 
     robotDrive.setSafetyEnabled(false);
 
@@ -373,6 +371,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
                 .withInterrupt(() -> profiledTurnToAngleController.atGoal()));
   }
 
+  public void putTrajOnFieldWidget(Trajectory trajectory, String label) {
+    fieldSim.getObject(label).setTrajectory(trajectory);
+  }
+
   public TrajectoryConfig getTrajConfig(boolean reversed) {
     var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
@@ -395,30 +397,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return config;
   }
 
-  public Trajectory getExampleTraj() {
-    Trajectory exampleTrajectory =
-        TrajectoryGenerator.generateTrajectory(
-            // Start at (1, 2) facing the +X direction
-            new Pose2d(1, 2, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(2, 3), new Translation2d(3, 1)),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(4, 2, new Rotation2d(0)),
-            // Pass config
-            getTrajConfig(false));
-
-    return exampleTrajectory;
-  }
-
-  public Trajectory getFirstTraj() {
-    Trajectory firstTraj =
-        TrajectoryGenerator.generateTrajectory(
-            List.of(
-                new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(1.46, 0.04, new Rotation2d(0.014))),
-            getTrajConfig(false));
-    return firstTraj;
-  }
-
   public Trajectory getTrajFromFieldWidget(String traj, boolean reversed) {
     Trajectory trajectory;
     try {
@@ -427,15 +405,15 @@ public class Drivetrain extends SubsystemBase implements Loggable {
               fieldSim.getObject(traj).getPoses(), getTrajConfig(reversed));
     } catch (Exception NegativeArraySizeException) {
 
-      trajectory = getExampleTraj();
+      trajectory =
+          TrajectoryGenerator.generateTrajectory(
+              List.of(new Pose2d(0, 0, new Rotation2d(0))), getTrajConfig(false));
     }
 
     return trajectory;
   }
 
   public Command getRamseteCommand(Drivetrain robotDrive, Trajectory trajectory) {
-    RamseteController disabledRamsete = new RamseteController();
-    disabledRamsete.setEnabled(false);
 
     RamseteCommand ramseteCommand =
         new RamseteCommand(
@@ -453,8 +431,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
             robotDrive);
 
     // Run path following command, then stop at the end.
-    return ramseteCommand
-        .beforeStarting(() -> robotDrive.resetOdometry(trajectory.getInitialPose()))
-        .andThen(() -> robotDrive.tankDriveVolts(0, 0));
+    return ramseteCommand.andThen(() -> robotDrive.tankDriveVolts(0, 0));
   }
 }

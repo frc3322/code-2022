@@ -54,12 +54,13 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private double flywheelAccelRPMPerS;
   private double flywheelTargetVelRadPS;
   private double flywheelVelRadPS;
-  private double flywheelFFEffort;
+  @Log private double flywheelFFEffort;
   private double flywheelBBEffort;
   @Log private double flywheelPIDEffort;
   @Log private double flywheelTotalEffort;
   private double flywheelFFScalar = 1.0;
   private double flywheelBBScalar = 12;
+  private double flywheelVoltage = 0;
 
   @Log private double intakeSpeedProp;
   @Log private double transferSpeedProp;
@@ -131,8 +132,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelTargetVelRPM = RPMsource.getAsDouble();
   }
 
-  public void spinUpFlywheelToTargetRPM(DoubleSupplier targetRPMsource) {
-    double targetVelRPM = targetRPMsource.getAsDouble();
+  public void spinUpFlywheelToTargetRPM() {
+    double targetVelRPM = flywheelTargetVelRPM;
     flywheelTargetVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelTargetVelRPM);
     flywheelVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelVelRPM);
 
@@ -159,32 +160,9 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   public Command getShootCommand(DoubleSupplier limelightAngleY) {
-    return new RunCommand(
-        () -> spinUpFlywheelToTargetRPM(() -> limelightAngleYtoRPM(limelightAngleY)));
-  }
-
-  // old shoot methods
-
-  private void shoot() {
-    if (Math.abs(flywheelEncoder.getVelocity() - flywheelTargetVelRPM) < 100) {
-      setTransferSpeedProp(0.5);
-    }
-
-    flywheelTargetVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelTargetVelRPM);
-    flywheelVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelVelRPM);
-
-    flywheelFFEffort = feedForward.calculate(flywheelTargetVelRadPS);
-    flywheelBBEffort = flywheelBangBang.calculate(flywheelVelRadPS, flywheelTargetVelRadPS);
-
-    flywheelPIDEffort = 0;
-
-    if (flywheelEncoder.getVelocity() < flywheelTargetVelRPM) {
-      flywheelPIDEffort =
-          flywheelPID.calculate(flywheelEncoder.getVelocity(), flywheelTargetVelRPM);
-    }
-
-    flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
-    flywheelL.setVoltage(flywheelTotalEffort);
+    return new InstantCommand(
+            () -> supplyFlywheelTargetSpeedRPM(() -> limelightAngleYtoRPM(limelightAngleY)))
+        .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
   }
 
   // @Config
@@ -192,20 +170,10 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelL.set(speed);
   }
 
-  public Command getShootCommand() {
-    return new RunCommand(this::shoot, this);
+  public void setFlywheelVoltage(double voltage) {
+    flywheelL.set(voltage);
+    flywheelVoltage = voltage;
   }
-
-  public Command getLLSetRPMCommand(DoubleSupplier limelightAngleYSource) {
-    return new InstantCommand(
-            () ->
-                supplyFlywheelTargetSpeedRPM(
-                    () ->
-                        ((-207.25) * Math.sqrt(limelightAngleYSource.getAsDouble() - 0.43)
-                            + 3698.91)))
-        .withInterrupt(() -> limelightAngleYSource.getAsDouble() < 0.43);
-  }
-
   public Command getIntakeCommand() {
     return new StartEndCommand(() -> setIntakeSpeedProp(0.7), () -> setIntakeSpeedProp(0))
         .withInterrupt(() -> stomachFull);

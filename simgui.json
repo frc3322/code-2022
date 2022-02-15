@@ -8,6 +8,8 @@
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
@@ -19,12 +21,20 @@
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/Blah": "Command",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Mech2d": "Mechanism2d",
       "/SmartDashboard/ProfiledPIDAngleCommand": "Command",
-      "/SmartDashboard/Turn to Angle": "Command"
+      "/SmartDashboard/Turn to Angle": "Command",
+      "/SmartDashboard/turnToAngleProfiled": "Command",
+      "/SmartDashboard/turnToLimelight": "Command"
     },
     "windows": {
+      "/SmartDashboard/Blah": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "window": {
           "visible": true

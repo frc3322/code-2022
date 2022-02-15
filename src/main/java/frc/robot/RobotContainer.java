@@ -56,8 +56,6 @@ public class RobotContainer {
     Logger.configureLoggingAndConfig(this, false);
     configureButtonBindings();
     drivetrain.setDefaultCommand(driveCommand);
-
-    SmartDashboard.putData("Blah", (Sendable) shootCommand);
   }
 
   private void configureButtonBindings() {
@@ -76,8 +74,8 @@ public class RobotContainer {
 
     driverController
         .a()
-        .whenPressed(() -> shootCommand.schedule())
-        .whenReleased(new InstantCommand(() -> shootCommand.cancel()).andThen(() -> digestiveSystem.setFlywheelVoltage(0)));
+        .whenHeld(shootCommand)
+        .whenReleased(() -> digestiveSystem.setFlywheelVoltage(0));
 
     driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
     driverController.y().whenPressed(() -> drivetrain.zeroPoseAndSensors());

@@ -65,7 +65,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final DifferentialDrive robotDrive = new DifferentialDrive(FL, FR);
 
   @Log private double limelightAngleX = 0;
-  @Log private double limelightAngleY = 0;
+  @Log private double limelightAngleY = 3;
 
   private double angleSetpoint = 0;
 
@@ -201,8 +201,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double limelightTY =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
-    limelightAngleX = -limelightTX; // llpython[0]
-    limelightAngleY = limelightTY; // llpython[1]
+    // limelightAngleX = -limelightTX; // llpython[0]
+    // limelightAngleY = limelightTY; // llpython[1]
 
     heading = getHeading();
     headingRad = getHeadingRad();
@@ -328,6 +328,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     /*.withInterrupt(() -> turnToAngleController.atSetpoint())*/ ;
   }
 
+  @Log
   public Boolean getTurnToAngleAtSetpoint() {
     return turnToAngleController.atSetpoint();
   }

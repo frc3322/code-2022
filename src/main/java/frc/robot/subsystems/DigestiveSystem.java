@@ -65,6 +65,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private double intakeSpeedProp;
   @Log private double transferSpeedProp;
 
+  @Log private double limelightAngleRPM;
+
   SimpleMotorFeedforward feedForward =
       new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRadian);
 
@@ -120,6 +122,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   public double limelightAngleYtoRPM(DoubleSupplier angle) {
+    limelightAngleRPM = (-207.25) * Math.sqrt(angle.getAsDouble() - 0.43) + 3698.91;
     return (-207.25) * Math.sqrt(angle.getAsDouble() - 0.43) + 3698.91;
   }
 

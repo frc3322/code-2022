@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CommandXboxController;
@@ -160,7 +159,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   public Command getShootCommand(DoubleSupplier limelightAngleY) {
-    return new RunCommand(() -> spinUpFlywheelToTargetRPM(() -> limelightAngleYtoRPM(limelightAngleY)));
+    return new RunCommand(
+        () -> spinUpFlywheelToTargetRPM(() -> limelightAngleYtoRPM(limelightAngleY)));
   }
 
   // old shoot methods

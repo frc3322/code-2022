@@ -143,9 +143,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
 
     SmartDashboard.putData(
-        "turnToAngleProfiled",
-        (SequentialCommandGroup)
-            profiledTurnToAngleCommand(() -> getLimelightAngleX() + getHeading()));
+        "turnToAngleProfiled", (SequentialCommandGroup) profiledTurnToAngleCommand(() -> 195.6));
     SmartDashboard.putData("turnToLimelight", (RunCommand) getTurnToLimelightCommand());
     SmartDashboard.putNumber("TurnToAngle/kP", 0);
 
@@ -153,8 +151,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
-    // fieldSim.getObject("Example Trajectory").setTrajectory(getExampleTraj());
-    fieldSim.getObject("Blah Trajectory").setTrajectory(getBlahTraj());
+    fieldSim.getObject("FirstTrajectory").setTrajectory(getFirstTraj());
 
     robotDrive.setSafetyEnabled(false);
 
@@ -184,7 +181,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     leftPosition = wheelDirection * FL_ENC.getPosition();
     rightPosition = wheelDirection * FR_ENC.getPosition();
 
-    odometry.update(gyro.getRotation2d(), leftPosition, rightPosition);
+    odometry.update(new Rotation2d(getHeadingRad()), leftPosition, rightPosition);
 
     fieldSim.setRobotPose(odometry.getPoseMeters());
 
@@ -251,7 +248,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public double getHeading() {
-    return gyro.getRotation2d().getDegrees();
+    if (Robot.isReal()) {
+      return -gyro.getRotation2d().getDegrees();
+    } else {
+      return gyro.getRotation2d().getDegrees();
+    }
   }
 
   public double getHeadingRad() {
@@ -285,7 +286,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    odometry.resetPosition(pose, gyro.getRotation2d());
+    odometry.resetPosition(pose, new Rotation2d(getHeadingRad()));
 
     if (RobotBase.isSimulation()) {
       drivetrainSimulator.setPose(pose);
@@ -308,10 +309,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     FR_ENC.setPosition(0);
   }
 
-  public void resetPoseAndSensors() {
-    resetOdometry(new Pose2d(0, 0, new Rotation2d(0, 0)));
+  public void zeroPoseAndSensors() {
     resetEncoders();
     gyro.reset();
+    resetOdometry(new Pose2d(0, 0, new Rotation2d(0, 0)));
   }
 
   // @Config
@@ -326,9 +327,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   public Command getTurnToLimelightCommand() {
     return new RunCommand(this::turnToLimelight, this)
-        /*.withInterrupt(() -> turnToAngleController.atSetpoint())*/;
+    /*.withInterrupt(() -> turnToAngleController.atSetpoint())*/ ;
   }
-  
+
   public Boolean getTurnToAngleAtSetpoint() {
     return turnToAngleController.atSetpoint();
   }
@@ -409,9 +410,13 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return exampleTrajectory;
   }
 
-  public Trajectory getBlahTraj() {
-    Trajectory blah = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(1, 2, new Rotation2d(0)), new Pose2d(1, 3, new Rotation2d(0))), getTrajConfig(false));
-    return blah;
+  public Trajectory getFirstTraj() {
+    Trajectory firstTraj =
+        TrajectoryGenerator.generateTrajectory(
+            List.of(
+                new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(1.46, 0.04, new Rotation2d(0.014))),
+            getTrajConfig(false));
+    return firstTraj;
   }
 
   public Trajectory getTrajFromFieldWidget(String traj, boolean reversed) {

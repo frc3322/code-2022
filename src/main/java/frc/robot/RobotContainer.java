@@ -5,10 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Climber;
@@ -25,7 +22,10 @@ public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController testController = new CommandXboxController(1);
 
-  private final Trigger alignedAndSped = new Trigger(() -> (drivetrain.getTurnToAngleAtSetpoint() && digestiveSystem.flywheelAtTargetVelRPM()));
+  private final Trigger alignedAndSped =
+      new Trigger(
+          () ->
+              (drivetrain.getTurnToAngleAtSetpoint() && digestiveSystem.flywheelAtTargetVelRPM()));
 
   private final Command driveCommand =
       new RunCommand(
@@ -57,19 +57,21 @@ public class RobotContainer {
     driverController
         .a()
         .whenHeld(
-           digestiveSystem.getShootCommand().alongWith(
-           drivetrain.getTurnToLimelightCommand())
-        )
-        .and(alignedAndSped).whileActiveOnce(new StartEndCommand(() -> digestiveSystem.setTransferSpeedProp(0.5), () -> digestiveSystem.setTransferSpeedProp(0), digestiveSystem));
+            digestiveSystem.getShootCommand().alongWith(drivetrain.getTurnToLimelightCommand()))
+        .whenReleased(() -> digestiveSystem.setFlywheelSpeedProp(0))
+        .and(alignedAndSped)
+        .whileActiveOnce(
+            new StartEndCommand(
+                () -> digestiveSystem.setTransferSpeedProp(0.5),
+                () -> digestiveSystem.setTransferSpeedProp(0),
+                digestiveSystem));
 
-    
     driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
-    driverController.y().whenPressed(() -> drivetrain.resetPoseAndSensors());
+    driverController.y().whenPressed(() -> drivetrain.zeroPoseAndSensors());
   }
 
   public Command getAutonomousCommand() {
-    return drivetrain.getRamseteCommand(
-        drivetrain, drivetrain.getTrajFromFieldWidget("traj1", false));
+    return drivetrain.getRamseteCommand(drivetrain, drivetrain.getFirstTraj());
   }
 
   public void updateLogger() {

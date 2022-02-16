@@ -46,6 +46,7 @@ import frc.robot.Constants.Drive;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -80,7 +81,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   // P = 12, D = 0.06
   private final ProfiledPIDController profiledTurnToAngleController =
-      new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(12.0, 8.0));
+      new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(12.0, 8.0));
 
   private final PIDController turnToAngleController = new PIDController(0.15, 0, 0.015);
 
@@ -113,6 +114,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   @Log private double xPosition;
   @Log private double yPosition;
+
+  @Log private boolean profiledTurnToAngleAtGoal;
+
+  @Log private double profiledTurnToAngleVelSetpoint;
+  @Log private double profiledTurnToAngleAccelSetpoint;
+  @Log private double profiledTurnToAngleGoal;
 
   // Account for different wheel directions between sim and test chassis
   private double wheelDirection = -1;
@@ -154,6 +161,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     robotDrive.setSafetyEnabled(false);
 
     if (RobotBase.isSimulation()) {
+
+      limelightAngleX = 0;
+      limelightAngleY = 2; //Reasonable non-zero angle for testing
 
       drivetrainSimulator =
           DifferentialDrivetrainSim.createKitbotSim(
@@ -201,13 +211,17 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double limelightTY =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
-    limelightAngleX = -limelightTX; // llpython[0]
-    limelightAngleY = limelightTY; // llpython[1]
+    if(Robot.isReal()){
+      limelightAngleX = -limelightTX; // llpython[0]
+      limelightAngleY = limelightTY; // llpython[1]
+    }
 
     heading = getHeading();
     headingRad = getHeadingRad();
     angVelRad = getAngVelRad();
     angAccelRad = getAngAccelRad();
+
+    profiledTurnToAngleAtGoal = profiledTurnToAngleController.atGoal();
   }
 
   @Override
@@ -291,6 +305,14 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     }
   }
 
+  public void zeroOdometry() {
+    resetOdometry(new Pose2d(0, 0, new Rotation2d(0)));
+  }
+
+  public void resetGyro() {
+    gyro.reset();
+  }
+
   // @Config
   public void tankDriveVolts(double leftVolts, double rightVolts) {
 
@@ -305,12 +327,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   public void resetEncoders() {
     FL_ENC.setPosition(0);
     FR_ENC.setPosition(0);
-  }
-
-  public void zeroPoseAndSensors() {
-    resetEncoders();
-    gyro.reset();
-    resetOdometry(new Pose2d(0, 0, new Rotation2d(0, 0)));
   }
 
   // @Config
@@ -341,26 +357,23 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   public void setProfiledTurnToAngleGoalSource(DoubleSupplier goalSource) {
     double goal = goalSource.getAsDouble();
     double goalRad = Math.toRadians(goal);
-    profiledTurnToAngleController.reset(getHeadingRad(), getAngVelRad());
+    profiledTurnToAngleController.reset(getHeadingRad());
     profiledTurnToAngleController.setGoal(new TrapezoidProfile.State(goalRad, 0));
   }
 
-  public void profiledTurnToAngle(DoubleSupplier goalSource) {
+  public void profiledTurnToAngle() {
     double velSetpoint = profiledTurnToAngleController.getSetpoint().velocity;
     double accelSetpoint = (velSetpoint - turnToAngleLastVel) / 0.02;
     turnToAngleLastVel = velSetpoint;
 
-    profiledTurnToAngleController.calculate(getHeadingRad());
+    double PID = profiledTurnToAngleController.calculate(getHeadingRad());
     double FF = angleFF.calculate(velSetpoint, accelSetpoint);
-    double kP = SmartDashboard.getNumber("TurnToAngle/kP", 0);
-    double PID = kP * getLimelightAngleX();
 
-    SmartDashboard.putNumber("TurnToAngle/velSetpoint", velSetpoint);
-    SmartDashboard.putNumber("TurnToAngle/accelSetpoint", accelSetpoint);
+    profiledTurnToAngleVelSetpoint = velSetpoint;
+    profiledTurnToAngleAccelSetpoint = accelSetpoint;
+    profiledTurnToAngleGoal = profiledTurnToAngleController.getGoal().position;
     SmartDashboard.putNumber("TurnToAngle/FF", FF);
     SmartDashboard.putNumber("TurnToAngle/PID", PID);
-    SmartDashboard.putNumber(
-        "TurnToAngle/AngleGoal", profiledTurnToAngleController.getGoal().position);
 
     tankDriveVolts(-(FF + PID), FF + PID);
   }
@@ -368,7 +381,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   public Command profiledTurnToAngleCommand(DoubleSupplier goalSource) {
     return new InstantCommand(() -> setProfiledTurnToAngleGoalSource(goalSource))
         .andThen(
-            new RunCommand(() -> profiledTurnToAngle(goalSource), this)
+            new RunCommand(() -> profiledTurnToAngle(), this)
                 .withInterrupt(() -> profiledTurnToAngleController.atGoal()));
   }
 

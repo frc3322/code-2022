@@ -13,8 +13,8 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 public final class Constants {
 
   public static final class Shooter {
-    public static final double ksVolts = -0.033976;
-    public static final double kvVoltSecondsPerRadian = 0.13123 / (2 * Math.PI);
+    public static final double ksVolts = -0.033976; //-0.033976
+    public static final double kvVoltSecondsPerRadian =  0.1 / (2 * Math.PI); //0.13123
     public static final double kaVoltSecondsSquaredPerRadian = 0.013611 / (2 * Math.PI);
 
     public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
@@ -70,10 +70,10 @@ public final class Constants {
     // TODO: Find these values
 
     public static final double kvAngularVoltSecondsPerRadian =
-        1.5 * .5 * kTrackwidthMeters; // 1.3894
+        1.3894 * .5 * kTrackwidthMeters; // 1.3894
     public static final double kaAngularVoltSecondsSquaredPerRadian =
-        0.2 * .5 * kTrackwidthMeters; // 0.17271
-    public static final double ksAngularVolts = 0.5; // 0.45806
+        0.17271 * .5 * kTrackwidthMeters; // 0.17271
+    public static final double ksAngularVolts = 0.45806; // 0.45806
 
     public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
     public static final double kDriveGearing = 10.71; // 8

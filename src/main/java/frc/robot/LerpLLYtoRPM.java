@@ -8,11 +8,12 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.DoubleSupplier;
 import java.util.TreeMap;
 
 /** Add your docs here. */
-public class InterpolatingTable {
-    private InterpolatingTable() {}
+public class LerpLLYtoRPM {
+    private LerpLLYtoRPM() {}
 
     private static final TreeMap<Double, Double> table =
             new TreeMap<>(
@@ -22,9 +23,9 @@ public class InterpolatingTable {
                             entry(3.0, 10.0),
                             entry(4.0, 20.0)));
 
-    public static Double getRPM(double limelightAngleX) {
-        Entry<Double, Double> ceiling = table.ceilingEntry(limelightAngleX);
-        Entry<Double, Double> floor = table.floorEntry(limelightAngleX);
+    public static Double getRPM(double limelightAngleY) {
+        Entry<Double, Double> ceiling = table.ceilingEntry(limelightAngleY);
+        Entry<Double, Double> floor = table.floorEntry(limelightAngleY);
 
         if (ceiling == null) return floor.getValue();
         if (floor == null) return ceiling.getValue();
@@ -33,7 +34,11 @@ public class InterpolatingTable {
         return interpolate(
             floor.getValue(),
             ceiling.getValue(),
-            (limelightAngleX - floor.getKey()) / (ceiling.getKey() - floor.getKey()));
+            (limelightAngleY - floor.getKey()) / (ceiling.getKey() - floor.getKey()));
+    }
+
+    public static Double getRPMFromSupplier(DoubleSupplier limelightAngleY) {
+        return getRPM(limelightAngleY.getAsDouble());
     }
 
     private static Double interpolate(double y1, double y2, double t) {

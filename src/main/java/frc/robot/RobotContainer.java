@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.time.Instant;
+
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Climber;
@@ -83,9 +86,18 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
+
+    ShootCommand shootCommand = new ShootCommand();
     return new SequentialCommandGroup(
-      new InstantCommand(() -> drivetrain.zeroOdometry()),
-      new InstantCommand(() -> drivetrain.resetGyro())
+      new InstantCommand(() -> drivetrain.zeroOdometry())
+        .alongWith(new InstantCommand(() -> drivetrain.resetGyro())),
+      new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
+      drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall),
+      new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
+      drivetrain.profiledTurnToAngleCommand(() -> -167),
+      new InstantCommand(() -> shootCommand.schedule()),
+      new WaitCommand(5),
+      new InstantCommand(() -> shootCommand.cancel())
     );
     // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)).andThen(new InstantCommand(() -> drivetrain.zeroOdometry())).andThen(drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall)
     // ).andThen(drivetrain.profiledTurnToAngleCommand(() -> -167)).andThen(new ShootCommand().withTimeout(5));

@@ -13,9 +13,9 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 public final class Constants {
 
   public static final class Shooter {
-    public static final double ksVolts = 0; //0.012354, -0.033976
-    public static final double kvVoltSecondsPerRotation =  0.01; //0.012655, 0.13123  / (2 * Math.PI)
-    public static final double kaVoltSecondsSquaredPerRotation = 0.00050103; //0.00050103, 0.013611  / (2 * Math.PI)
+    public static final double ksVolts = 0.012354; //0.012354, -0.033976
+    public static final double kvVoltSecondsPerRotation =  0.12655; //0.012655, 0.13123  / (2 * Math.PI)
+    public static final double kaVoltSecondsSquaredPerRotation = 0.0050103; //0.00050103, 0.013611  / (2 * Math.PI)
 
     public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
         LinearSystemId.identifyVelocitySystem(

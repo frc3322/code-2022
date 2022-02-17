@@ -177,7 +177,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   public void setFlywheelVoltage(double voltage) {
-    flywheelL.set(voltage);
+    flywheelL.setVoltage(voltage);
     flywheelVoltage = voltage;
   }
   public Command getIntakeCommand() {

@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
+import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
@@ -198,6 +199,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     xPosition = odometry.getPoseMeters().getX();
     yPosition = odometry.getPoseMeters().getY();
+
+    SmartDashboard.putNumber("TARGET RPM RIGHT HERE LOOK", LerpLLYtoRPM.getRPMFromSupplier(() -> limelightAngleY));
 
     double[] llpython =
         NetworkTableInstance.getDefault()
@@ -443,6 +446,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
             // RamseteCommand passes volts to the callback
             robotDrive::tankDriveVolts,
             robotDrive);
+
+    zeroOdometry();
 
     // Run path following command, then stop at the end.
     return ramseteCommand.andThen(() -> robotDrive.tankDriveVolts(0, 0));

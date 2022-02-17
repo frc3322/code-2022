@@ -11,6 +11,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -28,6 +29,7 @@ import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
 import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
 
@@ -47,13 +49,14 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private boolean ballInMouth = false;
   @Log private boolean stomachFull = false;
 
-  PIDController flywheelPID = new PIDController(0.0012, 0, 0);
+  PIDController flywheelPID = new PIDController(0.00009, 0, 0); //0.0012
   BangBangController flywheelBangBang = new BangBangController();
 
   @Log private double flywheelTargetVelRPM;
   @Log private double flywheelVelRPM;
   private double lastFlywheelVelRPM;
   @Log private double flywheelAccelRPMPerS;
+  private LinearFilter accelFilter = LinearFilter.movingAverage(40);
   private double flywheelTargetVelRadPS;
   private double flywheelVelRadPS;
   @Log private double flywheelFFEffort;
@@ -70,7 +73,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private double limelightAngleRPM;
 
   SimpleMotorFeedforward feedForward =
-      new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRadian);
+      new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRotation);
 
   private final CommandXboxController testController = new CommandXboxController(0);
 
@@ -104,7 +107,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     }
   }
 
-  // @Config
+  //@Config
   public void setFlywheelPID(double P, double I, double D) {
     flywheelPID.setPID(P, I, D);
   }
@@ -128,30 +131,34 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return (-207.25) * Math.sqrt(angle.getAsDouble() - 0.43) + 3698.91;
   }
 
+  // @Config
+  public void setFlywheelTargetVelRPM(double RPM) {
+    flywheelTargetVelRPM = RPM;
+  }
+
   public void supplyFlywheelTargetSpeedRPM(DoubleSupplier RPMsource) {
     flywheelTargetVelRPM = RPMsource.getAsDouble();
   }
 
   public void spinUpFlywheelToTargetRPM() {
-    flywheelTargetVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelTargetVelRPM);
-    flywheelVelRadPS = Units.rotationsPerMinuteToRadiansPerSecond(flywheelVelRPM);
 
-    flywheelFFEffort = feedForward.calculate(flywheelTargetVelRadPS);
+    flywheelFFEffort = feedForward.calculate(flywheelTargetVelRPM/60);
 
     flywheelPIDEffort = 0;
 
-    if (flywheelVelRPM < flywheelTargetVelRPM) {
+    //if (flywheelVelRPM < flywheelTargetVelRPM) {
       flywheelPIDEffort =
           flywheelPID.calculate(flywheelEncoder.getVelocity(), flywheelTargetVelRPM);
-    }
+    //}
 
     flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
+    SmartDashboard.putNumber("Actual voltage!!!", flywheelTotalEffort);
     setFlywheelVoltage(flywheelTotalEffort);
   }
 
   @Log
   public boolean flywheelAtTargetVelRPM() {
-    if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100 && flywheelAccelRPMPerS < 20) {
+    if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100 && flywheelAccelRPMPerS < 30) {
       return true;
     } else {
       return false;
@@ -185,11 +192,12 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
     flywheelVelRPM = flywheelEncoder.getVelocity();
 
-    flywheelAccelRPMPerS = (flywheelVelRPM - lastFlywheelVelRPM) / 0.02;
+    flywheelAccelRPMPerS = accelFilter.calculate((flywheelVelRPM - lastFlywheelVelRPM) / 0.02);
+    
     lastFlywheelVelRPM = flywheelVelRPM;
 
     
-
+    // setFlywheelVoltage(0.1);
     // spinUpFlywheelToTargetRPM();
   }
 

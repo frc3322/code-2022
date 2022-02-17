@@ -8,36 +8,21 @@
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
-      "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[6]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
-      "/SmartDashboard/Blah": "Command",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Mech2d": "Mechanism2d",
-      "/SmartDashboard/ProfiledPIDAngleCommand": "Command",
       "/SmartDashboard/Shooot": "Command",
-      "/SmartDashboard/Turn to Angle": "Command",
       "/SmartDashboard/TurntoAngleProfiledTestnottheotherone": "Command",
       "/SmartDashboard/turnToAngleProfiled": "Command",
       "/SmartDashboard/turnToLimelight": "Command"
     },
     "windows": {
       "/SmartDashboard/Field": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/TurntoAngleProfiledTestnottheotherone": {
         "window": {
           "visible": true
         }
@@ -51,67 +36,18 @@
       },
       "Drivetrain": {
         "setProfiledTurnToAnglePID": {
-          "open": true
+          "open": false
         }
       },
       "open": true
     },
     "SmartDashboard": {
-      "flywheel": {
+      "InterpTableTest": {
         "open": true
       },
-      "open": true
-    },
-    "createNonCanonical": true
-  },
-  "Plot": {
-    "Plot <0>": {
-      "plots": [
-        {
-          "series": [
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/Shuffleboard/Drivetrain/angVelRad"
-            },
-            {
-              "color": [
-                0.32156869769096375,
-                0.43379470705986023,
-                0.8666667342185974,
-                1.0
-              ],
-              "id": "NT:/Shuffleboard/Drivetrain/profiledTurnToAngleVelSetpoint"
-            }
-          ]
-        },
-        {
-          "series": [
-            {
-              "color": [
-                0.36966535449028015,
-                0.32156869769096375,
-                0.8666667342185974,
-                1.0
-              ],
-              "id": "NT:/Shuffleboard/Drivetrain/profiledTurnToAngleGoal"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/Shuffleboard/Drivetrain/headingRad"
-            }
-          ]
-        }
-      ]
+      "flywheel": {
+        "open": false
+      }
     }
   }
 }

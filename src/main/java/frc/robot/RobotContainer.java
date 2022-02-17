@@ -56,7 +56,7 @@ public class RobotContainer {
       private ShootCommand() {
         addCommands(
           digestiveSystem.getShootCommand(() -> drivetrain.getLimelightAngleY()),
-          drivetrain.getTurnToLimelightCommand(),
+          drivetrain.getTurnToLimelightCommand().withInterrupt(alignedAndSped),
           waitUntilAlignedAndSpedCommand.andThen(feedCommand)
         );
       }
@@ -89,9 +89,10 @@ public class RobotContainer {
 
     ShootCommand shootCommand = new ShootCommand();
     return new SequentialCommandGroup(
-      new InstantCommand(() -> drivetrain.zeroOdometry())
-        .alongWith(new InstantCommand(() -> drivetrain.resetGyro())),
+      new InstantCommand(() -> drivetrain.resetGyro()),
+      new InstantCommand(() -> drivetrain.zeroOdometry()),
       new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
+      new WaitCommand(1),
       drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall),
       new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
       drivetrain.profiledTurnToAngleCommand(() -> -167),

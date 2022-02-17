@@ -9,6 +9,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 
 public final class Constants {
 
@@ -17,9 +18,12 @@ public final class Constants {
     public static final double kvVoltSecondsPerRotation =  0.12655; //0.012655, 0.13123  / (2 * Math.PI)
     public static final double kaVoltSecondsSquaredPerRotation = 0.0050103; //0.00050103, 0.013611  / (2 * Math.PI)
 
+    public static final double kvVoltSecondsPerRadian = Units.rotationsPerMinuteToRadiansPerSecond(kvVoltSecondsPerRotation);
+    public static final double kaVoltSecondsSquaredPerRadian = Units.rotationsPerMinuteToRadiansPerSecond(kaVoltSecondsSquaredPerRotation);
+
     public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
         LinearSystemId.identifyVelocitySystem(
-            kvVoltSecondsPerRotation, kaVoltSecondsSquaredPerRotation);
+            kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
 
     public static final DCMotor kFlywheelGearbox = DCMotor.getNEO(2);
 

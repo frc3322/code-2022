@@ -49,7 +49,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private boolean ballInMouth = false;
   @Log private boolean stomachFull = false;
 
-  PIDController flywheelPID = new PIDController(0.00009, 0, 0); //0.0012
+  PIDController flywheelPID = new PIDController(0, 0, 0); //0.0012
   BangBangController flywheelBangBang = new BangBangController();
 
   @Log private double flywheelTargetVelRPM;
@@ -152,7 +152,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     //}
 
     flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
-    SmartDashboard.putNumber("Actual voltage!!!", flywheelTotalEffort);
     setFlywheelVoltage(flywheelTotalEffort);
   }
 
@@ -177,8 +176,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   public void setFlywheelVoltage(double voltage) {
-    flywheelL.setVoltage(voltage);
     flywheelVoltage = voltage;
+    flywheelL.setVoltage(voltage);
   }
   public Command getIntakeCommand() {
     return new StartEndCommand(() -> setIntakeSpeedProp(0.7), () -> setIntakeSpeedProp(0))
@@ -196,9 +195,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     
     lastFlywheelVelRPM = flywheelVelRPM;
 
-    
-    // setFlywheelVoltage(0.1);
-    // spinUpFlywheelToTargetRPM();
   }
 
   @Override
@@ -207,5 +203,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelSimulator.update(0.020);
 
     flywheelEncoderSim.setVelocity(flywheelSimulator.getAngularVelocityRPM());
+    flywheelVelRPM = flywheelEncoder.getVelocity();
   }
 }

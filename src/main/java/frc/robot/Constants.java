@@ -18,8 +18,8 @@ public final class Constants {
     public static final double kvVoltSecondsPerRotation =  0.12655; //0.012655, 0.13123  / (2 * Math.PI)
     public static final double kaVoltSecondsSquaredPerRotation = 0.0050103; //0.00050103, 0.013611  / (2 * Math.PI)
 
-    public static final double kvVoltSecondsPerRadian = Units.rotationsPerMinuteToRadiansPerSecond(kvVoltSecondsPerRotation);
-    public static final double kaVoltSecondsSquaredPerRadian = Units.rotationsPerMinuteToRadiansPerSecond(kaVoltSecondsSquaredPerRotation);
+    public static final double kvVoltSecondsPerRadian = kvVoltSecondsPerRotation / (2 * Math.PI);
+    public static final double kaVoltSecondsSquaredPerRadian = kaVoltSecondsSquaredPerRotation / (2 * Math.PI);
 
     public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
         LinearSystemId.identifyVelocitySystem(

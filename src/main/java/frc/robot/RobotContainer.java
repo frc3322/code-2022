@@ -9,11 +9,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Climber;
@@ -84,16 +82,24 @@ public class RobotContainer {
         .whenReleased(() -> digestiveSystem.setFlywheelVoltage(0));
 
     driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
-    driverController.y().whenPressed(new InstantCommand(() -> drivetrain.resetGyro()).andThen(() -> drivetrain.zeroOdometry()));
+    driverController
+        .y()
+        .whenPressed(
+            new InstantCommand(() -> drivetrain.resetGyro())
+                .andThen(() -> drivetrain.zeroOdometry()));
 
-    driverController.x().whenHeld(new StartEndCommand(
-                  () -> digestiveSystem.setIntakeSpeedProp(-0.7), 
-                  () -> digestiveSystem.setIntakeSpeedProp(0), 
-                  digestiveSystem));
+    driverController
+        .x()
+        .whenHeld(
+            new StartEndCommand(
+                () -> digestiveSystem.setIntakeSpeedProp(-0.7),
+                () -> digestiveSystem.setIntakeSpeedProp(0),
+                digestiveSystem));
 
-    driverController.leftBumper()
-                    .whenHeld(digestiveSystem.getShooterPurgeCommand())
-                    .whenReleased(() -> digestiveSystem.setFlywheelVoltage(0));
+    driverController
+        .leftBumper()
+        .whenHeld(digestiveSystem.getShooterPurgeCommand())
+        .whenReleased(() -> digestiveSystem.setFlywheelVoltage(0));
   }
 
   public Command getAutonomousCommand() {
@@ -107,10 +113,12 @@ public class RobotContainer {
         drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
         drivetrain.profiledTurnToAngleCommand(() -> -167),
-        new InstantCommand(() -> autoShootCommand.schedule()),
-        new WaitCommand(5),
-        new InstantCommand(() -> autoShootCommand.cancel()),
-        new InstantCommand(() -> digestiveSystem.setFlywheelVoltage(0)));
+        new InstantCommand(
+            () ->
+                autoShootCommand
+                    .withTimeout(3)
+                    .andThen(() -> digestiveSystem.setFlywheelVoltage(0))
+                    .schedule()));
     // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)).andThen(new
     // InstantCommand(() ->
     // drivetrain.zeroOdometry())).andThen(drivetrain.getRamseteCommand(drivetrain,

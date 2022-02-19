@@ -27,7 +27,6 @@ import frc.robot.Constants.Shooter;
 import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
 
@@ -105,7 +104,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     }
   }
 
-  //@Config
+  // @Config
   public void setFlywheelPID(double P, double I, double D) {
     flywheelPID.setPID(P, I, D);
   }
@@ -170,8 +169,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   public Command getShooterPurgeCommand() {
-    return new InstantCommand(
-            () -> supplyFlywheelTargetSpeedRPM(() -> 500))
+    return new InstantCommand(() -> supplyFlywheelTargetSpeedRPM(() -> 500))
         .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
   }
 
@@ -183,6 +181,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public void setFlywheelVoltage(double voltage) {
     flywheelVoltage = voltage;
     flywheelL.setVoltage(voltage);
+    System.out.println("Set voltage to: " + voltage);
   }
 
   public Command getIntakeCommand() {

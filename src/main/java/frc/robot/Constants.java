@@ -9,17 +9,19 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
 
 public final class Constants {
 
   public static final class Shooter {
-    public static final double ksVolts = 0.012354; //0.012354, -0.033976
-    public static final double kvVoltSecondsPerRotation =  0.12655; //0.012655, 0.13123  / (2 * Math.PI)
-    public static final double kaVoltSecondsSquaredPerRotation = 0.0050103; //0.00050103, 0.013611  / (2 * Math.PI)
+    public static final double ksVolts = 0.012354; // 0.012354, -0.033976
+    public static final double kvVoltSecondsPerRotation =
+        0.12655; // 0.012655, 0.13123  / (2 * Math.PI)
+    public static final double kaVoltSecondsSquaredPerRotation =
+        0.0050103; // 0.00050103, 0.013611  / (2 * Math.PI)
 
     public static final double kvVoltSecondsPerRadian = kvVoltSecondsPerRotation / (2 * Math.PI);
-    public static final double kaVoltSecondsSquaredPerRadian = kaVoltSecondsSquaredPerRotation / (2 * Math.PI);
+    public static final double kaVoltSecondsSquaredPerRadian =
+        kaVoltSecondsSquaredPerRotation / (2 * Math.PI);
 
     public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
         LinearSystemId.identifyVelocitySystem(

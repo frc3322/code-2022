@@ -12,21 +12,19 @@ import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CommandXboxController;
-import frc.robot.LerpLLYtoRPM;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
+import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
@@ -49,7 +47,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private boolean ballInMouth = false;
   @Log private boolean stomachFull = false;
 
-  PIDController flywheelPID = new PIDController(0, 0, 0); //0.0012
+  PIDController flywheelPID = new PIDController(0.00009, 0, 0); // 0.0012
   BangBangController flywheelBangBang = new BangBangController();
 
   @Log private double flywheelTargetVelRPM;
@@ -142,14 +140,13 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   public void spinUpFlywheelToTargetRPM() {
 
-    flywheelFFEffort = feedForward.calculate(flywheelTargetVelRPM/60);
+    flywheelFFEffort = feedForward.calculate(flywheelTargetVelRPM / 60);
 
     flywheelPIDEffort = 0;
 
-    //if (flywheelVelRPM < flywheelTargetVelRPM) {
-      flywheelPIDEffort =
-          flywheelPID.calculate(flywheelEncoder.getVelocity(), flywheelTargetVelRPM);
-    //}
+    // if (flywheelVelRPM < flywheelTargetVelRPM) {
+    flywheelPIDEffort = flywheelPID.calculate(flywheelEncoder.getVelocity(), flywheelTargetVelRPM);
+    // }
 
     flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
     setFlywheelVoltage(flywheelTotalEffort);
@@ -166,7 +163,9 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   public Command getShootCommand(DoubleSupplier limelightAngleY) {
     return new InstantCommand(
-            () -> supplyFlywheelTargetSpeedRPM(() -> LerpLLYtoRPM.getRPMFromSupplier(limelightAngleY)))
+            () ->
+                supplyFlywheelTargetSpeedRPM(
+                    () -> LerpLLYtoRPM.getRPMFromSupplier(limelightAngleY)))
         .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
   }
 
@@ -185,6 +184,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelVoltage = voltage;
     flywheelL.setVoltage(voltage);
   }
+
   public Command getIntakeCommand() {
     return new StartEndCommand(() -> setIntakeSpeedProp(0.7), () -> setIntakeSpeedProp(0))
         .withInterrupt(() -> stomachFull);
@@ -198,9 +198,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelVelRPM = flywheelEncoder.getVelocity();
 
     flywheelAccelRPMPerS = accelFilter.calculate((flywheelVelRPM - lastFlywheelVelRPM) / 0.02);
-    
-    lastFlywheelVelRPM = flywheelVelRPM;
 
+    lastFlywheelVelRPM = flywheelVelRPM;
   }
 
   @Override

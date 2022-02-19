@@ -4,14 +4,12 @@
 
 package frc.robot;
 
-import java.time.Instant;
-
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -41,33 +39,37 @@ public class RobotContainer {
           drivetrain);
 
   private class ShootCommand extends ParallelCommandGroup {
-      private final Trigger alignedAndSped =
-      new Trigger(
-          () ->
-              (drivetrain.getTurnToAngleAtSetpoint() && digestiveSystem.flywheelAtTargetVelRPM()));
+    private final Trigger alignedAndSped =
+        new Trigger(
+            () ->
+                (drivetrain.getTurnToAngleAtSetpoint()
+                    && digestiveSystem.flywheelAtTargetVelRPM()));
 
-      private final Command feedCommand =
+    private final Command feedCommand =
         new StartEndCommand(
             () -> digestiveSystem.setTransferSpeedProp(0.5),
-            () -> digestiveSystem.setTransferSpeedProp(0), digestiveSystem);
+            () -> digestiveSystem.setTransferSpeedProp(0),
+            digestiveSystem);
 
-      private final Command waitUntilAlignedAndSpedCommand = new WaitUntilCommand(alignedAndSped);
+    private final Command waitUntilAlignedAndSpedCommand = new WaitUntilCommand(alignedAndSped);
 
-      private ShootCommand() {
-        addCommands(
+    private ShootCommand() {
+      addCommands(
           digestiveSystem.getShootCommand(() -> drivetrain.getLimelightAngleY()),
           drivetrain.getTurnToLimelightCommand().withInterrupt(alignedAndSped),
-          waitUntilAlignedAndSpedCommand.andThen(feedCommand)
-        );
-      }
+          waitUntilAlignedAndSpedCommand.andThen(feedCommand));
+    }
   }
 
   public RobotContainer() {
 
-    SmartDashboard.putData("Shooot", (Sendable) digestiveSystem
-    .getShootCommand(() -> drivetrain.getLimelightAngleY()));
+    SmartDashboard.putData(
+        "Shooot",
+        (Sendable) digestiveSystem.getShootCommand(() -> drivetrain.getLimelightAngleY()));
 
-    SmartDashboard.putData("TurntoAngleProfiledTestnottheotherone", (Sendable) drivetrain.profiledTurnToAngleCommand(() -> 193));
+    SmartDashboard.putData(
+        "TurntoAngleProfiledTestnottheotherone",
+        (Sendable) drivetrain.profiledTurnToAngleCommand(() -> 193));
 
     Logger.configureLoggingAndConfig(this, false);
     configureButtonBindings();
@@ -82,7 +84,7 @@ public class RobotContainer {
         .whenReleased(() -> digestiveSystem.setFlywheelVoltage(0));
 
     driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
-    driverController.y().whenPressed(() -> drivetrain.zeroOdometry());
+    driverController.y().whenPressed(new InstantCommand(() -> drivetrain.resetGyro()).andThen(() -> drivetrain.zeroOdometry()));
 
     driverController.x().whenHeld(new StartEndCommand(
                   () -> digestiveSystem.setIntakeSpeedProp(-0.7), 
@@ -96,21 +98,25 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
 
-    ShootCommand shootCommand = new ShootCommand();
+    ShootCommand autoShootCommand = new ShootCommand();
     return new SequentialCommandGroup(
-      new InstantCommand(() -> drivetrain.resetGyro()),
-      new InstantCommand(() -> drivetrain.zeroOdometry()),
-      new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
-      new WaitCommand(1),
-      drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall),
-      new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
-      drivetrain.profiledTurnToAngleCommand(() -> -167),
-      new InstantCommand(() -> shootCommand.schedule()),
-      new WaitCommand(5),
-      new InstantCommand(() -> shootCommand.cancel())
-    );
-    // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)).andThen(new InstantCommand(() -> drivetrain.zeroOdometry())).andThen(drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall)
-    // ).andThen(drivetrain.profiledTurnToAngleCommand(() -> -167)).andThen(new ShootCommand().withTimeout(5));
+        new InstantCommand(() -> drivetrain.resetGyro()),
+        new InstantCommand(() -> drivetrain.zeroOdometry()),
+        new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
+        // new WaitCommand(1),
+        drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall),
+        new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
+        drivetrain.profiledTurnToAngleCommand(() -> -167),
+        new InstantCommand(() -> autoShootCommand.schedule()),
+        new WaitCommand(5),
+        new InstantCommand(() -> autoShootCommand.cancel()),
+        new InstantCommand(() -> digestiveSystem.setFlywheelVoltage(0)));
+    // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)).andThen(new
+    // InstantCommand(() ->
+    // drivetrain.zeroOdometry())).andThen(drivetrain.getRamseteCommand(drivetrain,
+    // trajectories.tarmacToBall)
+    // ).andThen(drivetrain.profiledTurnToAngleCommand(() -> -167)).andThen(new
+    // ShootCommand().withTimeout(5));
   }
 
   public void updateLogger() {

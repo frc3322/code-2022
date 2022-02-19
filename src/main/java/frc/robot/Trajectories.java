@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
+
 import java.util.List;
 
 public class Trajectories {
@@ -34,7 +36,7 @@ public class Trajectories {
     tarmacToBall =
         TrajectoryGenerator.generateTrajectory(
             List.of(
-                new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(1.46, 0.04, new Rotation2d(0.014))),
+                new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(1.484, 0.156, new Rotation2d(Units.degreesToRadians(-3.4)))),
             config);
   }
 }

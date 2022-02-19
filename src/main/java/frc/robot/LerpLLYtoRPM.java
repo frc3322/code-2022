@@ -8,39 +8,35 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.DoubleSupplier;
 import java.util.TreeMap;
+import java.util.function.DoubleSupplier;
 
 /** Add your docs here. */
 public class LerpLLYtoRPM {
-    private LerpLLYtoRPM() {}
+  private LerpLLYtoRPM() {}
 
-    private static final TreeMap<Double, Double> table =
-            new TreeMap<>(
-                    Map.ofEntries(
-                            entry(10.6, 3400.0),
-                            entry(6.89, 3600.0),
-                            entry(2.81, 3900.0)));
+  private static final TreeMap<Double, Double> table =
+      new TreeMap<>(Map.ofEntries(entry(10.6, 3300.0), entry(6.89, 3500.0), entry(2.81, 3800.0)));
 
-    public static Double getRPM(double limelightAngleY) {
-        Entry<Double, Double> ceiling = table.ceilingEntry(limelightAngleY);
-        Entry<Double, Double> floor = table.floorEntry(limelightAngleY);
+  public static Double getRPM(double limelightAngleY) {
+    Entry<Double, Double> ceiling = table.ceilingEntry(limelightAngleY);
+    Entry<Double, Double> floor = table.floorEntry(limelightAngleY);
 
-        if (ceiling == null) return floor.getValue();
-        if (floor == null) return ceiling.getValue();
-        if (ceiling.getValue().equals(floor.getValue())) return ceiling.getValue();
+    if (ceiling == null) return floor.getValue();
+    if (floor == null) return ceiling.getValue();
+    if (ceiling.getValue().equals(floor.getValue())) return ceiling.getValue();
 
-        return interpolate(
-            floor.getValue(),
-            ceiling.getValue(),
-            (limelightAngleY - floor.getKey()) / (ceiling.getKey() - floor.getKey()));
-    }
+    return interpolate(
+        floor.getValue(),
+        ceiling.getValue(),
+        (limelightAngleY - floor.getKey()) / (ceiling.getKey() - floor.getKey()));
+  }
 
-    public static Double getRPMFromSupplier(DoubleSupplier limelightAngleY) {
-        return getRPM(limelightAngleY.getAsDouble());
-    }
+  public static Double getRPMFromSupplier(DoubleSupplier limelightAngleY) {
+    return getRPM(limelightAngleY.getAsDouble());
+  }
 
-    private static Double interpolate(double y1, double y2, double t) {
-        return y1 + t * (y2 - y1);
-    }
+  private static Double interpolate(double y1, double y2, double t) {
+    return y1 + t * (y2 - y1);
+  }
 }

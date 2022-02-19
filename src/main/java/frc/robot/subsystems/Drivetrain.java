@@ -47,7 +47,6 @@ import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -164,7 +163,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     if (RobotBase.isSimulation()) {
 
       limelightAngleX = 0;
-      limelightAngleY = 10; //Reasonable non-zero angle for testing
+      limelightAngleY = 10; // Reasonable non-zero angle for testing
 
       drivetrainSimulator =
           DifferentialDrivetrainSim.createKitbotSim(
@@ -200,7 +199,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     xPosition = odometry.getPoseMeters().getX();
     yPosition = odometry.getPoseMeters().getY();
 
-    SmartDashboard.putNumber("TARGET RPM RIGHT HERE LOOK", LerpLLYtoRPM.getRPMFromSupplier(() -> limelightAngleY));
+    SmartDashboard.putNumber(
+        "TARGET RPM RIGHT HERE LOOK", LerpLLYtoRPM.getRPMFromSupplier(() -> limelightAngleY));
 
     double[] llpython =
         NetworkTableInstance.getDefault()
@@ -214,7 +214,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double limelightTY =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
-    if(Robot.isReal()){
+    if (Robot.isReal()) {
       limelightAngleX = -limelightTX; // llpython[0]
       limelightAngleY = limelightTY; // llpython[1]
     }

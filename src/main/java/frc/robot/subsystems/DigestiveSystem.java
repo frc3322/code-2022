@@ -27,6 +27,7 @@ import frc.robot.Constants.Shooter;
 import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
 
@@ -128,7 +129,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return (-207.25) * Math.sqrt(angle.getAsDouble() - 0.43) + 3698.91;
   }
 
-  // @Config
+  @Config
   public void setFlywheelTargetVelRPM(double RPM) {
     flywheelTargetVelRPM = RPM;
   }
@@ -164,7 +165,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return new InstantCommand(
             () ->
                 supplyFlywheelTargetSpeedRPM(
-                    () -> LerpLLYtoRPM.getRPMFromSupplier(limelightAngleY)))
+                    //() -> LerpLLYtoRPM.getRPMFromSupplier(limelightAngleY)))
+                    () -> flywheelTargetVelRPM))
         .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
   }
 

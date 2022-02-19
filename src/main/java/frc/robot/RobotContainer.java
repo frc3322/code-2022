@@ -55,6 +55,7 @@ public class RobotContainer {
       addCommands(
           digestiveSystem.getShootCommand(() -> drivetrain.getLimelightAngleY()),
           drivetrain.getTurnToLimelightCommand().withInterrupt(alignedAndSped),
+          new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0)),
           waitUntilAlignedAndSpedCommand.andThen(feedCommand));
     }
   }

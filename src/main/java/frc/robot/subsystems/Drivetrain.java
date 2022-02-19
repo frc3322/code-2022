@@ -153,7 +153,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     SmartDashboard.putData("turnToLimelight", (RunCommand) getTurnToLimelightCommand());
     SmartDashboard.putNumber("TurnToAngle/kP", 0);
 
-    turnToAngleController.setTolerance(2, 1);
+    turnToAngleController.setTolerance(0.5, 0.1);
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);

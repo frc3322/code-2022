@@ -83,6 +83,15 @@ public class RobotContainer {
 
     driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
     driverController.y().whenPressed(() -> drivetrain.zeroOdometry());
+
+    driverController.x().whenHeld(new StartEndCommand(
+                  () -> digestiveSystem.setIntakeSpeedProp(-0.7), 
+                  () -> digestiveSystem.setIntakeSpeedProp(0), 
+                  digestiveSystem));
+
+    driverController.leftBumper()
+                    .whenHeld(digestiveSystem.getShooterPurgeCommand())
+                    .whenReleased(() -> digestiveSystem.setFlywheelVoltage(0));
   }
 
   public Command getAutonomousCommand() {

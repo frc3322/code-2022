@@ -129,7 +129,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return (-207.25) * Math.sqrt(angle.getAsDouble() - 0.43) + 3698.91;
   }
 
-  @Config
+  //@Config
   public void setFlywheelTargetVelRPM(double RPM) {
     flywheelTargetVelRPM = RPM;
   }
@@ -165,8 +165,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return new InstantCommand(
             () ->
                 supplyFlywheelTargetSpeedRPM(
-                    //() -> LerpLLYtoRPM.getRPMFromSupplier(limelightAngleY)))
-                    () -> flywheelTargetVelRPM))
+                    () -> LerpLLYtoRPM.getRPMFromSupplier(limelightAngleY)))
+                    //() -> flywheelTargetVelRPM))
         .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
   }
 

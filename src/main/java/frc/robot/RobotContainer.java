@@ -62,17 +62,11 @@ public class RobotContainer {
 
   public RobotContainer() {
 
-    SmartDashboard.putData(
-        "Shooot",
-        (Sendable) digestiveSystem.getShootCommand(() -> drivetrain.getLimelightAngleY()));
-
-    SmartDashboard.putData(
-        "TurntoAngleProfiledTestnottheotherone",
-        (Sendable) drivetrain.profiledTurnToAngleCommand(() -> 193));
-
     Logger.configureLoggingAndConfig(this, false);
     configureButtonBindings();
     drivetrain.setDefaultCommand(driveCommand);
+    drivetrain.putTrajOnFieldWidget(trajectories.tarmacToBall, "Tarmac To Ball");
+    drivetrain.putTrajOnFieldWidget(trajectories.ballToHumanPlayer, "Ball To Human Player");
   }
 
   private void configureButtonBindings() {
@@ -108,9 +102,8 @@ public class RobotContainer {
     ShootCommand autoShootCommand = new ShootCommand();
     return new SequentialCommandGroup(
         new InstantCommand(() -> drivetrain.resetGyro()),
-        new InstantCommand(() -> drivetrain.zeroOdometry()),
+        new InstantCommand(() -> drivetrain.resetOdometry(trajectories.tarmacToBall.getInitialPose())),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
-        // new WaitCommand(1),
         drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
         drivetrain.profiledTurnToAngleCommand(() -> -167),

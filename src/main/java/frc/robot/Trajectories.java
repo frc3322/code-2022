@@ -16,6 +16,8 @@ public class Trajectories {
 
   public Trajectory example;
   public Trajectory tarmacToBall;
+  public Trajectory ballToHumanPlayer;
+  public Trajectory humanPlayerToShoot;
 
   public Trajectories(TrajectoryConfig config, TrajectoryConfig reversedConfig) {
     this.config = config;
@@ -38,5 +40,17 @@ public class Trajectories {
                 new Pose2d(0, 0, new Rotation2d(0)),
                 new Pose2d(1.484, 0.156, new Rotation2d(Units.degreesToRadians(-3.4)))),
             config);
+
+    ballToHumanPlayer = 
+        TrajectoryGenerator.generateTrajectory(
+          List.of(new Pose2d(1.484, 0.156, new Rotation2d(Units.degreesToRadians(-3.4))), new Pose2d(5.533, -0.774, new Rotation2d(Units.degreesToRadians(22.52)))),
+          config
+        );
+
+    humanPlayerToShoot = 
+        TrajectoryGenerator.generateTrajectory(
+          List.of(new Pose2d(5.533, -0.774, new Rotation2d(Units.degreesToRadians(22.52))), new Pose2d(1.701, -0.616, new Rotation2d(Units.degreesToRadians(0)))),
+          config
+        );
   }
 }

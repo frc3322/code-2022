@@ -50,7 +50,7 @@ public class Trajectories {
     humanPlayerToShoot = 
         TrajectoryGenerator.generateTrajectory(
           List.of(new Pose2d(5.533, -0.774, new Rotation2d(Units.degreesToRadians(22.52))), new Pose2d(1.701, -0.616, new Rotation2d(Units.degreesToRadians(0)))),
-          config
+          reversedConfig
         );
   }
 }

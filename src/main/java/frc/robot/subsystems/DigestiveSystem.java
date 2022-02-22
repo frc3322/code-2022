@@ -163,7 +163,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   @Log
   public boolean flywheelAtTargetVelRPM() {
-    if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100 && flywheelAccelRPMPerS < 30) {
+    if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100/* && flywheelAccelRPMPerS < 30*/) {
       return true;
     } else {
       return false;

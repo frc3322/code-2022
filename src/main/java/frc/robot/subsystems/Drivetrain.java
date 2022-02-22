@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -23,6 +24,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
@@ -105,6 +107,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double headingRad;
   @Log private double angVelRad;
   @Log private double angAccelRad;
+  @Log private double angAccelDeg;
   private double lastHeadingRad;
   private double lastAngVelRad;
 
@@ -112,12 +115,16 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   @Log private double leftPosition;
   @Log private double rightPosition;
-
   @Log private double leftVel;
   @Log private double rightVel;
-
+  private double lastLeftVel;
+  private double lastRightVel;
+  @Log private double leftAccel;
+  @Log private double rightAccel;
   @Log private double xPosition;
   @Log private double yPosition;
+
+  private LinearFilter accelFilter = LinearFilter.movingAverage(40);
 
   @Log private boolean profiledTurnToAngleAtGoal;
 
@@ -193,6 +200,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     leftPosition = wheelDirection * FL_ENC.getPosition();
     rightPosition = wheelDirection * FR_ENC.getPosition();
 
+    leftAccel = accelFilter.calculate((leftVel - lastLeftVel) / 0.02);
+    rightAccel = accelFilter.calculate((rightVel - lastRightVel) / 0.02);
+    lastLeftVel = leftVel;
+    lastRightVel = rightVel;
+
     odometry.update(new Rotation2d(getHeadingRad()), leftPosition, rightPosition);
 
     fieldSim.setRobotPose(odometry.getPoseMeters());
@@ -227,6 +239,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     headingRad = getHeadingRad();
     angVelRad = getAngVelRad();
     angAccelRad = getAngAccelRad();
+    angAccelDeg = Units.radiansToDegrees(angAccelRad);
 
     profiledTurnToAngleAtGoal = profiledTurnToAngleController.atGoal();
   }

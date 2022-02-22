@@ -52,10 +52,6 @@ public final class Constants {
     public static final int climberR = 40;
   }
 
-  // public static final class NewCAN {
-
-  // } eff u thor
-
   public static final class DIO {
     public static final int breakBeamA = 0;
     public static final int breakBeamB = 2;
@@ -89,8 +85,6 @@ public final class Constants {
 
     public static final double kPVel = 6; // 8.5  1.8422
 
-    public static double kPAngle = 0.8;
-    public static double kDAngle = 0.8;
   }
 
   public static final class AutoConstants {

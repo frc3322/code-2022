@@ -70,7 +70,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   // Create diff drive
   private final DifferentialDrive robotDrive = new DifferentialDrive(FL, FR);
-  
+
   // Create odometry
   private final DifferentialDriveOdometry odometry =
       new DifferentialDriveOdometry(gyro.getRotation2d());
@@ -84,7 +84,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   private final ProfiledPIDController profiledTurnToAngleController =
       new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(12.0, 8.0));
-      // P = 12, D = 0.06
+  // P = 12, D = 0.06
 
   private final PIDController turnToAngleController = new PIDController(0.15, 0, 0.015);
 
@@ -253,7 +253,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     leftEncoderSim.setVelocity(drivetrainSimulator.getLeftVelocityMetersPerSecond());
     rightEncoderSim.setPosition(drivetrainSimulator.getRightPositionMeters());
     rightEncoderSim.setVelocity(drivetrainSimulator.getRightVelocityMetersPerSecond());
-    
+
     leftVel = getWheelSpeeds().leftMetersPerSecond;
     rightVel = getWheelSpeeds().rightMetersPerSecond;
 

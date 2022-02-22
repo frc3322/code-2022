@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.CommandXboxController;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
@@ -75,7 +74,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   // Track transfer states
   @Log private boolean ballInMouth = false;
   @Log private boolean stomachFull = false;
-
 
   public DigestiveSystem() {
 
@@ -163,7 +161,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   @Log
   public boolean flywheelAtTargetVelRPM() {
-    if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100/* && flywheelAccelRPMPerS < 30*/) {
+    if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100 /* && flywheelAccelRPMPerS < 30*/) {
       return true;
     } else {
       return false;

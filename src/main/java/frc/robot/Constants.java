@@ -84,7 +84,6 @@ public final class Constants {
     public static final double kDriveGearing = 10.71; // 8
 
     public static final double kPVel = 6; // 8.5  1.8422
-
   }
 
   public static final class AutoConstants {

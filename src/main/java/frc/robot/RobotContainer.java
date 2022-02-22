@@ -57,7 +57,12 @@ public class RobotContainer {
           digestiveSystem.getShootCommand(() -> drivetrain.getLimelightAngleY()),
           drivetrain.getTurnToLimelightCommand().withInterrupt(alignedAndSped),
           new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0)),
-          waitUntilAlignedAndSpedCommand.andThen(feedCommand));
+          waitUntilAlignedAndSpedCommand.andThen(() -> feedCommand.schedule()));
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+      feedCommand.cancel();
     }
   }
 
@@ -99,9 +104,15 @@ public class RobotContainer {
         .whenReleased(() -> digestiveSystem.setFlywheelVoltage(0));
   }
 
+  private Command getAutoShootCommand() {
+    SequentialCommandGroup autoShootCommand = new ShootCommand().withTimeout(3).andThen(() -> digestiveSystem.setFlywheelVoltage(0));
+    return autoShootCommand;
+  }
+
   public Command getAutonomousCommand() {
 
-    SequentialCommandGroup autoShootCommand = new ShootCommand().withTimeout(3).andThen(() -> digestiveSystem.setFlywheelVoltage(0));
+    SmartDashboard.putData("auto shoot command", (Sendable) getAutoShootCommand());
+    
     return new SequentialCommandGroup(
         new InstantCommand(() -> drivetrain.resetGyro()),
         new InstantCommand(() -> drivetrain.resetOdometry(trajectories.tarmacToBall.getInitialPose())),
@@ -109,16 +120,15 @@ public class RobotContainer {
         drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
         drivetrain.profiledTurnToAngleCommand(() -> -167),
-        new InstantCommand(() -> autoShootCommand.schedule()),
-        new WaitCommand(3),     
+        getAutoShootCommand(),     
         drivetrain.profiledTurnToAngleCommand(() -> -3.4),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
         drivetrain.getRamseteCommand(drivetrain, trajectories.ballToHumanPlayer),
         new WaitCommand(1),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
         drivetrain.getRamseteCommand(drivetrain, trajectories.humanPlayerToShoot),
-        drivetrain.profiledTurnToAngleCommand(() -> 180),
-        new InstantCommand(() -> autoShootCommand.schedule()));
+        drivetrain.profiledTurnToAngleCommand(() -> -180),
+        getAutoShootCommand());
     // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)).andThen(new
     // InstantCommand(() ->
     // drivetrain.zeroOdometry())).andThen(drivetrain.getRamseteCommand(drivetrain,

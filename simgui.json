@@ -8,19 +8,7 @@
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
-      "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[13]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[14]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[15]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[16]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[17]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[18]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[19]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[20]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[21]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
@@ -32,6 +20,7 @@
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/auto shoot command": "Command",
       "/SmartDashboard/turnToAngleProfiled": "Command",
       "/SmartDashboard/turnToLimelight": "Command"
     },
@@ -40,13 +29,20 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/auto shoot command": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },
   "NetworkTables": {
     "Shuffleboard": {
+      "DigestiveSystem": {
+        "open": true
+      },
       "Drivetrain": {
-        "open": true,
         "setProfiledTurnToAnglePID": {
           "open": false
         }
@@ -57,19 +53,9 @@
       "InterpTableTest": {
         "open": false
       },
-      "TurnToAngle": {
-        "open": true
-      },
       "flywheel": {
         "open": false
-      },
-      "open": true,
-      "turnToAngleProfiled": {
-        "open": true
       }
     }
-  },
-  "NetworkTables View": {
-    "visible": false
   }
 }

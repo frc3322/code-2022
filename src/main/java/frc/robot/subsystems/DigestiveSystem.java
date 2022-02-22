@@ -33,53 +33,55 @@ import java.util.function.DoubleSupplier;
 
 public class DigestiveSystem extends SubsystemBase implements Loggable {
 
+  // Create motors
   private final CANSparkMax intake = new CANSparkMax(CAN.intake, MotorType.kBrushless);
   private final CANSparkMax transfer = new CANSparkMax(CAN.transfer, MotorType.kBrushless);
   private final CANSparkMax flywheelL = new CANSparkMax(CAN.flywheelL, MotorType.kBrushless);
   private final CANSparkMax flywheelR = new CANSparkMax(CAN.flywheelR, MotorType.kBrushless);
 
-  private final RelativeEncoder intakeEncoder = intake.getEncoder();
-  private final RelativeEncoder transferEncoder = transfer.getEncoder();
+  // Create encoders
   private final RelativeEncoder flywheelEncoder = flywheelL.getEncoder();
 
+  // Create break beam sensors
   private final DigitalInput breakBeamMouth = new DigitalInput(DIO.breakBeamA);
   private final DigitalInput breakBeamStomach = new DigitalInput(DIO.breakBeamB);
+
+  // Transfer states
   @Log private boolean ballInMouth = false;
   @Log private boolean stomachFull = false;
 
   PIDController flywheelPID = new PIDController(0.00009, 0, 0); // 0.0012
-  BangBangController flywheelBangBang = new BangBangController();
 
-  @Log private double flywheelTargetVelRPM;
+  SimpleMotorFeedforward flywheelFF =
+      new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRotation);
+
+  // Flywheel sim
+  private FlywheelSim flywheelSimulator;
+  private RelativeEncoderSim flywheelEncoderSim;
+  
+  // Flywheel measurements
   @Log private double flywheelVelRPM;
   private double lastFlywheelVelRPM;
   @Log private double flywheelAccelRPMPerS;
+
   private LinearFilter accelFilter = LinearFilter.movingAverage(40);
-  private double flywheelTargetVelRadPS;
-  private double flywheelVelRadPS;
+
+  // Flywheel control inputs
+  @Log private double flywheelTargetVelRPM;
   @Log private double flywheelFFEffort;
-  private double flywheelBBEffort;
   @Log private double flywheelPIDEffort;
   @Log private double flywheelTotalEffort;
-  private double flywheelFFScalar = 1.0;
-  private double flywheelBBScalar = 12;
-  @Log private double flywheelVoltage = 0;
+  @Log private double flywheelVoltage;
 
+  // Intake and transfer control inputs
   @Log private double intakeSpeedProp;
   @Log private double transferSpeedProp;
 
-  @Log private double limelightAngleRPM;
-
-  SimpleMotorFeedforward feedForward =
-      new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRotation);
-
   private final CommandXboxController testController = new CommandXboxController(0);
-
-  private FlywheelSim flywheelSimulator;
-  private RelativeEncoderSim flywheelEncoderSim;
 
   public DigestiveSystem() {
 
+    // Set up motors
     intake.restoreFactoryDefaults();
     transfer.restoreFactoryDefaults();
     flywheelL.restoreFactoryDefaults();
@@ -93,8 +95,10 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
     flywheelR.follow(flywheelL, true);
 
+    // Default to auto transfer balls from intake using beam breaks
     setDefaultCommand(new RunCommand(this::digestBalls, this));
 
+    // Set up sim values
     if (RobotBase.isSimulation()) {
 
       flywheelSimulator =
@@ -105,61 +109,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     }
   }
 
-  // @Config
-  public void setFlywheelPID(double P, double I, double D) {
-    flywheelPID.setPID(P, I, D);
-  }
-
-  public void setIntakeSpeedProp(double prop) {
-    intake.set(prop);
-    intakeSpeedProp = prop;
-  }
-
-  public void setTransferSpeedProp(double prop) {
-    transfer.set(prop);
-    transferSpeedProp = prop;
-  }
-
-  private void digestBalls() {
-    setTransferSpeedProp(ballInMouth && !stomachFull ? 0.5 : 0);
-  }
-
-  public double limelightAngleYtoRPM(DoubleSupplier angle) {
-    limelightAngleRPM = (-207.25) * Math.sqrt(angle.getAsDouble() - 0.43) + 3698.91;
-    return (-207.25) * Math.sqrt(angle.getAsDouble() - 0.43) + 3698.91;
-  }
-
-  //@Config
-  public void setFlywheelTargetVelRPM(double RPM) {
-    flywheelTargetVelRPM = RPM;
-  }
-
-  public void supplyFlywheelTargetSpeedRPM(DoubleSupplier RPMsource) {
-    flywheelTargetVelRPM = RPMsource.getAsDouble();
-  }
-
-  public void spinUpFlywheelToTargetRPM() {
-
-    flywheelFFEffort = feedForward.calculate(flywheelTargetVelRPM / 60);
-
-    flywheelPIDEffort = 0;
-
-    // if (flywheelVelRPM < flywheelTargetVelRPM) {
-    flywheelPIDEffort = flywheelPID.calculate(flywheelEncoder.getVelocity(), flywheelTargetVelRPM);
-    // }
-
-    flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
-    setFlywheelVoltage(flywheelTotalEffort);
-  }
-
-  @Log
-  public boolean flywheelAtTargetVelRPM() {
-    if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100 && flywheelAccelRPMPerS < 30) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  
+  // Digestive system commands
 
   public Command getShootCommand(DoubleSupplier limelightAngleY) {
     return new InstantCommand(
@@ -175,39 +126,108 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
         .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
   }
 
-  // @Config
-  public void setFlywheelSpeedProp(double speed) {
-    flywheelL.set(speed);
-  }
-
-  public void setFlywheelVoltage(double voltage) {
-    flywheelVoltage = voltage;
-    flywheelL.setVoltage(voltage);
-  }
-
   public Command getIntakeCommand() {
     return new StartEndCommand(() -> setIntakeSpeedProp(0.7), () -> setIntakeSpeedProp(0))
         .withInterrupt(() -> stomachFull);
   }
 
+  
+  // Flywheel control set-up methods
+  
+  public void setFlywheelPID(double P, double I, double D) {
+    flywheelPID.setPID(P, I, D);
+  }
+
+  public void setFlywheelTargetVelRPM(double RPM) {
+    flywheelTargetVelRPM = RPM;
+  }
+
+  public void supplyFlywheelTargetSpeedRPM(DoubleSupplier RPMsource) {
+    flywheelTargetVelRPM = RPMsource.getAsDouble();
+  }
+
+
+  // Methods to calculate control inputs
+  
+  public void spinUpFlywheelToTargetRPM() {
+
+    // Calculate control values
+    flywheelFFEffort = flywheelFF.calculate(flywheelTargetVelRPM / 60);
+    flywheelPIDEffort = flywheelPID.calculate(flywheelEncoder.getVelocity(), flywheelTargetVelRPM);
+    flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
+
+    // Use output
+    setFlywheelVoltage(flywheelTotalEffort);
+
+  }
+
+  private void digestBalls() {
+    setTransferSpeedProp(ballInMouth && !stomachFull ? 0.5 : 0);
+  }
+
+  
+  // Check whether flywheel is within tolerance of setpoint
+  
+  @Log
+  public boolean flywheelAtTargetVelRPM() {
+    if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100 && flywheelAccelRPMPerS < 30) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  
+  // Proportional control methods
+  
+  public void setIntakeSpeedProp(double prop) {
+    intake.set(prop);
+    intakeSpeedProp = prop;
+  }
+
+  public void setTransferSpeedProp(double prop) {
+    transfer.set(prop);
+    transferSpeedProp = prop;
+  }
+
+  public void setFlywheelSpeedProp(double speed) {
+    flywheelL.set(speed);
+  }
+
+  
+  // Voltage control methods
+  
+  public void setFlywheelVoltage(double voltage) {
+    flywheelVoltage = voltage;
+    flywheelL.setVoltage(voltage);
+  }
+  
+
+  // Periodic functions
+  
   @Override
   public void periodic() {
+
+    // Calculate flywheel measurements
     ballInMouth = !breakBeamMouth.get();
     stomachFull = !breakBeamStomach.get();
-
     flywheelVelRPM = flywheelEncoder.getVelocity();
-
     flywheelAccelRPMPerS = accelFilter.calculate((flywheelVelRPM - lastFlywheelVelRPM) / 0.02);
-
     lastFlywheelVelRPM = flywheelVelRPM;
+
   }
 
   @Override
   public void simulationPeriodic() {
+    
+    // Set sim inputs
     flywheelSimulator.setInput(flywheelVoltage);
     flywheelSimulator.update(0.020);
 
+    // Calculate sim values
     flywheelEncoderSim.setVelocity(flywheelSimulator.getAngularVelocityRPM());
+    
+    // Update encoder after sim value is set
     flywheelVelRPM = flywheelEncoder.getVelocity();
   }
 }

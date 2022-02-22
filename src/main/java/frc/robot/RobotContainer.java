@@ -129,12 +129,6 @@ public class RobotContainer {
         drivetrain.getRamseteCommand(drivetrain, trajectories.humanPlayerToShoot),
         drivetrain.profiledTurnToAngleCommand(() -> -180),
         getAutoShootCommand());
-    // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)).andThen(new
-    // InstantCommand(() ->
-    // drivetrain.zeroOdometry())).andThen(drivetrain.getRamseteCommand(drivetrain,
-    // trajectories.tarmacToBall)
-    // ).andThen(drivetrain.profiledTurnToAngleCommand(() -> -167)).andThen(new
-    // ShootCommand().withTimeout(5));
   }
 
   public void updateLogger() {

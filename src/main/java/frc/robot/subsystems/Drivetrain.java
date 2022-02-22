@@ -447,9 +447,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
             robotDrive::tankDriveVolts,
             robotDrive);
 
-    zeroOdometry();
-
     // Run path following command, then stop at the end.
-    return ramseteCommand.andThen(() -> robotDrive.tankDriveVolts(0, 0));
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> resetOdometry(trajectory.getInitialPose())),
+      ramseteCommand,
+      new InstantCommand(() -> tankDriveVolts(0, 0)));
   }
 }

@@ -8,7 +8,19 @@
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[13]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[14]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[15]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[16]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[17]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[18]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[19]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[20]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[21]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
@@ -26,6 +38,36 @@
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "Ball To Human Player": {
+          "arrowSize": 0,
+          "color": [
+            210.00001525878906,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "style": "Track"
+        },
+        "Human Player To Shoot": {
+          "arrowSize": 0,
+          "color": [
+            0.0,
+            255.0,
+            187.49993896484375,
+            255.0
+          ],
+          "style": "Track"
+        },
+        "Tarmac To Ball": {
+          "arrowSize": 0,
+          "color": [
+            255.0,
+            0.0,
+            217.49996948242188,
+            255.0
+          ],
+          "style": "Track"
+        },
         "window": {
           "visible": true
         }

@@ -44,10 +44,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   private final DigitalInput breakBeamMouth = new DigitalInput(DIO.breakBeamA);
   private final DigitalInput breakBeamStomach = new DigitalInput(DIO.breakBeamB);
 
-  // Transfer states
-  @Log private boolean ballInMouth = false;
-  @Log private boolean stomachFull = false;
-
+  // Controllers
   PIDController flywheelPID = new PIDController(0.00009, 0, 0); // 0.0012
 
   SimpleMotorFeedforward flywheelFF =
@@ -75,7 +72,10 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private double intakeSpeedProp;
   @Log private double transferSpeedProp;
 
-  private final CommandXboxController testController = new CommandXboxController(0);
+  // Track transfer states
+  @Log private boolean ballInMouth = false;
+  @Log private boolean stomachFull = false;
+
 
   public DigestiveSystem() {
 

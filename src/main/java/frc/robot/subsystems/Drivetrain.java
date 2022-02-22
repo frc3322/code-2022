@@ -53,48 +53,52 @@ import java.util.function.DoubleSupplier;
 
 public class Drivetrain extends SubsystemBase implements Loggable {
 
+  // Create motors
   private final CANSparkMax FL = new CANSparkMax(CAN.driveFL, MotorType.kBrushless);
   private final CANSparkMax FR = new CANSparkMax(CAN.driveFR, MotorType.kBrushless);
   private final CANSparkMax BL = new CANSparkMax(CAN.driveBL, MotorType.kBrushless);
   private final CANSparkMax BR = new CANSparkMax(CAN.driveBR, MotorType.kBrushless);
 
+  // Create encoders
   private final RelativeEncoder FL_ENC = FL.getEncoder();
   private final RelativeEncoder FR_ENC = FR.getEncoder();
 
+  // Create gyro
   private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
+  // Create diff drive
   private final DifferentialDrive robotDrive = new DifferentialDrive(FL, FR);
-
-  @Log private double limelightAngleX = 0;
-  @Log private double limelightAngleY = 0;
-
-  private double angleSetpoint = 0;
-
+  
+  // Create odometry
   private final DifferentialDriveOdometry odometry =
       new DifferentialDriveOdometry(gyro.getRotation2d());
 
+  // Controllers
   private final SimpleMotorFeedforward angleFF =
       new SimpleMotorFeedforward(
           Drive.ksAngularVolts,
           Drive.kvAngularVoltSecondsPerRadian,
           Drive.kaAngularVoltSecondsSquaredPerRadian);
 
-  // P = 12, D = 0.06
   private final ProfiledPIDController profiledTurnToAngleController =
       new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(12.0, 8.0));
+      // P = 12, D = 0.06
 
   private final PIDController turnToAngleController = new PIDController(0.15, 0, 0.015);
 
-  // These classes help us simulate our drivetrain
+  // Drivetrain sim
   private DifferentialDrivetrainSim drivetrainSimulator;
   private RelativeEncoderSim leftEncoderSim;
   private RelativeEncoderSim rightEncoderSim;
-  // The Field2d class shows the field in the sim GUI
-  private Field2d fieldSim = new Field2d();
   private SimDouble gyroSim;
 
-  @Log private double rightVoltage = 0;
+  // Field gui
+  private Field2d fieldSim = new Field2d();
 
+  @Log private double limelightAngleX = 0;
+  @Log private double limelightAngleY = 0;
+
+  @Log private double rightVoltage = 0;
   @Log private double leftVoltage = 0;
 
   @Log private double heading;

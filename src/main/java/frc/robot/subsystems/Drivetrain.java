@@ -240,6 +240,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     leftEncoderSim.setVelocity(drivetrainSimulator.getLeftVelocityMetersPerSecond());
     rightEncoderSim.setPosition(drivetrainSimulator.getRightPositionMeters());
     rightEncoderSim.setVelocity(drivetrainSimulator.getRightVelocityMetersPerSecond());
+    
+    leftVel = getWheelSpeeds().leftMetersPerSecond;
+    rightVel = getWheelSpeeds().rightMetersPerSecond;
 
     gyroSim.set(-drivetrainSimulator.getHeading().getDegrees());
 

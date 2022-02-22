@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -28,9 +26,6 @@ public class RobotContainer {
   private final Drivetrain drivetrain = new Drivetrain();
   private final DigestiveSystem digestiveSystem = new DigestiveSystem();
 
-  private final Trajectories trajectories =
-      new Trajectories(drivetrain.getTrajConfig(false), drivetrain.getTrajConfig(true));
-
   // Create controllers
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController testController = new CommandXboxController(1);
@@ -41,7 +36,6 @@ public class RobotContainer {
           () -> drivetrain.arcadeDrive(driverController.getLeftY(), -driverController.getRightX()),
           drivetrain);
 
-
   public RobotContainer() {
 
     // Configuration
@@ -50,19 +44,20 @@ public class RobotContainer {
 
     // Default commands
     drivetrain.setDefaultCommand(driveCommand);
-    
-    // Trajectories
-    drivetrain.putTrajOnFieldWidget(trajectories.tarmacToBall, "Tarmac To Ball");
-    drivetrain.putTrajOnFieldWidget(trajectories.ballToHumanPlayer, "Ball To Human Player");
-    drivetrain.putTrajOnFieldWidget(trajectories.humanPlayerToShoot, "Human Player To Shoot");
-  }
 
+    // Trajectories
+    drivetrain.putTrajOnFieldWidget(Trajectories.fourBallAuto.tarmacToBall, "Tarmac To Ball");
+    drivetrain.putTrajOnFieldWidget(
+        Trajectories.fourBallAuto.ballToHumanPlayer, "Ball To Human Player");
+    drivetrain.putTrajOnFieldWidget(
+        Trajectories.fourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
+  }
 
   private void configureButtonBindings() {
 
     driverController.a().whenHeld(new ShootCommand());
     driverController.rightBumper().whenHeld(digestiveSystem.getIntakeCommand());
-    
+
     driverController
         .y()
         .whenPressed(
@@ -83,27 +78,25 @@ public class RobotContainer {
         .whenReleased(() -> digestiveSystem.setFlywheelVoltage(0));
   }
 
-  
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
         new InstantCommand(() -> drivetrain.resetGyro()),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
-        drivetrain.getRamseteCommand(drivetrain, trajectories.tarmacToBall),
+        drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.tarmacToBall),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
         drivetrain.profiledTurnToAngleCommand(() -> -167),
-        getAutoShootCommand(2),     
+        getAutoShootCommand(2),
         drivetrain.profiledTurnToAngleCommand(() -> -3.4),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
-        drivetrain.getRamseteCommand(drivetrain, trajectories.ballToHumanPlayer),
+        drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.ballToHumanPlayer),
         new WaitCommand(1),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
-        drivetrain.getRamseteCommand(drivetrain, trajectories.humanPlayerToShoot),
+        drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.humanPlayerToShoot),
         drivetrain.profiledTurnToAngleCommand(() -> -180),
         getAutoShootCommand(2));
   }
 
-
-  // Shoot commands        
+  // Shoot commands
 
   private class ShootCommand extends ParallelCommandGroup {
     private final Trigger alignedAndSped =

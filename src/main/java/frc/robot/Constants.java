@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 public final class Constants {
 
@@ -98,6 +101,35 @@ public final class Constants {
     // seconds
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;
+
+    private static final DifferentialDriveVoltageConstraint autoVoltageConstraint =
+        new DifferentialDriveVoltageConstraint(
+            new SimpleMotorFeedforward(
+                Drive.ksVolts, Drive.kvVoltSecondsPerMeter, Drive.kaVoltSecondsSquaredPerMeter),
+            Drive.kKinematics,
+            7);
+
+    // Create config for trajectory
+    public static final TrajectoryConfig config =
+        new TrajectoryConfig(
+                AutoConstants.kMaxSpeedMetersPerSecond,
+                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+            // Add kinematics to ensure max speed is actually obeyed
+            .setKinematics(Drive.kKinematics)
+            // Apply the voltage constraint
+            .addConstraint(autoVoltageConstraint)
+            .setReversed(false);
+
+    // Create reversed config for trajectory
+    public static final TrajectoryConfig reversedConfig =
+        new TrajectoryConfig(
+                AutoConstants.kMaxSpeedMetersPerSecond,
+                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+            // Add kinematics to ensure max speed is actually obeyed
+            .setKinematics(Drive.kKinematics)
+            // Apply the voltage constraint
+            .addConstraint(autoVoltageConstraint)
+            .setReversed(true);
   }
 
   public static class XBOX {

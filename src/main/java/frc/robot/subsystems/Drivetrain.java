@@ -449,8 +449,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     // Run path following command, then stop at the end.
     return new SequentialCommandGroup(
-      new InstantCommand(() -> resetOdometry(trajectory.getInitialPose())),
-      ramseteCommand,
-      new InstantCommand(() -> tankDriveVolts(0, 0)));
+        new InstantCommand(() -> resetOdometry(trajectory.getInitialPose())),
+        ramseteCommand,
+        new InstantCommand(() -> tankDriveVolts(0, 0)));
   }
 }

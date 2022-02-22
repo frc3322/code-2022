@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -27,7 +26,6 @@ import frc.robot.Constants.Shooter;
 import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
 
@@ -58,7 +56,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   // Flywheel sim
   private FlywheelSim flywheelSimulator;
   private RelativeEncoderSim flywheelEncoderSim;
-  
+
   // Flywheel measurements
   @Log private double flywheelVelRPM;
   private double lastFlywheelVelRPM;
@@ -109,7 +107,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     }
   }
 
-  
   // Digestive system commands
 
   public Command getShootCommand(DoubleSupplier limelightAngleY) {
@@ -117,7 +114,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
             () ->
                 supplyFlywheelTargetSpeedRPM(
                     () -> LerpLLYtoRPM.getRPMFromSupplier(limelightAngleY)))
-                    //() -> flywheelTargetVelRPM))
+        // () -> flywheelTargetVelRPM))
         .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
   }
 
@@ -131,9 +128,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
         .withInterrupt(() -> stomachFull);
   }
 
-  
   // Flywheel control set-up methods
-  
+
   public void setFlywheelPID(double P, double I, double D) {
     flywheelPID.setPID(P, I, D);
   }
@@ -146,9 +142,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelTargetVelRPM = RPMsource.getAsDouble();
   }
 
-
   // Methods to calculate control inputs
-  
+
   public void spinUpFlywheelToTargetRPM() {
 
     // Calculate control values
@@ -158,16 +153,14 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
     // Use output
     setFlywheelVoltage(flywheelTotalEffort);
-
   }
 
   private void digestBalls() {
     setTransferSpeedProp(ballInMouth && !stomachFull ? 0.5 : 0);
   }
 
-  
   // Check whether flywheel is within tolerance of setpoint
-  
+
   @Log
   public boolean flywheelAtTargetVelRPM() {
     if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100 && flywheelAccelRPMPerS < 30) {
@@ -177,9 +170,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     }
   }
 
-  
   // Proportional control methods
-  
+
   public void setIntakeSpeedProp(double prop) {
     intake.set(prop);
     intakeSpeedProp = prop;
@@ -194,17 +186,15 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelL.set(speed);
   }
 
-  
   // Voltage control methods
-  
+
   public void setFlywheelVoltage(double voltage) {
     flywheelVoltage = voltage;
     flywheelL.setVoltage(voltage);
   }
-  
 
   // Periodic functions
-  
+
   @Override
   public void periodic() {
 
@@ -214,19 +204,18 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelVelRPM = flywheelEncoder.getVelocity();
     flywheelAccelRPMPerS = accelFilter.calculate((flywheelVelRPM - lastFlywheelVelRPM) / 0.02);
     lastFlywheelVelRPM = flywheelVelRPM;
-
   }
 
   @Override
   public void simulationPeriodic() {
-    
+
     // Set sim inputs
     flywheelSimulator.setInput(flywheelVoltage);
     flywheelSimulator.update(0.020);
 
     // Calculate sim values
     flywheelEncoderSim.setVelocity(flywheelSimulator.getAngularVelocityRPM());
-    
+
     // Update encoder after sim value is set
     flywheelVelRPM = flywheelEncoder.getVelocity();
   }

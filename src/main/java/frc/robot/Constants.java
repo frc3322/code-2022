@@ -16,11 +16,11 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 public final class Constants {
 
   public static final class Shooter {
-    public static final double ksVolts = 0.012354; // 0.012354, -0.033976
+    public static final double ksVolts = 0.10413; // 0.012354, -0.033976
     public static final double kvVoltSecondsPerRotation =
-        0.12655; // 0.012655, 0.13123  / (2 * Math.PI)
+        0.13672; // 0.012655, 0.13123  / (2 * Math.PI)
     public static final double kaVoltSecondsSquaredPerRotation =
-        0.0050103; // 0.00050103, 0.013611  / (2 * Math.PI)
+        0.066727; // 0.00050103, 0.013611  / (2 * Math.PI)
 
     public static final double kvVoltSecondsPerRadian = kvVoltSecondsPerRotation / (2 * Math.PI);
     public static final double kaVoltSecondsSquaredPerRadian =
@@ -68,9 +68,9 @@ public final class Constants {
 
     public static final boolean kGyroReversed = true;
 
-    public static final double ksVolts = 0.20747; // 0.20747   0.22
-    public static final double kvVoltSecondsPerMeter = 2.819; // 2.819 1.98
-    public static final double kaVoltSecondsSquaredPerMeter = 0.30444; // 0.30444  0.2
+    public static final double ksVolts = 0.1474; // 0.20747   0.22
+    public static final double kvVoltSecondsPerMeter = 2.7911; // 2.819 1.98
+    public static final double kaVoltSecondsSquaredPerMeter = 0.68337; // 0.30444  0.2
 
     // TODO: Find these values
 

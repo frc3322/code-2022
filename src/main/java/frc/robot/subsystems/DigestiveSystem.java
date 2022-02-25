@@ -39,6 +39,10 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   private final CANSparkMax transfer = new CANSparkMax(CAN.transfer, MotorType.kBrushless);
   private final CANSparkMax flywheelL = new CANSparkMax(CAN.flywheelL, MotorType.kBrushless);
   private final CANSparkMax flywheelR = new CANSparkMax(CAN.flywheelR, MotorType.kBrushless);
+  private final CANSparkMax intakeExternal =
+      new CANSparkMax(CAN.extIntakeTurn, MotorType.kBrushless);
+  private final CANSparkMax intakeExternalLift =
+      new CANSparkMax(CAN.extIntakeLift, MotorType.kBrushless);
 
   // Create encoders
   private final RelativeEncoder flywheelMotorEncoder = flywheelL.getEncoder();
@@ -98,6 +102,10 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     transfer.setIdleMode(IdleMode.kBrake);
     flywheelL.setIdleMode(IdleMode.kCoast);
     flywheelR.setIdleMode(IdleMode.kCoast);
+    intakeExternal.follow(intake);
+    intakeExternal.setIdleMode(IdleMode.kCoast);
+    intakeExternalLift.setIdleMode(IdleMode.kBrake);
+    // intakeExternalLift.setSmartCurrentLimit(0);
 
     flywheelShaftEncoder.setDistancePerPulse(1. / 2048.);
     flywheelShaftEncoder.setSamplesToAverage(4);
@@ -133,7 +141,21 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   public Command getIntakeCommand() {
-    return new StartEndCommand(() -> setIntakeSpeedProp(0.7), () -> setIntakeSpeedProp(0))
+    return new StartEndCommand(
+            () -> {
+              setIntakeSpeedProp(0.7);
+              new StartEndCommand(
+                      () -> intakeExternalLift.set(-0.5), () -> intakeExternalLift.set(0))
+                  .withTimeout(0.3)
+                  .schedule();
+            },
+            () -> {
+              setIntakeSpeedProp(0);
+              new StartEndCommand(
+                      () -> intakeExternalLift.set(0.5), () -> intakeExternalLift.set(0))
+                  .withTimeout(0.3)
+                  .schedule();
+            })
         .withInterrupt(() -> stomachFull);
   }
 

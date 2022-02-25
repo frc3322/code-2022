@@ -48,7 +48,7 @@ public final class Constants {
     public static final int transfer = 36;
     public static final int intake = 50;
 
-    public static final int extIntakeLift = 50;
+    public static final int extIntakeLift = 69; //TODO: placeholder, give real id
     public static final int extIntakeTurn = 11;
 
     public static final int climberL = 45;

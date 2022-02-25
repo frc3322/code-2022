@@ -81,6 +81,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
         new InstantCommand(() -> drivetrain.resetGyro()),
+        new InstantCommand(() -> drivetrain.resetOdometry(Trajectories.fourBallAuto.tarmacToBall.getInitialPose())),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
         drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.tarmacToBall),
         new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),

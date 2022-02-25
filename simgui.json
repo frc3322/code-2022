@@ -98,6 +98,9 @@
       }
     }
   },
+  "NetworkTables View": {
+    "visible": false
+  },
   "Plot": {
     "Plot <0>": {
       "plots": [

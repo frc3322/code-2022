@@ -102,8 +102,9 @@ public class RobotContainer {
     private final Trigger alignedAndSped =
         new Trigger(
             () ->
-                (drivetrain.getTurnToAngleAtSetpoint()
-                    && digestiveSystem.flywheelAtTargetVelRPM()));
+                (
+                drivetrain.getTurnToAngleAtSetpoint()
+                &&  digestiveSystem.flywheelAtTargetVelRPM()));
 
     private final Command feedCommand =
         new StartEndCommand(
@@ -116,16 +117,21 @@ public class RobotContainer {
     private ShootCommand() {
       addCommands(
           digestiveSystem.getShootCommand(() -> drivetrain.getLimelightAngleY()),
-          drivetrain.getTurnToLimelightCommand().withInterrupt(alignedAndSped),
-          new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0)),
+          drivetrain.getTurnToLimelightCommand()/*.withInterrupt(alignedAndSped)*/,
+          // new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0)),
           waitUntilAlignedAndSpedCommand.andThen(() -> feedCommand.schedule()));
     }
 
     @Override
     public void end(boolean interrupted) {
       feedCommand.cancel();
+      digestiveSystem.setSpinUpFlywheelCustomFreq(false);
       digestiveSystem.setFlywheelVoltage(0);
     }
+  }
+
+  public void spinUpFlywheelCustomFreq() {
+    digestiveSystem.spinUpCustomFreqFunc();
   }
 
   private Command getAutoShootCommand(double duration) {

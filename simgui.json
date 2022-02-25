@@ -79,8 +79,10 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
+      "DigestiveSystem": {
+        "open": true
+      },
       "Drivetrain": {
-        "open": true,
         "setProfiledTurnToAnglePID": {
           "open": false
         }
@@ -95,9 +97,6 @@
         "open": false
       }
     }
-  },
-  "NetworkTables View": {
-    "visible": false
   },
   "Plot": {
     "Plot <0>": {
@@ -133,46 +132,7 @@
     "Plot <1>": {
       "plots": [
         {
-          "axis": [
-            {
-              "autoFit": true
-            }
-          ],
-          "height": 272,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/Shuffleboard/Drivetrain/leftAccel"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/Shuffleboard/Drivetrain/rightAccel"
-            }
-          ]
-        },
-        {
-          "height": 272,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/Shuffleboard/Drivetrain/angAccelDeg"
-            }
-          ]
+          "height": 571
         }
       ]
     }

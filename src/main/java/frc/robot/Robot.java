@@ -28,6 +28,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+    addPeriodic(() -> robotContainer.spinUpFlywheelCustomFreq(), 0.01, 0.005);
     this.setNetworkTablesFlushEnabled(true);
   }
 

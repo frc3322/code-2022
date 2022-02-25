@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,7 +26,10 @@ import frc.robot.Constants.Shooter;
 import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
+
+import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
 public class DigestiveSystem extends SubsystemBase implements Loggable {
@@ -37,14 +41,16 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   private final CANSparkMax flywheelR = new CANSparkMax(CAN.flywheelR, MotorType.kBrushless);
 
   // Create encoders
-  private final RelativeEncoder flywheelEncoder = flywheelL.getEncoder();
+  private final RelativeEncoder flywheelMotorEncoder = flywheelL.getEncoder();
+  private final Encoder flywheelShaftEncoder =
+      new Encoder(4, 3 /*, false, Encoder.EncodingType.k4X*/);
 
   // Create break beam sensors
   private final DigitalInput breakBeamMouth = new DigitalInput(DIO.breakBeamA);
   private final DigitalInput breakBeamStomach = new DigitalInput(DIO.breakBeamB);
 
   // Controllers
-  PIDController flywheelPID = new PIDController(0.00009, 0, 0); // 0.0012
+  PIDController flywheelPID = new PIDController(0.0015, 0, 0); // 0.00009 0.0012
 
   SimpleMotorFeedforward flywheelFF =
       new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRotation);
@@ -57,6 +63,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private double flywheelVelRPM;
   private double lastFlywheelVelRPM;
   @Log private double flywheelAccelRPMPerS;
+  @Log private double flywheelVelRPMShaftEnc;
+  @Log private double flywheelPositionShaftEnc;
 
   private LinearFilter accelFilter = LinearFilter.movingAverage(40);
 
@@ -75,6 +83,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private boolean ballInMouth = false;
   @Log private boolean stomachFull = false;
 
+  private boolean spinFlywheelCustomFreq = false;
+
   public DigestiveSystem() {
 
     // Set up motors
@@ -89,7 +99,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelL.setIdleMode(IdleMode.kCoast);
     flywheelR.setIdleMode(IdleMode.kCoast);
 
-    flywheelR.follow(flywheelL, true);
+    flywheelShaftEncoder.setDistancePerPulse(1. / 2048.);
+    flywheelShaftEncoder.setSamplesToAverage(4);
 
     // Default to auto transfer balls from intake using beam breaks
     setDefaultCommand(new RunCommand(this::digestBalls, this));
@@ -112,8 +123,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
             () ->
                 supplyFlywheelTargetSpeedRPM(
                     () -> LerpLLYtoRPM.getRPMFromSupplier(limelightAngleY)))
-        // () -> flywheelTargetVelRPM))
-        .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
+                    // () -> flywheelTargetVelRPM))
+        .andThen(new RunCommand(() -> setSpinUpFlywheelCustomFreq(true)));
   }
 
   public Command getShooterPurgeCommand() {
@@ -128,10 +139,17 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   // Flywheel control set-up methods
 
+  // @Config
+  public void setSpinUpFlywheelCustomFreq(boolean bool) {
+    spinFlywheelCustomFreq = bool;
+  }
+
+  @Config
   public void setFlywheelPID(double P, double I, double D) {
     flywheelPID.setPID(P, I, D);
   }
 
+  // @Config
   public void setFlywheelTargetVelRPM(double RPM) {
     flywheelTargetVelRPM = RPM;
   }
@@ -145,12 +163,19 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public void spinUpFlywheelToTargetRPM() {
 
     // Calculate control values
-    flywheelFFEffort = flywheelFF.calculate(flywheelTargetVelRPM / 60);
-    flywheelPIDEffort = flywheelPID.calculate(flywheelEncoder.getVelocity(), flywheelTargetVelRPM);
+    flywheelFFEffort = 0.95 * flywheelFF.calculate(flywheelTargetVelRPM / 60);
+    flywheelPIDEffort =
+        flywheelPID.calculate(getFlywheelVelRPM(), flywheelTargetVelRPM);
     flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
 
     // Use output
     setFlywheelVoltage(flywheelTotalEffort);
+  }
+
+  public void spinUpCustomFreqFunc() {
+    if (spinFlywheelCustomFreq) {
+      spinUpFlywheelToTargetRPM();
+    }
   }
 
   private void digestBalls() {
@@ -189,17 +214,32 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public void setFlywheelVoltage(double voltage) {
     flywheelVoltage = voltage;
     flywheelL.setVoltage(voltage);
+    flywheelR.setVoltage(-voltage);
+  }
+
+  // Measurement methods
+
+  @Log
+  public double getFlywheelVelRPM() {
+    return flywheelShaftEncoder.getRate() * 60;
+  }
+
+  @Log
+  public double getFlywheelPosition() {
+    return flywheelShaftEncoder.getDistance();
   }
 
   // Periodic functions
 
   @Override
   public void periodic() {
+    flywheelVelRPMShaftEnc = getFlywheelVelRPM();
+    flywheelPositionShaftEnc = getFlywheelPosition();
 
     // Calculate flywheel measurements
     ballInMouth = !breakBeamMouth.get();
     stomachFull = !breakBeamStomach.get();
-    flywheelVelRPM = flywheelEncoder.getVelocity();
+    flywheelVelRPM = flywheelMotorEncoder.getVelocity();
     flywheelAccelRPMPerS = accelFilter.calculate((flywheelVelRPM - lastFlywheelVelRPM) / 0.02);
     lastFlywheelVelRPM = flywheelVelRPM;
   }
@@ -215,6 +255,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelEncoderSim.setVelocity(flywheelSimulator.getAngularVelocityRPM());
 
     // Update encoder after sim value is set
-    flywheelVelRPM = flywheelEncoder.getVelocity();
+    flywheelVelRPM = flywheelMotorEncoder.getVelocity();
   }
 }

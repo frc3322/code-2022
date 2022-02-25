@@ -16,7 +16,7 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 public final class Constants {
 
   public static final class Shooter {
-    public static final double ksVolts = 0.10413; // 0.012354, -0.033976
+    public static final double ksVolts = 0; // 0.10413 0.012354, -0.033976
     public static final double kvVoltSecondsPerRotation =
         0.13672; // 0.012655, 0.13123  / (2 * Math.PI)
     public static final double kaVoltSecondsSquaredPerRotation =

@@ -272,12 +272,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   // @Config
-  public void arcadeDrive(double speed, double rotation) {
+  public void drive(double speed, double rotation, boolean turnInPlace) {
     SmartDashboard.putNumber("rotation prop", rotation);
-    robotDrive.arcadeDrive(speed, rotation);
+    robotDrive.curvatureDrive(speed, rotation, turnInPlace);
 
     if (Robot.isSimulation()) {
-      WheelSpeeds wheelSpeeds = DifferentialDrive.arcadeDriveIK(speed, rotation, true);
+      WheelSpeeds wheelSpeeds = DifferentialDrive.curvatureDriveIK(speed, rotation, true);
       leftVoltage = wheelSpeeds.left * 12;
       rightVoltage = wheelSpeeds.right * 12;
     }

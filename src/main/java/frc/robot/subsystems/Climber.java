@@ -39,7 +39,7 @@ public class Climber extends SubsystemBase implements Loggable {
     ClimberR.setIdleMode(IdleMode.kBrake);
 
     ClimberL.setInverted(true);
-    ClimberR.follow(ClimberL, true);
+    // ClimberR.follow(ClimberL, true);
 
     ClimberL_ENC = ClimberL.getEncoder();
     // ClimberL_ENC.setPosition(0);

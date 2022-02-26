@@ -141,21 +141,20 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public Command getIntakeCommand() {
     return new StartEndCommand(
             () -> {
-              // intake.setVoltage(8);
-              setIntakeSpeedProp(0.6);
-              // new StartEndCommand(
-              //         () -> intakeExternalLift.setVoltage(-6),
-              //         () -> setIntakeExternalLiftSpeedProp(0))
-              //     .withTimeout(0.3)
-              //     .schedule();
+              intake.setVoltage(8);
+              new StartEndCommand(
+                      () -> intakeExternalLift.setVoltage(-5),
+                      () -> setIntakeExternalLiftSpeedProp(0))
+                  .withTimeout(0.3)
+                  .schedule();
             },
             () -> {
               setIntakeSpeedProp(0);
-              // new StartEndCommand(
-              //         () -> intakeExternalLift.setVoltage(5),
-              //         () -> setIntakeExternalLiftSpeedProp(0))
-              //     .withTimeout(0.4)
-              //     .schedule();
+              new StartEndCommand(
+                      () -> intakeExternalLift.setVoltage(5),
+                      () -> setIntakeExternalLiftSpeedProp(0))
+                  .withTimeout(0.45)
+                  .schedule();
             })
         .withInterrupt(() -> stomachFull);
   }

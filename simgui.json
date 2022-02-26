@@ -18,6 +18,13 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/turnToAngleProfiled": "Command",
       "/SmartDashboard/turnToLimelight": "Command"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {

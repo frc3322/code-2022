@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -32,7 +33,7 @@ public class RobotContainer {
   // Create commands
   private final Command driveCommand =
       new RunCommand(
-          () -> drivetrain.arcadeDrive(driverController.getLeftY(), -driverController.getRightX()),
+          () -> drivetrain.drive(MathUtil.applyDeadband(driverController.getLeftY(), 0.07), MathUtil.applyDeadband(-driverController.getRightX(), 0.07), driverController.leftStick().get()),
           drivetrain);
 
   public RobotContainer() {
@@ -123,8 +124,8 @@ public class RobotContainer {
             waitUntilAlignedAndSpedCommand.andThen(() -> feedCommand.schedule()));
       } else {
         addCommands(
-            digestiveSystem.getShootCommand(() -> 700.0),
-            waitUntilSpedCommand.andThen(() -> feedCommand.schedule()));
+          digestiveSystem.getShootCommand(() -> 1500.0),
+          waitUntilSpedCommand.andThen(() -> feedCommand.schedule()));
       }
     }
 

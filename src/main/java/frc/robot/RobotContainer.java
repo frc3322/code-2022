@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Climber;
@@ -82,9 +81,10 @@ public class RobotContainer {
         .leftBumper()
         .and(testController.rightBumper())
         .whileActiveOnce(
-            new RunCommand(() ->
-                climber.supplyClimbInputs(
-                    () -> testController.getLeftY(), () -> testController.getRightY())))
+            new RunCommand(
+                () ->
+                    climber.supplyClimbInputs(
+                        () -> testController.getLeftY(), () -> testController.getRightY())))
         .whenInactive(() -> climber.climb(0));
   }
 
@@ -101,9 +101,7 @@ public class RobotContainer {
                 (drivetrain.getTurnToAngleAtSetpoint()
                     && digestiveSystem.flywheelAtTargetVelRPM()));
 
-    private final Trigger sped = new Trigger(
-            () ->
-                digestiveSystem.flywheelAtTargetVelRPM());
+    private final Trigger sped = new Trigger(() -> digestiveSystem.flywheelAtTargetVelRPM());
 
     private final Command feedCommand =
         new StartEndCommand(
@@ -116,16 +114,17 @@ public class RobotContainer {
     private final Command waitUntilSpedCommand = new WaitUntilCommand(sped);
 
     private ShootCommand(boolean useLimelight) {
-      if(useLimelight){
+      if (useLimelight) {
         addCommands(
-            digestiveSystem.getShootCommand(() -> LerpLLYtoRPM.getRPMFromSupplier(() -> drivetrain.getLimelightAngleY())),
+            digestiveSystem.getShootCommand(
+                () -> LerpLLYtoRPM.getRPMFromSupplier(() -> drivetrain.getLimelightAngleY())),
             drivetrain.getTurnToLimelightCommand() /*.withInterrupt(alignedAndSped)*/,
             // new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0)),
             waitUntilAlignedAndSpedCommand.andThen(() -> feedCommand.schedule()));
       } else {
         addCommands(
-          digestiveSystem.getShootCommand(() -> 700.0),
-          waitUntilSpedCommand.andThen(() -> feedCommand.schedule()));
+            digestiveSystem.getShootCommand(() -> 700.0),
+            waitUntilSpedCommand.andThen(() -> feedCommand.schedule()));
       }
     }
 
@@ -153,15 +152,15 @@ public class RobotContainer {
           drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.tarmacToBall),
           new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
           drivetrain.profiledTurnToAngleCommand(() -> -167),
-          getAutoShootCommand(2));//,
-          // drivetrain.profiledTurnToAngleCommand(() -> -3.4),
-          // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
-          // drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.ballToHumanPlayer),
-          // new WaitCommand(1),
-          // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
-          // drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.humanPlayerToShoot),
-          // drivetrain.profiledTurnToAngleCommand(() -> -180),
-          // getAutoShootCommand(2));
+          getAutoShootCommand(2)); // ,
+      // drivetrain.profiledTurnToAngleCommand(() -> -3.4),
+      // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
+      // drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.ballToHumanPlayer),
+      // new WaitCommand(1),
+      // new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
+      // drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.humanPlayerToShoot),
+      // drivetrain.profiledTurnToAngleCommand(() -> -180),
+      // getAutoShootCommand(2));
     }
   }
 

@@ -62,10 +62,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final CANSparkMax BL = new CANSparkMax(CAN.driveBL, MotorType.kBrushless);
   private final CANSparkMax BR = new CANSparkMax(CAN.driveBR, MotorType.kBrushless);
 
-
   private final Spark blinkin = new Spark(0);
 
-  
   // Create encoders
   private final RelativeEncoder FL_ENC = FL.getEncoder();
   private final RelativeEncoder FR_ENC = FR.getEncoder();
@@ -220,9 +218,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     xPosition = odometry.getPoseMeters().getX();
     yPosition = odometry.getPoseMeters().getY();
 
-    if(getTurnToAngleAtSetpoint()){
+    if (getTurnToAngleAtSetpoint()) {
       blinkin.set(-0.99);
-    }else{
+    } else {
       blinkin.set(0.83);
     }
 

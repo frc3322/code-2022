@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
-import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
@@ -129,10 +128,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   // Digestive system commands
 
   public Command getShootCommand(DoubleSupplier RPM) {
-    return new InstantCommand(
-            () ->
-                supplyFlywheelTargetSpeedRPM(
-                    RPM))
+    return new InstantCommand(() -> supplyFlywheelTargetSpeedRPM(RPM))
         // () -> flywheelTargetVelRPM))
         .andThen(new RunCommand(() -> setSpinUpFlywheelCustomFreq(true)));
   }

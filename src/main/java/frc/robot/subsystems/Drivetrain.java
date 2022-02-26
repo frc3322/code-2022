@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
@@ -61,6 +62,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final CANSparkMax BL = new CANSparkMax(CAN.driveBL, MotorType.kBrushless);
   private final CANSparkMax BR = new CANSparkMax(CAN.driveBR, MotorType.kBrushless);
 
+
+  private final Spark blinkin = new Spark(0);
+
+  
   // Create encoders
   private final RelativeEncoder FL_ENC = FL.getEncoder();
   private final RelativeEncoder FR_ENC = FR.getEncoder();
@@ -214,6 +219,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     xPosition = odometry.getPoseMeters().getX();
     yPosition = odometry.getPoseMeters().getY();
+
+    if(getTurnToAngleAtSetpoint()){
+      blinkin.set(-0.99);
+    }else{
+      blinkin.set(0.83);
+    }
 
     SmartDashboard.putNumber(
         "TARGET RPM RIGHT HERE LOOK", LerpLLYtoRPM.getRPMFromSupplier(() -> limelightAngleY));

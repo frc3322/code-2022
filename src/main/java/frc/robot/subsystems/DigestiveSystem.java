@@ -28,8 +28,6 @@ import frc.robot.RelativeEncoderSim;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
-
-import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
 public class DigestiveSystem extends SubsystemBase implements Loggable {
@@ -82,6 +80,10 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   // Intake and transfer control inputs
   @Log private double intakeSpeedProp;
   @Log private double transferSpeedProp;
+  @Log private double intakeExternalSpeedProp;
+  @Log private double intakeExternalLiftSpeedProp;
+
+  @Log private double intakeExternalLiftCurrent;
 
   // Track transfer states
   @Log private boolean ballInMouth = false;
@@ -105,7 +107,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     intakeExternal.follow(intake);
     intakeExternal.setIdleMode(IdleMode.kCoast);
     intakeExternalLift.setIdleMode(IdleMode.kBrake);
-    // intakeExternalLift.setSmartCurrentLimit(0);
+    intakeExternalLift.setSmartCurrentLimit(10);
 
     flywheelShaftEncoder.setDistancePerPulse(1. / 2048.);
     flywheelShaftEncoder.setSamplesToAverage(4);
@@ -126,12 +128,12 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   // Digestive system commands
 
-  public Command getShootCommand(DoubleSupplier limelightAngleY) {
+  public Command getShootCommand(DoubleSupplier RPM) {
     return new InstantCommand(
             () ->
                 supplyFlywheelTargetSpeedRPM(
-                    () -> LerpLLYtoRPM.getRPMFromSupplier(limelightAngleY)))
-                    // () -> flywheelTargetVelRPM))
+                    RPM))
+        // () -> flywheelTargetVelRPM))
         .andThen(new RunCommand(() -> setSpinUpFlywheelCustomFreq(true)));
   }
 
@@ -143,18 +145,21 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public Command getIntakeCommand() {
     return new StartEndCommand(
             () -> {
-              setIntakeSpeedProp(0.7);
-              new StartEndCommand(
-                      () -> intakeExternalLift.set(-0.5), () -> intakeExternalLift.set(0))
-                  .withTimeout(0.3)
-                  .schedule();
+              // intake.setVoltage(8);
+              setIntakeSpeedProp(0.6);
+              // new StartEndCommand(
+              //         () -> intakeExternalLift.setVoltage(-6),
+              //         () -> setIntakeExternalLiftSpeedProp(0))
+              //     .withTimeout(0.3)
+              //     .schedule();
             },
             () -> {
               setIntakeSpeedProp(0);
-              new StartEndCommand(
-                      () -> intakeExternalLift.set(0.5), () -> intakeExternalLift.set(0))
-                  .withTimeout(0.3)
-                  .schedule();
+              // new StartEndCommand(
+              //         () -> intakeExternalLift.setVoltage(5),
+              //         () -> setIntakeExternalLiftSpeedProp(0))
+              //     .withTimeout(0.4)
+              //     .schedule();
             })
         .withInterrupt(() -> stomachFull);
   }
@@ -186,8 +191,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
     // Calculate control values
     flywheelFFEffort = 0.95 * flywheelFF.calculate(flywheelTargetVelRPM / 60);
-    flywheelPIDEffort =
-        flywheelPID.calculate(getFlywheelVelRPM(), flywheelTargetVelRPM);
+    flywheelPIDEffort = flywheelPID.calculate(getFlywheelVelRPM(), flywheelTargetVelRPM);
     flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
 
     // Use output
@@ -220,6 +224,16 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public void setIntakeSpeedProp(double prop) {
     intake.set(prop);
     intakeSpeedProp = prop;
+  }
+
+  public void setIntakeExternalSpeedProp(double prop) {
+    intakeExternal.set(prop);
+    intakeExternalSpeedProp = prop;
+  }
+
+  public void setIntakeExternalLiftSpeedProp(double prop) {
+    intakeExternalLift.set(prop);
+    intakeExternalLiftSpeedProp = prop;
   }
 
   public void setTransferSpeedProp(double prop) {
@@ -257,6 +271,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public void periodic() {
     flywheelVelRPMShaftEnc = getFlywheelVelRPM();
     flywheelPositionShaftEnc = getFlywheelPosition();
+
+    intakeExternalLiftCurrent = intakeExternalLift.getOutputCurrent();
 
     // Calculate flywheel measurements
     ballInMouth = !breakBeamMouth.get();

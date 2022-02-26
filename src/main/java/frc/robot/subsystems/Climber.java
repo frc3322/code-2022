@@ -10,9 +10,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.function.DoubleSupplier;
 
-public class Climber extends SubsystemBase {
+public class Climber extends SubsystemBase implements Loggable {
 
   private final CANSparkMax ClimberR = new CANSparkMax(CAN.climberL, MotorType.kBrushless);
   private final CANSparkMax ClimberL = new CANSparkMax(CAN.climberR, MotorType.kBrushless);
@@ -22,6 +24,8 @@ public class Climber extends SubsystemBase {
 
   @Log private double lEncVal;
   @Log private double rEncVal;
+  @Log private double propL;
+  @Log private double propR;
 
   // private final DigitalInput bottomLimit = new DigitalInput(DIO.breakBeamA);
   // private final DigitalInput topLimit = new DigitalInput(DIO.breakBeamB);
@@ -48,15 +52,22 @@ public class Climber extends SubsystemBase {
 
   public void setPropL(double pwr) {
     ClimberL.set(pwr);
+    propL = pwr;
   }
 
   public void setPropR(double pwr) {
     ClimberR.set(pwr);
+    propR = pwr;
   }
 
   public void climb(double pwr) {
     ClimberL.set(pwr);
     ClimberR.set(pwr);
+  }
+
+  public void supplyClimbInputs(DoubleSupplier pwrL, DoubleSupplier pwrR) {
+    setPropL(pwrL.getAsDouble());
+    setPropR(pwrR.getAsDouble());
   }
 
   @Override

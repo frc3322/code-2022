@@ -10,11 +10,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -46,6 +48,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
+import frc.robot.Constants;
 import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
@@ -128,6 +131,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double yPosition;
 
   private LinearFilter accelFilter = LinearFilter.movingAverage(40);
+  SlewRateLimiter accelLimit = new SlewRateLimiter(2);
+  SlewRateLimiter turnLimit = new SlewRateLimiter(2);
 
   @Log private boolean profiledTurnToAngleAtGoal;
 
@@ -272,14 +277,28 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   // @Config
-  public void drive(double speed, double rotation, boolean turnInPlace) {
-    SmartDashboard.putNumber("rotation prop", rotation);
-    robotDrive.curvatureDrive(speed, rotation, turnInPlace);
+  public void drive(double speed, double turn, boolean turnInPlace) {
+
+    turn = 0.5*turn + 0.5*Math.pow(turn, 3);
+
+    WheelSpeeds curveDriveSpeedsProp = DifferentialDrive.curvatureDriveIK(accelLimit.calculate(speed), turn, turnInPlace);
+    double leftVolts = curveDriveSpeedsProp.left * 12;
+    double rightVolts = curveDriveSpeedsProp.right * 12;
+
+    leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
+    rightVolts += Math.copySign(Constants.Drive.ksVolts, rightVolts);
+
+    leftVolts = MathUtil.clamp(leftVolts, -12, 12);
+    rightVolts = MathUtil.clamp(rightVolts, -12, 12);
+
+    SmartDashboard.putNumber("drive test/leftVolts", leftVolts);
+    SmartDashboard.putNumber("drive test/rightVolts", rightVolts);
+
+    tankDriveVolts(leftVolts, rightVolts);
 
     if (Robot.isSimulation()) {
-      WheelSpeeds wheelSpeeds = DifferentialDrive.curvatureDriveIK(speed, rotation, true);
-      leftVoltage = wheelSpeeds.left * 12;
-      rightVoltage = wheelSpeeds.right * 12;
+      leftVoltage = leftVolts;
+      rightVoltage = rightVolts;
     }
   }
 

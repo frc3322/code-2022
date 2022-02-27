@@ -144,7 +144,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
               intake.setVoltage(8);
               new StartEndCommand(
                       () -> intakeExternalLift.setVoltage(-5),
-                      () -> setIntakeExternalLiftSpeedProp(0))
+                      () -> setIntakeExternalLiftSpeedProp(-1))
                   .withTimeout(0.3)
                   .schedule();
             },
@@ -152,7 +152,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
               setIntakeSpeedProp(0);
               new StartEndCommand(
                       () -> intakeExternalLift.setVoltage(5),
-                      () -> setIntakeExternalLiftSpeedProp(0))
+                      () -> intakeExternalLift.setVoltage(0.5))
                   .withTimeout(0.45)
                   .schedule();
             })

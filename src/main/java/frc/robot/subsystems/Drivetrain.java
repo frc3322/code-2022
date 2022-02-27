@@ -221,7 +221,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     if (getTurnToAngleAtSetpoint()) {
       blinkin.set(-0.99);
     } else {
-      blinkin.set(0.83);
+      blinkin.set(0.87);
     }
 
     SmartDashboard.putNumber(

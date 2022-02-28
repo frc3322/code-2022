@@ -77,10 +77,10 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private double flywheelVoltage;
 
   // Intake and transfer control inputs
-  @Log private double intakeSpeedProp;
-  @Log private double transferSpeedProp;
-  @Log private double intakeExternalSpeedProp;
-  @Log private double intakeExternalLiftSpeedProp;
+  @Log private double intakeSpeedVolts;
+  @Log private double transferSpeedVolts;
+  @Log private double intakeExternalSpeedVolts;
+  @Log private double intakeExternalLiftSpeedVolts;
 
   @Log private double intakeExternalLiftCurrent;
 
@@ -140,20 +140,20 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   public Command getIntakeDownCommand() {
     return new StartEndCommand(
-            () -> intakeExternalLift.setVoltage(-5), () -> intakeExternalLift.setVoltage(-1))
-        .alongWith(new InstantCommand(() -> intake.setVoltage(8)))
+            () -> setIntakeExternalLiftSpeedVolts(-5), () -> setIntakeExternalLiftSpeedVolts(-1))
+        .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(8)))
         .withTimeout(0.3);
   }
 
   public Command getIntakeUpCommand() {
     return new StartEndCommand(
-            () -> intakeExternalLift.setVoltage(5), () -> intakeExternalLift.setVoltage(0.75))
-        .alongWith(new InstantCommand(() -> intake.setVoltage(0)))
+            () -> setIntakeExternalLiftSpeedVolts(5), () -> setIntakeExternalLiftSpeedVolts(0.75))
+        .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(0)))
         .withTimeout(0.45);
   }
 
   public Command getIntakeCommand() {
-    return new StartEndCommand(() -> getIntakeDownCommand(), () -> getIntakeUpCommand())
+    return new StartEndCommand(() -> getIntakeDownCommand().schedule(), () -> getIntakeUpCommand().schedule())
         .withInterrupt(() -> stomachFull);
   }
 
@@ -216,22 +216,22 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   public void setIntakeSpeedProp(double prop) {
     intake.set(prop);
-    intakeSpeedProp = prop;
+    intakeSpeedVolts = prop * 12;
   }
 
   public void setIntakeExternalSpeedProp(double prop) {
     intakeExternal.set(prop);
-    intakeExternalSpeedProp = prop;
+    intakeExternalSpeedVolts = prop * 12;
   }
 
   public void setIntakeExternalLiftSpeedProp(double prop) {
     intakeExternalLift.set(prop);
-    intakeExternalLiftSpeedProp = prop;
+    intakeExternalLiftSpeedVolts = prop * 12;
   }
 
   public void setTransferSpeedProp(double prop) {
     transfer.set(prop);
-    transferSpeedProp = prop;
+    transferSpeedVolts = prop * 12;
   }
 
   public void setFlywheelSpeedProp(double speed) {
@@ -239,6 +239,26 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   // Voltage control methods
+
+  public void setIntakeSpeedVolts(double volts) {
+    intake.setVoltage(volts);
+    intakeSpeedVolts = volts;
+  }
+
+  public void setIntakeExternalSpeedVolts(double volts) {
+    intakeExternal.setVoltage(volts);
+    intakeExternalSpeedVolts = volts;
+  }
+
+  public void setIntakeExternalLiftSpeedVolts(double volts) {
+    intakeExternalLift.setVoltage(volts);
+    intakeExternalLiftSpeedVolts = volts;
+  }
+
+  public void setTransferSpeedVolts(double volts) {
+    transfer.setVoltage(volts);
+    transferSpeedVolts = volts;
+  }
 
   public void setFlywheelVoltage(double voltage) {
     flywheelVoltage = voltage;

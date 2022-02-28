@@ -45,10 +45,10 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
-import frc.robot.Constants;
 import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
@@ -279,13 +279,14 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   // @Config
   public void drive(double speed, double turn, boolean turnInPlace) {
 
-    turn = 0.5*turn + 0.5*Math.pow(turn, 3);
+    turn = 0.5 * turn + 0.5 * Math.pow(turn, 3);
 
-    WheelSpeeds curveDriveSpeedsProp = DifferentialDrive.curvatureDriveIK(accelLimit.calculate(speed), turn, turnInPlace);
+    WheelSpeeds curveDriveSpeedsProp =
+        DifferentialDrive.curvatureDriveIK(accelLimit.calculate(speed), turn, turnInPlace);
     double leftVolts = curveDriveSpeedsProp.left * 12;
     double rightVolts = curveDriveSpeedsProp.right * 12;
 
-    if(Robot.isReal()){
+    if (Robot.isReal()) {
       leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
       rightVolts += Math.copySign(Constants.Drive.ksVolts, rightVolts);
     }

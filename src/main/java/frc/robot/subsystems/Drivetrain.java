@@ -89,7 +89,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
           Drive.kaAngularVoltSecondsSquaredPerRadian);
 
   private final ProfiledPIDController profiledTurnToAngleController =
-      new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(12.0, 8.0));
+      new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(10.0, 15.0));
   // P = 12, D = 0.06
 
   private final PIDController turnToAngleController = new PIDController(0.15, 0, 0.015);
@@ -285,8 +285,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double leftVolts = curveDriveSpeedsProp.left * 12;
     double rightVolts = curveDriveSpeedsProp.right * 12;
 
-    leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
-    rightVolts += Math.copySign(Constants.Drive.ksVolts, rightVolts);
+    if(Robot.isReal()){
+      leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
+      rightVolts += Math.copySign(Constants.Drive.ksVolts, rightVolts);
+    }
 
     leftVolts = MathUtil.clamp(leftVolts, -12, 12);
     rightVolts = MathUtil.clamp(rightVolts, -12, 12);
@@ -360,7 +362,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     resetOdometry(new Pose2d(0, 0, new Rotation2d(0)));
   }
 
-  public void resetGyro() {
+  public void resetGyro(double offset) {
+    gyro.setAngleAdjustment(-offset);
     gyro.reset();
   }
 

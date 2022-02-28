@@ -66,7 +66,7 @@ public final class Trajectories {
                         .get(tarmacToBall.getStates().size() - 1)
                         .poseMeters
                         .getTranslation(),
-                    new Rotation2d(0)),
+                    new Rotation2d(Units.degreesToRadians(-12))),
                 new Pose2d(15.051, 6.827, new Rotation2d(Units.degreesToRadians(45)))),
             AutoConstants.config);
 

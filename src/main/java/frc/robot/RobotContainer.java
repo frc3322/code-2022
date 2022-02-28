@@ -185,7 +185,7 @@ public class RobotContainer {
           drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAutoAdjusted.tarmacToBall),
           new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
           drivetrain.profiledTurnToAngleCommand(() -> -143),
-          getAutoShootCommand(1.5),
+          getAutoShootCommand(1.5, false),
           drivetrain.profiledTurnToAngleCommand(
               () ->
                   Trajectories.fourBallAutoAdjusted
@@ -201,12 +201,19 @@ public class RobotContainer {
           drivetrain.getRamseteCommand(
               drivetrain, Trajectories.fourBallAutoAdjusted.humanPlayerToShoot),
           drivetrain.profiledTurnToAngleCommand(() -> -135),
-          getAutoShootCommand(1.5));
+          getAutoShootCommand(1.5, false));
     }
   }
 
-  private Command getAutoShootCommand(double duration) {
-    ParallelRaceGroup autoShootCommand = new ShootCommand().withTimeout(duration);
+  private Command getAutoShootCommand(double duration, boolean useLimelight) {
+    ParallelRaceGroup autoShootCommand;
+
+    if(useLimelight){
+        autoShootCommand = new ShootCommand().withTimeout(duration);
+    } else {
+        autoShootCommand = new ShootCommand(3300).withTimeout(duration);
+    }
+
     return autoShootCommand;
   }
 

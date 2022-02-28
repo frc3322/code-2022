@@ -437,7 +437,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return new InstantCommand(() -> setProfiledTurnToAngleGoalSource(goalSource))
         .andThen(
             new RunCommand(() -> profiledTurnToAngle(), this)
-                .withInterrupt(() -> profiledTurnToAngleController.atGoal()));
+                .withInterrupt(() -> profiledTurnToAngleController.atGoal())).andThen(() -> tankDriveVolts(0, 0));
   }
 
   public void putTrajOnFieldWidget(Trajectory trajectory, String label) {

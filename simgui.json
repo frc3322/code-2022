@@ -33,6 +33,7 @@
       "/LiveWindow/Ungrouped/Spark[0]": "Motor Controller",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Select Autonomous": "String Chooser",
       "/SmartDashboard/turnToAngleProfiled": "Command",
       "/SmartDashboard/turnToLimelight": "Command"
     },
@@ -71,6 +72,11 @@
         "image": "C:\\Users\\twhel\\Downloads\\field.png",
         "units": "inches",
         "width": 16.459199905395508,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Select Autonomous": {
         "window": {
           "visible": true
         }

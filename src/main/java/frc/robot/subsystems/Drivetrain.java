@@ -239,7 +239,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double limelightTY =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
-    double limelightTV = 
+    double limelightTV =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
 
     if (Robot.isReal()) {
@@ -370,12 +370,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   public void resetGyro(double offset) {
     gyro.reset();
-    if(Robot.isReal()){
+    if (Robot.isReal()) {
       gyro.setAngleAdjustment(offset);
     } else {
       gyro.setAngleAdjustment(-offset);
     }
-    
   }
 
   // @Config
@@ -414,7 +413,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return turnToAngleController.atSetpoint();
   }
 
-  //Only for LEDs
+  // Only for LEDs
   public Boolean getLimelightAligned() {
     return Math.abs(limelightAngleX) < 0.8;
   }
@@ -452,7 +451,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return new InstantCommand(() -> setProfiledTurnToAngleGoalSource(goalSource))
         .andThen(
             new RunCommand(() -> profiledTurnToAngle(), this)
-                .withInterrupt(() -> profiledTurnToAngleController.atGoal())).andThen(() -> tankDriveVolts(0, 0));
+                .withInterrupt(() -> profiledTurnToAngleController.atGoal()))
+        .andThen(() -> tankDriveVolts(0, 0));
   }
 
   public void putTrajOnFieldWidget(Trajectory trajectory, String label) {

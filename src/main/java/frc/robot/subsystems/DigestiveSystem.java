@@ -294,7 +294,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelSimulator.update(0.020);
 
     // Calculate sim values
-    flywheelEncoderSim.setRate(flywheelSimulator.getAngularVelocityRPM());
+    flywheelEncoderSim.setRate(flywheelSimulator.getAngularVelocityRPM() / 60);
 
     // Update encoder after sim value is set
     flywheelVelRPMShaftEnc = flywheelShaftEncoder.getRate();

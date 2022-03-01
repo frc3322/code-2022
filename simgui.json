@@ -89,11 +89,6 @@
         "open": true
       },
       "open": true
-    },
-    "SmartDashboard": {
-      "drive test": {
-        "open": true
-      }
     }
   },
   "Plot": {

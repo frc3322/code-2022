@@ -35,8 +35,8 @@ public class RobotContainer {
   private final Command driveCommand =
       new RunCommand(
           () -> {
-            double speed = MathUtil.applyDeadband(driverController.getLeftY(), 0.07);
-            double turn = MathUtil.applyDeadband(-driverController.getRightX(), 0.07);
+            double speed = MathUtil.applyDeadband(-driverController.getLeftY(), 0.07);
+            double turn = MathUtil.applyDeadband(driverController.getRightX(), 0.07);
 
             drivetrain.drive(speed, turn, driverController.leftStick().get());
           },
@@ -185,7 +185,7 @@ public class RobotContainer {
           drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAutoAdjusted.tarmacToBall),
           new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
           drivetrain.profiledTurnToAngleCommand(() -> -143),
-          getAutoShootCommand(1.5, false),
+          getAutoShootCommand(2, false),
           drivetrain.profiledTurnToAngleCommand(
               () ->
                   Trajectories.fourBallAutoAdjusted
@@ -196,12 +196,12 @@ public class RobotContainer {
           new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
           drivetrain.getRamseteCommand(
               drivetrain, Trajectories.fourBallAutoAdjusted.ballToHumanPlayer),
-          new WaitCommand(1),
+          new WaitCommand(2),
           new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
           drivetrain.getRamseteCommand(
               drivetrain, Trajectories.fourBallAutoAdjusted.humanPlayerToShoot),
           drivetrain.profiledTurnToAngleCommand(() -> -135),
-          getAutoShootCommand(1.5, false));
+          getAutoShootCommand(2, false));
     }
   }
 

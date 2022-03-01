@@ -92,7 +92,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
       new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(10.0, 15.0));
   // P = 12, D = 0.06
 
-  private final PIDController turnToAngleController = new PIDController(0.15, 0, 0.015);
+  private final PIDController turnToAngleController = new PIDController(0.15, 0, 0.01);
 
   // Drivetrain sim
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -105,6 +105,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   @Log private double limelightAngleX = 0;
   @Log private double limelightAngleY = 0;
+  @Log private boolean limelightHasTarget;
 
   @Log private double rightVoltage = 0;
   @Log private double leftVoltage = 0;
@@ -223,12 +224,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     xPosition = odometry.getPoseMeters().getX();
     yPosition = odometry.getPoseMeters().getY();
 
-    if (getTurnToAngleAtSetpoint()) {
-      blinkin.set(-0.99);
-    } else {
-      blinkin.set(0.87);
-    }
-
     SmartDashboard.putNumber(
         "TARGET RPM RIGHT HERE LOOK", LerpLLYtoRPM.getRPMFromSupplier(() -> limelightAngleY));
 
@@ -244,9 +239,19 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double limelightTY =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
+    double limelightTV = 
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
+
     if (Robot.isReal()) {
       limelightAngleX = -limelightTX; // llpython[0]
       limelightAngleY = limelightTY; // llpython[1]
+      limelightHasTarget = limelightTV == 0 ? false : true;
+    }
+
+    if (getLimelightAligned() && limelightHasTarget) {
+      blinkin.set(-0.99);
+    } else {
+      blinkin.set(0.87);
     }
 
     heading = getHeading();
@@ -364,8 +369,13 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public void resetGyro(double offset) {
-    gyro.setAngleAdjustment(-offset);
     gyro.reset();
+    if(Robot.isReal()){
+      gyro.setAngleAdjustment(offset);
+    } else {
+      gyro.setAngleAdjustment(-offset);
+    }
+    
   }
 
   // @Config
@@ -402,6 +412,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log
   public Boolean getTurnToAngleAtSetpoint() {
     return turnToAngleController.atSetpoint();
+  }
+
+  //Only for LEDs
+  public Boolean getLimelightAligned() {
+    return Math.abs(limelightAngleX) < 0.8;
   }
 
   // @Config

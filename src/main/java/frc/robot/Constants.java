@@ -90,8 +90,8 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3.2;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 2.75;
+    public static final double kMaxSpeedMetersPerSecond = 3.4;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 2.8;
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and
     // seconds
@@ -103,7 +103,7 @@ public final class Constants {
             new SimpleMotorFeedforward(
                 Drive.ksVolts, Drive.kvVoltSecondsPerMeter, Drive.kaVoltSecondsSquaredPerMeter),
             Drive.kKinematics,
-            8);
+            9);
 
     // Create config for trajectory
     public static final TrajectoryConfig config =
@@ -127,7 +127,7 @@ public final class Constants {
             .addConstraint(autoVoltageConstraint)
             .setReversed(true);
 
-    public static final double flywheelIdleRPM = 2000;
+    public static final double flywheelIdleRPM = 3000;
   }
 
   public static class XBOX {

@@ -191,7 +191,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public void spinUpFlywheelToTargetRPM() {
 
     // Calculate control values
-    flywheelFFEffort = 0.95 * flywheelFF.calculate(flywheelTargetVelRPM / 60);
+    flywheelFFEffort = flywheelFF.calculate(flywheelTargetVelRPM / 60);
+    flywheelFFEffort *= Robot.isSimulation() ? 1 : 0.95;
     flywheelPIDEffort = flywheelPID.calculate(getFlywheelVelRPM(), flywheelTargetVelRPM);
     flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
 

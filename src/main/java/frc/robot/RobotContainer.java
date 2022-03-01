@@ -64,12 +64,13 @@ public class RobotContainer {
 
     // Trajectories
 
-    drivetrain.putTrajOnFieldWidget(
-        Trajectories.fourBallAuto.tarmacToBall, "Tarmac To Ball Adjusted");
-    drivetrain.putTrajOnFieldWidget(
-        Trajectories.fourBallAuto.ballToHumanPlayer, "Ball To Human Player Adjusted");
-    drivetrain.putTrajOnFieldWidget(
-        Trajectories.fourBallAuto.humanPlayerToShoot, "Human Player To Shoot Adjusted");
+    // drivetrain.putTrajOnFieldWidget(
+    //     Trajectories.FourBallAuto.tarmacToBall, "Tarmac To Ball");
+    // drivetrain.putTrajOnFieldWidget(
+    //     Trajectories.FourBallAuto.shootToHumanPlayer, "Shoot To Human Player");
+    // drivetrain.putTrajOnFieldWidget(
+    //     Trajectories.FourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
+    drivetrain.putTrajOnFieldWidget(Trajectories.FourBallAuto.tarmacToShoot, "Tarmac To Shoot");
   }
 
   private void configureButtonBindings() {
@@ -82,12 +83,12 @@ public class RobotContainer {
         .y()
         .whenPressed(
             new InstantCommand(
-                    () -> drivetrain.resetGyro(Trajectories.initPose.getRotation().getDegrees()))
+                    () -> drivetrain.resetGyro(Trajectories.FourBallAuto.initPose.getRotation().getDegrees()))
                 .andThen(
                     () ->
                         drivetrain.resetOdometry(
                             Trajectories
-                                .initPose))); // Trajectories.fourBallAutoAdjusted.ballToHumanPlayer.getStates().get(Trajectories.fourBallAutoAdjusted.ballToHumanPlayer.getStates().size() - 1).poseMeters)));
+                                .FourBallAuto.initPose)));
 
     driverController
         .x()
@@ -209,38 +210,41 @@ public class RobotContainer {
     private FourBallAuto() {
       addCommands(
           new InstantCommand(
-              () -> drivetrain.resetGyro(Trajectories.initPose.getRotation().getDegrees())),
+              () -> drivetrain.resetGyro(Trajectories.FourBallAuto.initPose.getRotation().getDegrees())),
           new InstantCommand(
               () ->
                   drivetrain.resetOdometry(
-                      Trajectories.initPose)),
+                      Trajectories.FourBallAuto.initPose)),
           digestiveSystem.spinUpCommand(() -> AutoConstants.flywheelIdleRPM),
           drivetrain.profiledTurnToAngleCommand(
               () ->
-                  Trajectories.fourBallAuto
+                  Trajectories.FourBallAuto
                       .tarmacToBall
                       .getInitialPose()
                       .getRotation()
                       .getDegrees()),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.tarmacToBall)
+          // drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.tarmacToBall)
+          //   .alongWith(digestiveSystem.getIntakeDownCommand()),
+          // drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.ballToShoot)
+          //   .alongWith(digestiveSystem.getIntakeUpCommand()),
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.tarmacToShoot)
             .alongWith(digestiveSystem.getIntakeDownCommand()),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.ballToShoot)
+          getAutoShootCommand(2, true)
             .alongWith(digestiveSystem.getIntakeUpCommand()),
-          getAutoShootCommand(2, false),
           drivetrain.profiledTurnToAngleCommand(
               () ->
-                  360 + Trajectories.fourBallAuto
-                      .ballToHumanPlayer
+                  360 + Trajectories.FourBallAuto
+                      .shootToHumanPlayer
                       .getInitialPose()
                       .getRotation()
                       .getDegrees()),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.ballToHumanPlayer)
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.shootToHumanPlayer)
             .alongWith(digestiveSystem.getIntakeDownCommand()),
           new WaitCommand(2),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.humanPlayerToShoot)
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.humanPlayerToShoot)
           .alongWith(digestiveSystem.getIntakeUpCommand()),
           drivetrain.profiledTurnToAngleCommand(() -> 240),
-          getAutoShootCommand(2, false),
+          getAutoShootCommand(2, true),
           new InstantCommand(() -> {
             digestiveSystem.setSpinUpFlywheelCustomFreq(false);
             digestiveSystem.setFlywheelVoltage(0);

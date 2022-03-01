@@ -12,9 +12,6 @@ import java.util.List;
 
 public final class Trajectories {
 
-  public static final Pose2d initPose =
-      new Pose2d(new Translation2d(9.764, 5.583), new Rotation2d(Units.degreesToRadians(24)));
-
   public static final Trajectory example =
       TrajectoryGenerator.generateTrajectory(
           // Start at (1, 2) facing the +X direction
@@ -31,7 +28,10 @@ public final class Trajectories {
           List.of(new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(1, 0, new Rotation2d(0))),
           AutoConstants.config);
 
-  public static final class fourBallAuto {
+  public static final class FourBallAuto {
+    public static final Pose2d initPose =
+      new Pose2d(new Translation2d(9.764, 5.583), new Rotation2d(Units.degreesToRadians(24)));
+
     public static final Trajectory tarmacToBall =
         TrajectoryGenerator.generateTrajectory(
             List.of(
@@ -42,22 +42,19 @@ public final class Trajectories {
     public static final Trajectory ballToShoot = 
         TrajectoryGenerator.generateTrajectory(
             List.of(
-                tarmacToBall
-                    .getStates()
-                    .get(tarmacToBall.getStates().size() - 1)
-                    .poseMeters,
+                getLastPose(tarmacToBall),
                 new Pose2d(9.754, 6.844, new Rotation2d(Units.degreesToRadians(-120)))),
             AutoConstants.config);
 
-    public static final Trajectory ballToHumanPlayer =
+    public static final Trajectory tarmacToShoot = 
+        TrajectoryGenerator.generateTrajectory(
+            List.of(tarmacToBall.getInitialPose(), ballToShoot.getInitialPose(), getLastPose(ballToShoot)), AutoConstants.config);
+
+    public static final Trajectory shootToHumanPlayer =
         TrajectoryGenerator.generateTrajectory(
             List.of(
                 new Pose2d(
-                    ballToShoot
-                        .getStates()
-                        .get(ballToShoot.getStates().size() - 1)
-                        .poseMeters
-                        .getTranslation(),
+                    getLastPose(ballToShoot).getTranslation(),
                     new Rotation2d(Units.degreesToRadians(-12))),
                 new Pose2d(15.051, 6.827, new Rotation2d(Units.degreesToRadians(43)))),
             AutoConstants.config);
@@ -65,61 +62,12 @@ public final class Trajectories {
     public static final Trajectory humanPlayerToShoot =
         TrajectoryGenerator.generateTrajectory(
             List.of(
-                ballToHumanPlayer
-                    .getStates()
-                    .get(ballToHumanPlayer.getStates().size() - 1)
-                    .poseMeters,
-                    new Pose2d(9.754, 6.844, new Rotation2d(Units.degreesToRadians(-12)))),
+                getLastPose(shootToHumanPlayer),
+                new Pose2d(getLastPose(ballToShoot).getTranslation(), new Rotation2d(Units.degreesToRadians(-12)))),
             AutoConstants.reversedConfig);
   }
 
-  // Old robot relative 4 ball auto trajectories
-
-  public static final class fourBallAutoOld {
-    public static final Trajectory tarmacToBall =
-        TrajectoryGenerator.generateTrajectory(
-            List.of(
-                new Pose2d(0, 0, new Rotation2d(0)),
-                new Pose2d(1.484, 0.156, new Rotation2d(Units.degreesToRadians(-3.4)))),
-            AutoConstants.config);
-
-    public static final Trajectory ballToHumanPlayer =
-        TrajectoryGenerator.generateTrajectory(
-            List.of(
-                new Pose2d(1.484, 0.156, new Rotation2d(Units.degreesToRadians(-3.4))),
-                new Pose2d(5.533, -0.774, new Rotation2d(Units.degreesToRadians(22.52)))),
-            AutoConstants.config);
-
-    public static final Trajectory humanPlayerToShoot =
-        TrajectoryGenerator.generateTrajectory(
-            List.of(
-                new Pose2d(5.533, -0.774, new Rotation2d(Units.degreesToRadians(22.52))),
-                new Pose2d(1.701, -0.616, new Rotation2d(Units.degreesToRadians(0)))),
-            AutoConstants.reversedConfig);
-  }
-
-  public static final class fourBallAutoTransformed {
-
-    private static final Transform2d transform =
-        new Transform2d(initPose.getTranslation(), initPose.getRotation());
-
-    public static final Trajectory tarmacToBall =
-        fourBallAutoOld.tarmacToBall.transformBy(transform);
-
-    private static final Pose2d initPoseTwo =
-        tarmacToBall.getStates().get(tarmacToBall.getStates().size() - 1).poseMeters;
-    private static final Transform2d transformTwo =
-        new Transform2d(fourBallAutoOld.ballToHumanPlayer.getInitialPose(), initPoseTwo);
-
-    public static final Trajectory ballToHumanPlayer =
-        fourBallAutoOld.ballToHumanPlayer.transformBy(transformTwo);
-
-    private static final Pose2d initPoseThree =
-        ballToHumanPlayer.getStates().get(ballToHumanPlayer.getStates().size() - 1).poseMeters;
-    private static final Transform2d transformThree =
-        new Transform2d(fourBallAutoOld.humanPlayerToShoot.getInitialPose(), initPoseThree);
-
-    public static final Trajectory humanPlayerToShoot =
-        fourBallAutoOld.humanPlayerToShoot.transformBy(transformThree);
+  private static Pose2d getLastPose(Trajectory trajectory){
+      return trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters;
   }
 }

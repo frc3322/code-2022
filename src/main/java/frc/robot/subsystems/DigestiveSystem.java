@@ -25,6 +25,7 @@ import frc.robot.Constants.CAN;
 import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
 import frc.robot.RelativeEncoderSim;
+import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -196,6 +197,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
     // Use output
     setFlywheelVoltage(flywheelTotalEffort);
+
+    updateSim();
   }
 
   public void spinUpCustomFreqFunc() {
@@ -285,6 +288,18 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return flywheelShaftEncoder.getDistance();
   }
 
+  private void updateSim() {
+    // Set sim inputs
+    flywheelSimulator.setInput(flywheelVoltage);
+    flywheelSimulator.update(0.020);
+
+    // Calculate sim values
+    flywheelEncoderSim.setRate(flywheelSimulator.getAngularVelocityRPM());
+
+    // Update encoder after sim value is set
+    flywheelVelRPMShaftEnc = flywheelShaftEncoder.getRate();
+  }
+
   // Periodic functions
 
   @Override
@@ -304,15 +319,5 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Override
   public void simulationPeriodic() {
 
-    // Set sim inputs
-    flywheelSimulator.setInput(flywheelVoltage);
-    flywheelSimulator.update(0.020);
-
-    // Calculate sim values
-    flywheelEncoderSim.setRate(flywheelSimulator.getAngularVelocityRPM());
-
-    // Update encoder after sim value is set
-    flywheelVelRPM = flywheelMotorEncoder.getVelocity();
-    flywheelVelRPMShaftEnc = flywheelSimulator.getAngularVelocityRPM();//getFlywheelVelRPM();
   }
 }

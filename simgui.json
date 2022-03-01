@@ -47,11 +47,19 @@
           "arrows": false,
           "style": "Track"
         },
+        "Ball To Human Player Adjusted": {
+          "arrows": false,
+          "style": "Track"
+        },
         "Human Player To Shoot": {
           "arrows": false,
           "style": "Track"
         },
         "Human Player To Shoot Absolute": {
+          "arrows": false,
+          "style": "Track"
+        },
+        "Human Player To Shoot Adjusted": {
           "arrows": false,
           "style": "Track"
         },
@@ -65,6 +73,10 @@
           "style": "Track"
         },
         "Tarmac To Ball Absolute": {
+          "arrows": false,
+          "style": "Track"
+        },
+        "Tarmac To Ball Adjusted": {
           "arrows": false,
           "style": "Track"
         },

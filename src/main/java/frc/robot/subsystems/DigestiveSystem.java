@@ -198,7 +198,9 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     // Use output
     setFlywheelVoltage(flywheelTotalEffort);
 
-    updateSim();
+    if(Robot.isSimulation()){
+      updateSim();
+    }
   }
 
   public void spinUpCustomFreqFunc() {
@@ -297,7 +299,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelEncoderSim.setRate(flywheelSimulator.getAngularVelocityRPM() / 60);
 
     // Update encoder after sim value is set
-    flywheelVelRPMShaftEnc = flywheelShaftEncoder.getRate();
+    flywheelVelRPMShaftEnc = getFlywheelVelRPM();
   }
 
   // Periodic functions
@@ -318,6 +320,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   @Override
   public void simulationPeriodic() {
-
+    updateSim();
   }
 }

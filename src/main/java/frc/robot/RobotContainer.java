@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DigestiveSystem;
 import frc.robot.subsystems.Drivetrain;
@@ -213,7 +214,7 @@ public class RobotContainer {
               () ->
                   drivetrain.resetOdometry(
                       Trajectories.initPose)),
-          digestiveSystem.spinUpCommand(() -> 2000),
+          digestiveSystem.spinUpCommand(() -> AutoConstants.flywheelIdleRPM),
           drivetrain.profiledTurnToAngleCommand(
               () ->
                   Trajectories.fourBallAuto
@@ -221,10 +222,10 @@ public class RobotContainer {
                       .getInitialPose()
                       .getRotation()
                       .getDegrees()),
-          new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.tarmacToBall),
-          new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.ballToShoot),
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.tarmacToBall)
+            .alongWith(digestiveSystem.getIntakeDownCommand()),
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.ballToShoot)
+            .alongWith(digestiveSystem.getIntakeUpCommand()),
           getAutoShootCommand(2, false),
           drivetrain.profiledTurnToAngleCommand(
               () ->
@@ -233,11 +234,11 @@ public class RobotContainer {
                       .getInitialPose()
                       .getRotation()
                       .getDegrees()),
-          new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.ballToHumanPlayer),
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.ballToHumanPlayer)
+            .alongWith(digestiveSystem.getIntakeDownCommand()),
           new WaitCommand(2),
-          new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0)),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.humanPlayerToShoot),
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.fourBallAuto.humanPlayerToShoot)
+          .alongWith(digestiveSystem.getIntakeUpCommand()),
           drivetrain.profiledTurnToAngleCommand(() -> 240),
           getAutoShootCommand(2, false),
           new InstantCommand(() -> {

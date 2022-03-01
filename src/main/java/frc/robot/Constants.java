@@ -126,6 +126,8 @@ public final class Constants {
             // Apply the voltage constraint
             .addConstraint(autoVoltageConstraint)
             .setReversed(true);
+
+    public static final double flywheelIdleRPM = 2000;
   }
 
   public static class XBOX {

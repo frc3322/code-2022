@@ -90,7 +90,7 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3.0;
+    public static final double kMaxSpeedMetersPerSecond = 2.0;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1.7;
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and
@@ -103,7 +103,7 @@ public final class Constants {
             new SimpleMotorFeedforward(
                 Drive.ksVolts, Drive.kvVoltSecondsPerMeter, Drive.kaVoltSecondsSquaredPerMeter),
             Drive.kKinematics,
-            9);
+            7);
 
     // Create config for trajectory
     public static final TrajectoryConfig config =

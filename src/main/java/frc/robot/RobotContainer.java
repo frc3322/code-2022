@@ -57,7 +57,8 @@ public class RobotContainer {
     // Default commands
     drivetrain.setDefaultCommand(driveCommand);
 
-    autonChooser.setDefaultOption("Two Ball (Positionable)", new TwoBallPositionableAuto());
+    autonChooser.setDefaultOption("Two Ball", new TwoBallAuto());
+    autonChooser.addOption("Two Ball (Positionable)", new TwoBallPositionableAuto());
     autonChooser.addOption("Four Ball", new FourBallAuto());
 
     SmartDashboard.putData("Select Autonomous", autonChooser);
@@ -206,6 +207,33 @@ public class RobotContainer {
     }
   }
 
+  private class TwoBallAuto extends SequentialCommandGroup {
+    private TwoBallAuto() {
+      addCommands(
+          new InstantCommand(
+              () -> drivetrain.resetGyro(Trajectories.FourBallAuto.initPose.getRotation().getDegrees())),
+          new InstantCommand(
+              () ->
+                  drivetrain.resetOdometry(
+                      Trajectories.FourBallAuto.initPose)),
+          drivetrain.profiledTurnToAngleCommand(
+              () ->
+                  Trajectories.FourBallAuto
+                      .tarmacToShoot
+                      .getInitialPose()
+                      .getRotation()
+                      .getDegrees()),
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.tarmacToShoot)
+            .alongWith(digestiveSystem.getIntakeDownCommand()),
+          getAutoShootCommand(4, true)
+            .alongWith(digestiveSystem.getIntakeUpCommand()),
+          new InstantCommand(() -> {
+            digestiveSystem.setSpinUpFlywheelCustomFreq(false);
+            digestiveSystem.setFlywheelVoltage(0);
+          }));
+    }
+  }
+
   private class FourBallAuto extends SequentialCommandGroup {
     private FourBallAuto() {
       addCommands(
@@ -219,7 +247,7 @@ public class RobotContainer {
           drivetrain.profiledTurnToAngleCommand(
               () ->
                   Trajectories.FourBallAuto
-                      .tarmacToBall
+                      .tarmacToShoot
                       .getInitialPose()
                       .getRotation()
                       .getDegrees()),

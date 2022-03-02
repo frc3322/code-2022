@@ -92,7 +92,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
       new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(10.0, 15.0));
   // P = 12, D = 0.06
 
-  private final PIDController turnToAngleController = new PIDController(0.15, 0, 0.01);
+  private final PIDController turnToAngleController = new PIDController(0.16, 0, 0.009);
 
   // Drivetrain sim
   private DifferentialDrivetrainSim drivetrainSimulator;

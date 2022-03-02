@@ -229,7 +229,7 @@ public class RobotContainer {
           //   .alongWith(digestiveSystem.getIntakeUpCommand()),
           drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.tarmacToShoot)
             .alongWith(digestiveSystem.getIntakeDownCommand()),
-          getAutoShootCommand(2, true)
+          getAutoShootCommand(1, true)
             .alongWith(digestiveSystem.getIntakeUpCommand()),
           drivetrain.profiledTurnToAngleCommand(
               () ->
@@ -244,7 +244,7 @@ public class RobotContainer {
           drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.humanPlayerToShoot)
           .alongWith(digestiveSystem.getIntakeUpCommand()),
           drivetrain.profiledTurnToAngleCommand(() -> 240),
-          getAutoShootCommand(2, true),
+          getAutoShootCommand(1, true),
           new InstantCommand(() -> {
             digestiveSystem.setSpinUpFlywheelCustomFreq(false);
             digestiveSystem.setFlywheelVoltage(0);

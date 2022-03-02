@@ -14,6 +14,7 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -145,24 +146,45 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
         .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
   }
 
+  //Only use in auton, volatile when called in succession
   public Command getIntakeDownCommand() {
     return new StartEndCommand(
-            () -> setIntakeExternalLiftSpeedVolts(-5), () -> setIntakeExternalLiftSpeedVolts(-1))
+            () -> setIntakeExternalLiftSpeedVolts(-7), () -> setIntakeExternalLiftSpeedVolts(-2.5))
         .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(8)))
         .withTimeout(0.3);
   }
 
   public Command getIntakeUpCommand() {
     return new StartEndCommand(
-            () -> setIntakeExternalLiftSpeedVolts(5), () -> setIntakeExternalLiftSpeedVolts(0.75))
+            () -> setIntakeExternalLiftSpeedVolts(4), () -> setIntakeExternalLiftSpeedVolts(0))
         .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(0)))
         .withTimeout(0.45);
   }
 
+  //Use this for teleop
   public Command getIntakeCommand() {
     return new StartEndCommand(
-            () -> getIntakeDownCommand().schedule(), () -> getIntakeUpCommand().schedule())
+            () -> {
+              setIntakeSpeedVolts(8);
+              new StartEndCommand(
+                      () -> setIntakeExternalLiftSpeedVolts(-7),
+                      () -> setIntakeExternalLiftSpeedVolts(-2.5))
+                  .withTimeout(0.3)
+                  .schedule();
+            },
+            () -> {
+              setIntakeSpeedVolts(0);
+              new StartEndCommand(
+                      () -> setIntakeExternalLiftSpeedVolts(4),
+                      () -> setIntakeExternalLiftSpeedVolts(0))
+                  .withTimeout(0.45)
+                  .schedule();
+            })
         .withInterrupt(() -> stomachFull);
+  }
+
+  public boolean getStomachFull(){
+    return stomachFull;
   }
 
   // Flywheel control set-up methods
@@ -317,6 +339,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelPositionShaftEnc = getFlywheelPosition();
     flywheelAccelRPMPerS = accelFilter.calculate((flywheelVelRPM - lastFlywheelVelRPM) / 0.02);
     lastFlywheelVelRPM = flywheelVelRPM;
+    
+    
   }
 
   @Override

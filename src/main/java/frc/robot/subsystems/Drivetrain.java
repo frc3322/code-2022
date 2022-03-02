@@ -141,6 +141,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double profiledTurnToAngleAccelSetpoint;
   @Log private double profiledTurnToAngleGoal;
 
+
+
   // Account for different wheel directions between sim and test chassis
   private double wheelDirection = -1;
 
@@ -250,9 +252,13 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (getLimelightAligned() && limelightHasTarget) {
       blinkin.set(-0.99);
-    } else {
+    } 
+    
+    else {
       blinkin.set(0.87);
     }
+
+  
 
     heading = getHeading();
     headingRad = getHeadingRad();

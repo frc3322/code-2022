@@ -44,7 +44,7 @@ public class RobotContainer {
             double speed = MathUtil.applyDeadband(-driverController.getLeftY(), 0.07);
             double turn = MathUtil.applyDeadband(driverController.getRightX(), 0.07);
 
-            drivetrain.drive(speed, turn, driverController.leftStick().get());
+            drivetrain.drive(speed, turn);
           },
           drivetrain);
 

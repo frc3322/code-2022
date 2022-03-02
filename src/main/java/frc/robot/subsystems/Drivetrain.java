@@ -288,12 +288,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   // @Config
-  public void drive(double speed, double turn, boolean turnInPlace) {
+  public void drive(double speed, double turn) {
 
     turn = 0.5 * turn + 0.5 * Math.pow(turn, 3);
 
     WheelSpeeds curveDriveSpeedsProp =
-        DifferentialDrive.curvatureDriveIK(accelLimit.calculate(speed), turn, turnInPlace);
+        DifferentialDrive.arcadeDriveIK(accelLimit.calculate(speed), turn, false);
     double leftVolts = curveDriveSpeedsProp.left * 12;
     double rightVolts = curveDriveSpeedsProp.right * 12;
 

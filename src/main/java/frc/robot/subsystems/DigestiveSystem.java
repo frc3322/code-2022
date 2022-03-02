@@ -179,8 +179,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
                       () -> setIntakeExternalLiftSpeedVolts(0))
                   .withTimeout(0.45)
                   .schedule();
-            })
-        .withInterrupt(() -> stomachFull);
+            });
   }
 
   public boolean getStomachFull(){

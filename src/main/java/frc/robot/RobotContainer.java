@@ -77,7 +77,7 @@ public class RobotContainer {
 
     driverController.rightBumper().whenHeld(new ShootCommand(true));
     driverController.a().whenHeld(new ShootCommand(1500, true));
-    driverController.leftBumper().whenHeld(digestiveSystem.getIntakeCommand());
+    driverController.leftBumper().and(new Trigger(() -> !digestiveSystem.getStomachFull())).whileActiveOnce(digestiveSystem.getIntakeCommand());
 
     testController
         .y()
@@ -110,8 +110,8 @@ public class RobotContainer {
             new RunCommand(
                 () ->
                     climber.supplyClimbInputs(
-                        () -> MathUtil.applyDeadband(secondController.getLeftY(), 0.7),
-                        () -> MathUtil.applyDeadband(secondController.getRightY(), 0.7))))
+                        () -> MathUtil.applyDeadband(secondController.getLeftY(), 0.07),
+                        () -> MathUtil.applyDeadband(secondController.getRightY(), 0.07))))
         .whenInactive(() -> climber.climb(0));
   }
 

@@ -95,8 +95,14 @@ public class RobotContainer {
         .x()
         .whenHeld(
             new StartEndCommand(
-                () -> digestiveSystem.setIntakeSpeedProp(-0.7),
-                () -> digestiveSystem.setIntakeSpeedProp(0),
+                () -> {
+                  digestiveSystem.setIntakeSpeedProp(-0.7);
+                  digestiveSystem.setTransferSpeedProp(-0.5);
+                },
+                () -> {
+                  digestiveSystem.setIntakeSpeedProp(0);
+                  digestiveSystem.setTransferSpeedProp(0);
+                },
                 digestiveSystem));
 
     driverController
@@ -111,8 +117,8 @@ public class RobotContainer {
             new RunCommand(
                 () ->
                     climber.supplyClimbInputs(
-                        () -> MathUtil.applyDeadband(secondController.getLeftY(), 0.07),
-                        () -> MathUtil.applyDeadband(secondController.getRightY(), 0.07))))
+                        () -> MathUtil.applyDeadband(secondController.getRightY(), 0.07),
+                        () -> MathUtil.applyDeadband(secondController.getLeftY(), 0.07))))
         .whenInactive(() -> climber.climb(0));
   }
 

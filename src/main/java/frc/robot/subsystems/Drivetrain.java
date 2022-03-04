@@ -92,7 +92,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
       new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(10.0, 15.0));
   // P = 12, D = 0.06
 
-  private final PIDController turnToAngleController = new PIDController(0.13, 0, 0.003);
+  private final PIDController turnToAngleController = new PIDController(0.18, 0, 0.009);
 
   // Drivetrain sim
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -175,7 +175,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     SmartDashboard.putData("turnToLimelight", (RunCommand) getTurnToLimelightCommand());
     SmartDashboard.putNumber("TurnToAngle/kP", 0);
 
-    turnToAngleController.setTolerance(0.8, 0.1);
+    turnToAngleController.setTolerance(1.1, 0.1);
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);

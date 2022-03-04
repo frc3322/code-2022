@@ -150,7 +150,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public Command getIntakeDownCommand() {
     return new StartEndCommand(
             () -> setIntakeExternalLiftSpeedVolts(-7), () -> setIntakeExternalLiftSpeedVolts(-2.5))
-        .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(8)))
+        .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(10)))
         .withTimeout(0.3);
   }
 

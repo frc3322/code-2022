@@ -77,7 +77,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     driverController.rightBumper().whenHeld(new ShootCommand(true));
-    driverController.a().whenHeld(new ShootCommand(1500, true));
+    driverController.a().whenHeld(new ShootCommand(1250, true));
     driverController.leftBumper().and(new Trigger(() -> !digestiveSystem.getStomachFull())).whileActiveOnce(digestiveSystem.getIntakeCommand());
 
     testController
@@ -120,6 +120,12 @@ public class RobotContainer {
                         () -> MathUtil.applyDeadband(secondController.getRightY(), 0.07),
                         () -> MathUtil.applyDeadband(secondController.getLeftY(), 0.07))))
         .whenInactive(() -> climber.climb(0));
+
+    secondController
+        .y().whenPressed(() -> climber.climb(-0.5)).whenReleased(() -> climber.climb(0));
+
+    secondController
+        .b().whenPressed(() -> climber.climb(0.75)).whenReleased(() -> climber.climb(0));
   }
 
   public Command getAutonomousCommand() {
@@ -189,7 +195,7 @@ public class RobotContainer {
     if (useLimelight) {
       autoShootCommand = new ShootCommand(false).withTimeout(duration);
     } else {
-      autoShootCommand = new ShootCommand(3300, false).withTimeout(duration);
+      autoShootCommand = new ShootCommand(2900, false).withTimeout(duration);
     }
 
     return autoShootCommand;
@@ -204,12 +210,12 @@ public class RobotContainer {
           new InstantCommand(
               () ->
                   drivetrain.resetGyro(
-                      Trajectories.oneMeterForward.getInitialPose().getRotation().getDegrees())),
+                      Trajectories.straightForward.getInitialPose().getRotation().getDegrees())),
           new InstantCommand(
-              () -> drivetrain.resetOdometry(Trajectories.oneMeterForward.getInitialPose())),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.oneMeterForward),
+              () -> drivetrain.resetOdometry(Trajectories.straightForward.getInitialPose())),
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.straightForward),
           drivetrain.profiledTurnToAngleCommand(() -> 180),
-          getAutoShootCommand(2, true));
+          getAutoShootCommand(3, false));
     }
   }
 

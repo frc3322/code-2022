@@ -106,10 +106,11 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     transfer.setIdleMode(IdleMode.kBrake);
     flywheelL.setIdleMode(IdleMode.kCoast);
     flywheelR.setIdleMode(IdleMode.kCoast);
-    intakeExternal.follow(intake);
+    // intakeExternal.follow(intake);
     intakeExternal.setIdleMode(IdleMode.kCoast);
     intakeExternalLift.setIdleMode(IdleMode.kBrake);
     intakeExternalLift.setSmartCurrentLimit(10);
+    
 
     flywheelShaftEncoder.setDistancePerPulse(1. / 2048.);
     flywheelShaftEncoder.setSamplesToAverage(4);
@@ -166,18 +167,20 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return new StartEndCommand(
             () -> {
               setIntakeSpeedVolts(8);
+              setIntakeExternalSpeedVolts(10);
               new StartEndCommand(
                       () -> setIntakeExternalLiftSpeedVolts(-7),
                       () -> setIntakeExternalLiftSpeedVolts(-2.5))
-                  .withTimeout(0.3)
+                  .withTimeout(0.45)
                   .schedule();
             },
             () -> {
               setIntakeSpeedVolts(0);
+              setIntakeExternalSpeedVolts(0);
               new StartEndCommand(
                       () -> setIntakeExternalLiftSpeedVolts(4),
                       () -> setIntakeExternalLiftSpeedVolts(0))
-                  .withTimeout(0.45)
+                  .withTimeout(0.4)
                   .schedule();
             });
   }

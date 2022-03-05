@@ -16,7 +16,7 @@ public class LerpLLYtoRPM {
   private LerpLLYtoRPM() {}
 
   private static final TreeMap<Double, Double> table =
-      new TreeMap<>(Map.ofEntries(entry(8.07, 2750.0), entry(4.95, 2900.0), entry(2.81, 3000.0), entry(1.53, 3250.0)));
+      new TreeMap<>(Map.ofEntries(entry(8.07, 2725.0), entry(4.0, 2870.0), entry(2.81, 3100.0), entry(1.53, 3350.0), entry(-2.0, 3400.0)));
 
   public static Double getRPM(double limelightAngleY) {
     Entry<Double, Double> ceiling = table.ceilingEntry(limelightAngleY);

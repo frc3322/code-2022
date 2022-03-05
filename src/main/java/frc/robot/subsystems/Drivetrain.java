@@ -53,6 +53,7 @@ import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -92,7 +93,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
       new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(10.0, 15.0));
   // P = 12, D = 0.06
 
-  private final PIDController turnToAngleController = new PIDController(0.18, 0, 0.009);
+  private final PIDController turnToAngleController = new PIDController(0.18, 0, 0.007);
 
   // Drivetrain sim
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -141,6 +142,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double profiledTurnToAngleAccelSetpoint;
   @Log private double profiledTurnToAngleGoal;
 
+  private double limelightThreshold = 2.1;
+
 
 
   // Account for different wheel directions between sim and test chassis
@@ -175,12 +178,18 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     SmartDashboard.putData("turnToLimelight", (RunCommand) getTurnToLimelightCommand());
     SmartDashboard.putNumber("TurnToAngle/kP", 0);
 
-    turnToAngleController.setTolerance(1.1, 0.1);
+    turnToAngleController.setTolerance(limelightThreshold, 0.5);
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
 
     robotDrive.setSafetyEnabled(false);
+
+    //set drivetrain current limit to prevent brown out
+    // FL.setSmartCurrentLimit(30, 40);
+    // FR.setSmartCurrentLimit(30, 40);
+    // BL.setSmartCurrentLimit(30, 40);
+    // BR.setSmartCurrentLimit(30, 40);
 
     if (RobotBase.isSimulation()) {
 
@@ -405,7 +414,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public void turnToLimelight() {
-    double PID = turnToAngleController.calculate(getLimelightAngleX(), 0);
+    double PID = turnToAngleController.calculate(getLimelightAngleX(), 3.5);
     double ks = Math.copySign(Constants.Drive.ksVolts, PID);
     double effort = PID + ks;
     tankDriveVolts(effort, -effort);
@@ -423,7 +432,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   // Only for LEDs
   public Boolean getLimelightAligned() {
-    return Math.abs(limelightAngleX) < 0.8;
+    return Math.abs(limelightAngleX) < limelightThreshold;
   }
 
   // @Config

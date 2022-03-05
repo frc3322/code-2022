@@ -57,8 +57,8 @@ public class RobotContainer {
     // Default commands
     drivetrain.setDefaultCommand(driveCommand);
 
-    autonChooser.setDefaultOption("Two Ball", new TwoBallAuto());
-    autonChooser.addOption("Two Ball (Positionable)", new TwoBallPositionableAuto());
+    autonChooser.setDefaultOption("Two Ball (Positionable)", new TwoBallPositionableAuto());
+    autonChooser.addOption("Two Ball", new TwoBallAuto());
     autonChooser.addOption("Four Ball", new FourBallAuto());
 
     SmartDashboard.putData("Select Autonomous", autonChooser);
@@ -125,7 +125,7 @@ public class RobotContainer {
         .y().whenPressed(() -> climber.climb(-0.5)).whenReleased(() -> climber.climb(0));
 
     secondController
-        .b().whenPressed(() -> climber.climb(0.75)).whenReleased(() -> climber.climb(0));
+        .a().whenPressed(() -> climber.climb(0.75)).whenReleased(() -> climber.climb(0));
   }
 
   public Command getAutonomousCommand() {
@@ -193,9 +193,9 @@ public class RobotContainer {
     ParallelRaceGroup autoShootCommand;
 
     if (useLimelight) {
-      autoShootCommand = new ShootCommand(false).withTimeout(duration);
+      autoShootCommand = new ShootCommand(true).withTimeout(duration);
     } else {
-      autoShootCommand = new ShootCommand(2900, false).withTimeout(duration);
+      autoShootCommand = new ShootCommand(2900, true).withTimeout(duration);
     }
 
     return autoShootCommand;
@@ -206,7 +206,8 @@ public class RobotContainer {
   private class TwoBallPositionableAuto extends SequentialCommandGroup {
     private TwoBallPositionableAuto() {
       addCommands(
-          new InstantCommand(() -> digestiveSystem.setIntakeSpeedProp(0.75)),
+          //new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(8)),
+          digestiveSystem.getIntakeDownCommand(),
           new InstantCommand(
               () ->
                   drivetrain.resetGyro(
@@ -214,8 +215,11 @@ public class RobotContainer {
           new InstantCommand(
               () -> drivetrain.resetOdometry(Trajectories.straightForward.getInitialPose())),
           drivetrain.getRamseteCommand(drivetrain, Trajectories.straightForward),
-          drivetrain.profiledTurnToAngleCommand(() -> 180),
-          getAutoShootCommand(3, false));
+          digestiveSystem.getIntakeUpCommand(),
+          drivetrain.profiledTurnToAngleCommand(() -> 170).withTimeout(1),
+          getAutoShootCommand(8, true));
+          //new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
+         
     }
   }
 

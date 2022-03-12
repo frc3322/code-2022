@@ -63,9 +63,9 @@ public class LEDs extends SubsystemBase {
   /** Creates a new LEDs. */
   public LEDs() {
     stateMap.put(Modes.BASE, State.defaultState(SOLIDRED));
-    stateMap.put(Modes.ANGLE_GOOD, State.defaultState(SOLIDGREEN));
-    stateMap.put(Modes.DIST_GOOD, State.defaultState(SOLIDBLUE));
-    stateMap.put(Modes.ANGLE_AND_DIST, State.defaultState(RAINBOW));
+    stateMap.put(Modes.ANGLE_GOOD, State.conditionalState(SOLIDGREEN));
+    stateMap.put(Modes.DIST_GOOD, State.conditionalState(SOLIDBLUE));
+    stateMap.put(Modes.ANGLE_AND_DIST, State.conditionalState(RAINBOW));
   }
 
   public void setCondition(Modes mode, BooleanSupplier condition) {

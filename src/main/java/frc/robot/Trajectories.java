@@ -35,16 +35,30 @@ public final class Trajectories {
     public static final Trajectory tarmacToBall =
         TrajectoryGenerator.generateTrajectory(
             List.of(
-                new Pose2d(initPose.getTranslation(), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(11.3, 5.959, new Rotation2d(Units.degreesToRadians(60.562)))),
+                initPose,
+                new Pose2d(10.823, 6.079, new Rotation2d(Units.degreesToRadians(25.6)))),
             AutoConstants.config);
 
     public static final Trajectory ballToShoot = 
         TrajectoryGenerator.generateTrajectory(
             List.of(
                 getLastPose(tarmacToBall),
-                new Pose2d(9.754, 6.844, new Rotation2d(Units.degreesToRadians(-120)))),
+                new Pose2d(9.693, 6.597, new Rotation2d(Units.degreesToRadians(-120)))),
             AutoConstants.config);
+
+    public static final Trajectory shootToWallBall = 
+        TrajectoryGenerator.generateTrajectory(
+            getLastPose(ballToShoot),
+            List.of(new Translation2d(8.986, 6.625)), 
+            new Pose2d(8.935, 7.5, new Rotation2d(Units.degreesToRadians(90))),
+        AutoConstants.config);
+
+    public static final Trajectory wallBallToShoot = 
+        TrajectoryGenerator.generateTrajectory(
+            getLastPose(shootToWallBall),
+            List.of(new Translation2d(8.986, 6.625)), 
+            getLastPose(ballToShoot),
+        AutoConstants.reversedConfig);
 
     public static final Trajectory tarmacToShoot = 
         TrajectoryGenerator.generateTrajectory(

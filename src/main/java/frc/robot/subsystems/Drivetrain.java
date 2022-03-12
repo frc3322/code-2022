@@ -90,7 +90,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
           Drive.kaAngularVoltSecondsSquaredPerRadian);
 
   private final ProfiledPIDController profiledTurnToAngleController =
-      new ProfiledPIDController(5, 0, 0.001, new TrapezoidProfile.Constraints(10.0, 15.0));
+      new ProfiledPIDController(4, 0, 0.0006, new TrapezoidProfile.Constraints(10.0, 15.0));
   // P = 12, D = 0.06
 
   private final PIDController turnToAngleController = new PIDController(0.18, 0, 0.007);
@@ -179,6 +179,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     SmartDashboard.putNumber("TurnToAngle/kP", 0);
 
     turnToAngleController.setTolerance(limelightThreshold, 0.5);
+    profiledTurnToAngleController.setTolerance(0.5);
 
     // the Field2d class lets us visualize our robot in the simulation GUI.
     SmartDashboard.putData("Field", fieldSim);
@@ -193,7 +194,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (RobotBase.isSimulation()) {
 
-      limelightAngleX = 0;
+      limelightAngleX = 2;
       limelightAngleY = 10; // Reasonable non-zero angle for testing
 
       drivetrainSimulator =
@@ -414,9 +415,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public void turnToLimelight() {
-    double PID = turnToAngleController.calculate(getLimelightAngleX(), 3.5);
+    double PID = turnToAngleController.calculate(getLimelightAngleX(), 0); //3.5
     double ks = Math.copySign(Constants.Drive.ksVolts, PID);
-    double effort = PID + ks;
+    double effort = Robot.isReal() ? PID + 0.5 * ks : PID;
     tankDriveVolts(effort, -effort);
   }
 

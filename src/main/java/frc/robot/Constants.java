@@ -86,11 +86,11 @@ public final class Constants {
     public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
     public static final double kDriveGearing = 10.71; // 8
 
-    public static final double kPVel = 6; // 8.5  1.8422
+    public static final double kPVel = 1.8422; // 8.5  1.8422
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 2.0;
+    public static final double kMaxSpeedMetersPerSecond = 1.5;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1.7;
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and

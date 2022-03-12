@@ -65,8 +65,12 @@
         },
         "Robot": {
           "arrowSize": 61,
-          "length": 0.9067800045013428,
-          "width": 0.9118599891662598
+          "length": 0.9017000198364258,
+          "width": 0.9207500219345093
+        },
+        "Shoot To Wall Ball": {
+          "arrows": false,
+          "style": "Track"
         },
         "Tarmac To Ball": {
           "arrows": false,
@@ -82,10 +86,11 @@
         },
         "Tarmac To Shoot": {
           "arrows": false,
-          "style": "Line"
+          "style": "Track"
         },
         "height": 8.229599952697754,
-        "units": "inches",
+        "image": "C:\\Users\\twhel\\Downloads\\field.png",
+        "units": "meters",
         "width": 16.459199905395508,
         "window": {
           "visible": true

@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
@@ -53,7 +52,6 @@ import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -65,8 +63,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final CANSparkMax FR = new CANSparkMax(CAN.driveFR, MotorType.kBrushless);
   private final CANSparkMax BL = new CANSparkMax(CAN.driveBL, MotorType.kBrushless);
   private final CANSparkMax BR = new CANSparkMax(CAN.driveBR, MotorType.kBrushless);
-
-  private final Spark blinkin = new Spark(0);
 
   // Create encoders
   private final RelativeEncoder FL_ENC = FL.getEncoder();
@@ -144,8 +140,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   private double limelightThreshold = 2.1;
 
-
-
   // Account for different wheel directions between sim and test chassis
   private double wheelDirection = -1;
 
@@ -185,7 +179,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     robotDrive.setSafetyEnabled(false);
 
-    //set drivetrain current limit to prevent brown out
+    // set drivetrain current limit to prevent brown out
     // FL.setSmartCurrentLimit(30, 40);
     // FR.setSmartCurrentLimit(30, 40);
     // BL.setSmartCurrentLimit(30, 40);
@@ -213,6 +207,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
       wheelDirection = 1;
     }
+    LEDs.get()
+        .setCondition(LEDs.Modes.ANGLE_GOOD, () -> getLimelightAligned() && limelightHasTarget);
   }
 
   @Override
@@ -256,18 +252,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     if (Robot.isReal()) {
       limelightAngleX = -limelightTX; // llpython[0]
       limelightAngleY = limelightTY; // llpython[1]
-      limelightHasTarget = limelightTV == 0 ? false : true;
+      limelightHasTarget = limelightTV == 1;
     }
-
-    if (getLimelightAligned() && limelightHasTarget) {
-      blinkin.set(-0.99);
-    } 
-    
-    else {
-      blinkin.set(0.87);
-    }
-
-  
 
     heading = getHeading();
     headingRad = getHeadingRad();

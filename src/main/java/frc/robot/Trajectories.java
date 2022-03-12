@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -30,7 +29,7 @@ public final class Trajectories {
 
   public static final class FourBallAuto {
     public static final Pose2d initPose =
-      new Pose2d(new Translation2d(9.764, 5.583), new Rotation2d(Units.degreesToRadians(24)));
+        new Pose2d(new Translation2d(9.764, 5.583), new Rotation2d(Units.degreesToRadians(24)));
 
     public static final Trajectory tarmacToBall =
         TrajectoryGenerator.generateTrajectory(
@@ -39,21 +38,19 @@ public final class Trajectories {
                 new Pose2d(11.3, 5.959, new Rotation2d(Units.degreesToRadians(60.562)))),
             AutoConstants.config);
 
-    public static final Trajectory ballToShoot = 
+    public static final Trajectory ballToShoot =
         TrajectoryGenerator.generateTrajectory(
             List.of(
                 getLastPose(tarmacToBall),
                 new Pose2d(9.754, 6.844, new Rotation2d(Units.degreesToRadians(-120)))),
             AutoConstants.config);
 
-    public static final Trajectory tarmacToShoot = 
+    public static final Trajectory tarmacToShoot =
         TrajectoryGenerator.generateTrajectory(
             tarmacToBall.getInitialPose(),
-            List.of(
-                ballToShoot.getInitialPose().getTranslation(),
-                new Translation2d(11.0, 6.9)),
-            getLastPose(ballToShoot), AutoConstants.config);
-            
+            List.of(ballToShoot.getInitialPose().getTranslation(), new Translation2d(11.0, 6.9)),
+            getLastPose(ballToShoot),
+            AutoConstants.config);
 
     public static final Trajectory shootToHumanPlayer =
         TrajectoryGenerator.generateTrajectory(
@@ -68,11 +65,13 @@ public final class Trajectories {
         TrajectoryGenerator.generateTrajectory(
             List.of(
                 getLastPose(shootToHumanPlayer),
-                new Pose2d(getLastPose(ballToShoot).getTranslation(), new Rotation2d(Units.degreesToRadians(-12)))),
+                new Pose2d(
+                    getLastPose(ballToShoot).getTranslation(),
+                    new Rotation2d(Units.degreesToRadians(-12)))),
             AutoConstants.reversedConfig);
   }
 
-  private static Pose2d getLastPose(Trajectory trajectory){
-      return trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters;
+  private static Pose2d getLastPose(Trajectory trajectory) {
+    return trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters;
   }
 }

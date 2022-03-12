@@ -51,6 +51,10 @@
           "arrows": false,
           "style": "Track"
         },
+        "Human Player Pickup Balls": {
+          "arrows": false,
+          "style": "Track"
+        },
         "Human Player To Shoot": {
           "arrows": false,
           "style": "Track"
@@ -67,6 +71,16 @@
           "arrowSize": 61,
           "length": 0.9017000198364258,
           "width": 0.9207500219345093
+        },
+        "Shoot To Human Player": {
+          "arrows": false,
+          "color": [
+            0.0,
+            255.0,
+            149.9999542236328,
+            255.0
+          ],
+          "style": "Track"
         },
         "Shoot To Wall Ball": {
           "arrows": false,

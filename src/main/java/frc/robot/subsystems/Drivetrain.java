@@ -191,7 +191,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (RobotBase.isSimulation()) {
 
-      limelightAngleX = 2;
+      limelightAngleX = 0;
       limelightAngleY = 10; // Reasonable non-zero angle for testing
 
       drivetrainSimulator =

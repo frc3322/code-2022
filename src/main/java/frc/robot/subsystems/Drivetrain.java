@@ -53,7 +53,6 @@ import frc.robot.LerpLLYtoRPM;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -144,8 +143,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   private double limelightThreshold = 2.1;
 
-
-
   // Account for different wheel directions between sim and test chassis
   private double wheelDirection = -1;
 
@@ -186,7 +183,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     robotDrive.setSafetyEnabled(false);
 
-    //set drivetrain current limit to prevent brown out
+    // set drivetrain current limit to prevent brown out
     // FL.setSmartCurrentLimit(30, 40);
     // FR.setSmartCurrentLimit(30, 40);
     // BL.setSmartCurrentLimit(30, 40);
@@ -262,13 +259,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (getLimelightAligned() && limelightHasTarget) {
       blinkin.set(-0.99);
-    } 
-    
-    else {
+    } else {
       blinkin.set(0.87);
     }
-
-  
 
     heading = getHeading();
     headingRad = getHeadingRad();
@@ -415,7 +408,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public void turnToLimelight() {
-    double PID = turnToAngleController.calculate(getLimelightAngleX(), 0); //3.5
+    double PID = turnToAngleController.calculate(getLimelightAngleX(), 0); // 3.5
     double ks = Math.copySign(Constants.Drive.ksVolts, PID);
     double effort = Robot.isReal() ? PID + 0.5 * ks : PID;
     tankDriveVolts(effort, -effort);

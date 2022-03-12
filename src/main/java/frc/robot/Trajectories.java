@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -30,44 +29,41 @@ public final class Trajectories {
 
   public static final class FourBallAuto {
     public static final Pose2d initPose =
-      new Pose2d(new Translation2d(9.764, 5.583), new Rotation2d(Units.degreesToRadians(24)));
+        new Pose2d(new Translation2d(9.764, 5.583), new Rotation2d(Units.degreesToRadians(24)));
 
     public static final Trajectory tarmacToBall =
         TrajectoryGenerator.generateTrajectory(
             List.of(
-                initPose,
-                new Pose2d(10.823, 6.079, new Rotation2d(Units.degreesToRadians(25.6)))),
+                initPose, new Pose2d(10.823, 6.079, new Rotation2d(Units.degreesToRadians(25.6)))),
             AutoConstants.config);
 
-    public static final Trajectory ballToShoot = 
+    public static final Trajectory ballToShoot =
         TrajectoryGenerator.generateTrajectory(
             List.of(
                 getLastPose(tarmacToBall),
                 new Pose2d(9.693, 6.597, new Rotation2d(Units.degreesToRadians(-120)))),
             AutoConstants.config);
 
-    public static final Trajectory shootToWallBall = 
+    public static final Trajectory shootToWallBall =
         TrajectoryGenerator.generateTrajectory(
             getLastPose(ballToShoot),
-            List.of(new Translation2d(8.986, 6.625)), 
+            List.of(new Translation2d(8.986, 6.625)),
             new Pose2d(8.935, 7.5, new Rotation2d(Units.degreesToRadians(90))),
-        AutoConstants.config);
+            AutoConstants.config);
 
-    public static final Trajectory wallBallToShoot = 
+    public static final Trajectory wallBallToShoot =
         TrajectoryGenerator.generateTrajectory(
             getLastPose(shootToWallBall),
-            List.of(new Translation2d(8.986, 6.625)), 
+            List.of(new Translation2d(8.986, 6.625)),
             getLastPose(ballToShoot),
-        AutoConstants.reversedConfig);
+            AutoConstants.reversedConfig);
 
-    public static final Trajectory tarmacToShoot = 
+    public static final Trajectory tarmacToShoot =
         TrajectoryGenerator.generateTrajectory(
             tarmacToBall.getInitialPose(),
-            List.of(
-                ballToShoot.getInitialPose().getTranslation(),
-                new Translation2d(11.0, 6.9)),
-            getLastPose(ballToShoot), AutoConstants.config);
-            
+            List.of(ballToShoot.getInitialPose().getTranslation(), new Translation2d(11.0, 6.9)),
+            getLastPose(ballToShoot),
+            AutoConstants.config);
 
     public static final Trajectory shootToHumanPlayer =
         TrajectoryGenerator.generateTrajectory(
@@ -82,11 +78,13 @@ public final class Trajectories {
         TrajectoryGenerator.generateTrajectory(
             List.of(
                 getLastPose(shootToHumanPlayer),
-                new Pose2d(getLastPose(ballToShoot).getTranslation(), new Rotation2d(Units.degreesToRadians(-12)))),
+                new Pose2d(
+                    getLastPose(ballToShoot).getTranslation(),
+                    new Rotation2d(Units.degreesToRadians(-12)))),
             AutoConstants.reversedConfig);
   }
 
-  private static Pose2d getLastPose(Trajectory trajectory){
-      return trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters;
+  private static Pose2d getLastPose(Trajectory trajectory) {
+    return trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters;
   }
 }

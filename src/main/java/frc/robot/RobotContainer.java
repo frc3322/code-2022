@@ -14,10 +14,8 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DigestiveSystem;
 import frc.robot.subsystems.Drivetrain;
@@ -65,32 +63,33 @@ public class RobotContainer {
 
     // Trajectories
 
-    drivetrain.putTrajOnFieldWidget(
-        Trajectories.FourBallAuto.tarmacToBall, "Tarmac To Ball");
+    drivetrain.putTrajOnFieldWidget(Trajectories.FourBallAuto.tarmacToBall, "Tarmac To Ball");
     // drivetrain.putTrajOnFieldWidget(
     //     Trajectories.FourBallAuto.shootToHumanPlayer, "Shoot To Human Player");
     // drivetrain.putTrajOnFieldWidget(
     //     Trajectories.FourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
     drivetrain.putTrajOnFieldWidget(Trajectories.FourBallAuto.tarmacToShoot, "Tarmac To Shoot");
-    drivetrain.putTrajOnFieldWidget(Trajectories.FourBallAuto.shootToWallBall, "Shoot To Wall Ball");
+    drivetrain.putTrajOnFieldWidget(
+        Trajectories.FourBallAuto.shootToWallBall, "Shoot To Wall Ball");
   }
 
   private void configureButtonBindings() {
 
     driverController.rightBumper().whenHeld(new ShootCommand(true));
     driverController.a().whenHeld(new ShootCommand(1250, true));
-    driverController.leftBumper().and(new Trigger(() -> !digestiveSystem.getStomachFull())).whileActiveOnce(digestiveSystem.getIntakeCommand());
+    driverController
+        .leftBumper()
+        .and(new Trigger(() -> !digestiveSystem.getStomachFull()))
+        .whileActiveOnce(digestiveSystem.getIntakeCommand());
 
     testController
         .y()
         .whenPressed(
             new InstantCommand(
-                    () -> drivetrain.resetGyro(Trajectories.FourBallAuto.initPose.getRotation().getDegrees()))
-                .andThen(
                     () ->
-                        drivetrain.resetOdometry(
-                            Trajectories
-                                .FourBallAuto.initPose)));
+                        drivetrain.resetGyro(
+                            Trajectories.FourBallAuto.initPose.getRotation().getDegrees()))
+                .andThen(() -> drivetrain.resetOdometry(Trajectories.FourBallAuto.initPose)));
 
     driverController
         .x()
@@ -123,10 +122,14 @@ public class RobotContainer {
         .whenInactive(() -> climber.climb(0));
 
     secondController
-        .y().whenPressed(() -> climber.climb(-0.5)).whenReleased(() -> climber.climb(0));
+        .y()
+        .whenPressed(() -> climber.climb(-0.5))
+        .whenReleased(() -> climber.climb(0));
 
     secondController
-        .a().whenPressed(() -> climber.climb(0.75)).whenReleased(() -> climber.climb(0));
+        .a()
+        .whenPressed(() -> climber.climb(0.75))
+        .whenReleased(() -> climber.climb(0));
   }
 
   public Command getAutonomousCommand() {
@@ -169,7 +172,7 @@ public class RobotContainer {
 
     private ShootCommand(double RPM, Boolean stopShooterAtEnd) {
       this.stopShooterAtEnd = stopShooterAtEnd;
-      
+
       addCommands(
           digestiveSystem.getShootCommand(() -> RPM),
           waitUntilSpedCommand.andThen(() -> feedCommand.schedule()));
@@ -179,7 +182,7 @@ public class RobotContainer {
     public void end(boolean interrupted) {
       feedCommand.cancel();
 
-      if(stopShooterAtEnd){
+      if (stopShooterAtEnd) {
         digestiveSystem.setSpinUpFlywheelCustomFreq(false);
         digestiveSystem.setFlywheelVoltage(0);
       }
@@ -207,7 +210,7 @@ public class RobotContainer {
   private class TwoBallPositionableAuto extends SequentialCommandGroup {
     private TwoBallPositionableAuto() {
       addCommands(
-          //new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(8)),
+          // new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(8)),
           digestiveSystem.getIntakeDownCommand(),
           new InstantCommand(
               () ->
@@ -219,8 +222,8 @@ public class RobotContainer {
           digestiveSystem.getIntakeUpCommand(),
           drivetrain.profiledTurnToAngleCommand(() -> 170).withTimeout(1),
           getAutoShootCommand(8, true));
-          //new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
-         
+      // new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
+
     }
   }
 
@@ -228,26 +231,25 @@ public class RobotContainer {
     private TwoBallAuto() {
       addCommands(
           new InstantCommand(
-              () -> drivetrain.resetGyro(Trajectories.FourBallAuto.initPose.getRotation().getDegrees())),
-          new InstantCommand(
               () ->
-                  drivetrain.resetOdometry(
-                      Trajectories.FourBallAuto.initPose)),
+                  drivetrain.resetGyro(
+                      Trajectories.FourBallAuto.initPose.getRotation().getDegrees())),
+          new InstantCommand(() -> drivetrain.resetOdometry(Trajectories.FourBallAuto.initPose)),
           drivetrain.profiledTurnToAngleCommand(
               () ->
-                  Trajectories.FourBallAuto
-                      .tarmacToShoot
+                  Trajectories.FourBallAuto.tarmacToShoot
                       .getInitialPose()
                       .getRotation()
                       .getDegrees()),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.tarmacToShoot)
-            .alongWith(digestiveSystem.getIntakeDownCommand()),
-          getAutoShootCommand(4, true)
-            .alongWith(digestiveSystem.getIntakeUpCommand()),
-          new InstantCommand(() -> {
-            digestiveSystem.setSpinUpFlywheelCustomFreq(false);
-            digestiveSystem.setFlywheelVoltage(0);
-          }));
+          drivetrain
+              .getRamseteCommand(drivetrain, Trajectories.FourBallAuto.tarmacToShoot)
+              .alongWith(digestiveSystem.getIntakeDownCommand()),
+          getAutoShootCommand(4, true).alongWith(digestiveSystem.getIntakeUpCommand()),
+          new InstantCommand(
+              () -> {
+                digestiveSystem.setSpinUpFlywheelCustomFreq(false);
+                digestiveSystem.setFlywheelVoltage(0);
+              }));
     }
   }
 
@@ -255,52 +257,54 @@ public class RobotContainer {
     private FourBallAuto() {
       addCommands(
           new InstantCommand(
-              () -> drivetrain.resetGyro(Trajectories.FourBallAuto.initPose.getRotation().getDegrees())),
-          new InstantCommand(
               () ->
-                  drivetrain.resetOdometry(
-                      Trajectories.FourBallAuto.initPose)),
+                  drivetrain.resetGyro(
+                      Trajectories.FourBallAuto.initPose.getRotation().getDegrees())),
+          new InstantCommand(() -> drivetrain.resetOdometry(Trajectories.FourBallAuto.initPose)),
           // digestiveSystem.spinUpCommand(() -> AutoConstants.flywheelIdleRPM),
-          drivetrain.profiledTurnToAngleCommand(
-              () ->
-                  Trajectories.FourBallAuto
-                      .tarmacToShoot
-                      .getInitialPose()
-                      .getRotation()
-                      .getDegrees()).withTimeout(1),
+          drivetrain
+              .profiledTurnToAngleCommand(
+                  () ->
+                      Trajectories.FourBallAuto.tarmacToShoot
+                          .getInitialPose()
+                          .getRotation()
+                          .getDegrees())
+              .withTimeout(1),
           // drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.tarmacToBall)
           //   .alongWith(digestiveSystem.getIntakeDownCommand()),
           // drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.ballToShoot)
           //   .alongWith(digestiveSystem.getIntakeUpCommand()),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.tarmacToShoot)
-            .alongWith(digestiveSystem.getIntakeDownCommand()),
-          getAutoShootCommand(2, true)
-            .alongWith(digestiveSystem.getIntakeUpCommand()),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.shootToWallBall)
-            .alongWith(digestiveSystem.getIntakeDownCommand()),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.wallBallToShoot)
-            .alongWith(digestiveSystem.getIntakeUpCommand()),
-          getAutoShootCommand(2, true));//,
-          // getAutoShootCommand(1, true)
-          //   .alongWith(digestiveSystem.getIntakeUpCommand()),
-          // drivetrain.profiledTurnToAngleCommand(
-          //     () ->
-          //         360 + Trajectories.FourBallAuto
-          //             .shootToHumanPlayer
-          //             .getInitialPose()
-          //             .getRotation()
-          //             .getDegrees()),
-          // drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.shootToHumanPlayer)
-          //   .alongWith(digestiveSystem.getIntakeDownCommand()),
-          // new WaitCommand(2),
-          // drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.humanPlayerToShoot)
-          // .alongWith(digestiveSystem.getIntakeUpCommand()),
-          // drivetrain.profiledTurnToAngleCommand(() -> 240),
-          // getAutoShootCommand(1, true),
-          // new InstantCommand(() -> {
-          //   digestiveSystem.setSpinUpFlywheelCustomFreq(false);
-          //   digestiveSystem.setFlywheelVoltage(0);
-          // }));
+          drivetrain
+              .getRamseteCommand(drivetrain, Trajectories.FourBallAuto.tarmacToShoot)
+              .alongWith(digestiveSystem.getIntakeDownCommand()),
+          getAutoShootCommand(2, true).alongWith(digestiveSystem.getIntakeUpCommand()),
+          drivetrain
+              .getRamseteCommand(drivetrain, Trajectories.FourBallAuto.shootToWallBall)
+              .alongWith(digestiveSystem.getIntakeDownCommand()),
+          drivetrain
+              .getRamseteCommand(drivetrain, Trajectories.FourBallAuto.wallBallToShoot)
+              .alongWith(digestiveSystem.getIntakeUpCommand()),
+          getAutoShootCommand(2, true)); // ,
+      // getAutoShootCommand(1, true)
+      //   .alongWith(digestiveSystem.getIntakeUpCommand()),
+      // drivetrain.profiledTurnToAngleCommand(
+      //     () ->
+      //         360 + Trajectories.FourBallAuto
+      //             .shootToHumanPlayer
+      //             .getInitialPose()
+      //             .getRotation()
+      //             .getDegrees()),
+      // drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.shootToHumanPlayer)
+      //   .alongWith(digestiveSystem.getIntakeDownCommand()),
+      // new WaitCommand(2),
+      // drivetrain.getRamseteCommand(drivetrain, Trajectories.FourBallAuto.humanPlayerToShoot)
+      // .alongWith(digestiveSystem.getIntakeUpCommand()),
+      // drivetrain.profiledTurnToAngleCommand(() -> 240),
+      // getAutoShootCommand(1, true),
+      // new InstantCommand(() -> {
+      //   digestiveSystem.setSpinUpFlywheelCustomFreq(false);
+      //   digestiveSystem.setFlywheelVoltage(0);
+      // }));
     }
   }
 

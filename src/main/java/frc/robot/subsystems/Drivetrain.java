@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
@@ -64,8 +63,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   private final CANSparkMax FR = new CANSparkMax(CAN.driveFR, MotorType.kBrushless);
   private final CANSparkMax BL = new CANSparkMax(CAN.driveBL, MotorType.kBrushless);
   private final CANSparkMax BR = new CANSparkMax(CAN.driveBR, MotorType.kBrushless);
-
-  private final Spark blinkin = new Spark(0);
 
   // Create encoders
   private final RelativeEncoder FL_ENC = FL.getEncoder();
@@ -211,6 +208,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
       wheelDirection = 1;
     }
+    LEDs.get()
+        .setCondition(LEDs.Modes.ANGLE_GOOD, () -> getLimelightAligned() && limelightHasTarget);
   }
 
   @Override
@@ -254,13 +253,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     if (Robot.isReal()) {
       limelightAngleX = -limelightTX; // llpython[0]
       limelightAngleY = limelightTY; // llpython[1]
-      limelightHasTarget = limelightTV == 0 ? false : true;
-    }
-
-    if (getLimelightAligned() && limelightHasTarget) {
-      blinkin.set(-0.99);
-    } else {
-      blinkin.set(0.87);
+      limelightHasTarget = limelightTV == 1;
     }
 
     heading = getHeading();

@@ -5,6 +5,7 @@
       "/LiveWindow/Climber": "Subsystem",
       "/LiveWindow/DigestiveSystem": "Subsystem",
       "/LiveWindow/Drivetrain": "Subsystem",
+      "/LiveWindow/LEDs": "Subsystem",
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
@@ -103,7 +104,6 @@
           "style": "Track"
         },
         "height": 8.229599952697754,
-        "image": "C:\\Users\\twhel\\Downloads\\field.png",
         "units": "meters",
         "width": 16.459199905395508,
         "window": {

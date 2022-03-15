@@ -250,6 +250,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double limelightTV =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
 
+    
     if (Robot.isReal()) {
       limelightAngleX = -limelightTX; // llpython[0]
       limelightAngleY = limelightTY; // llpython[1]
@@ -352,6 +353,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return angAccel;
   }
 
+  public double getLLDistMeters(){
+    double angleToGoalRadians = getLimelightAngleY() * Math.PI/180;
+    double distanceToGoalIN = 71/Math.tan(angleToGoalRadians);
+    return distanceToGoalIN * 0.0254;
+  }
+  
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(
         wheelDirection * FL_ENC.getVelocity(), wheelDirection * FR_ENC.getVelocity());

@@ -510,6 +510,15 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   public Command getRamseteCommand(Drivetrain robotDrive, Trajectory trajectory) {
 
+    var table = NetworkTableInstance.getDefault().getTable("Ramsete Vals");
+    var leftReference = table.getEntry("left_reference");
+    var leftMeasurement = table.getEntry("left_measurement");
+    var rightReference = table.getEntry("right_reference");
+    var rightMeasurement = table.getEntry("right_measurement");
+
+    PIDController leftController = new PIDController(Drive.kPVel, 0, 0);
+    PIDController rightController = new PIDController(Drive.kPVel, 0, 0);
+
     RamseteCommand ramseteCommand =
         new RamseteCommand(
             trajectory,
@@ -519,10 +528,18 @@ public class Drivetrain extends SubsystemBase implements Loggable {
                 Drive.ksVolts, Drive.kvVoltSecondsPerMeter, Drive.kaVoltSecondsSquaredPerMeter),
             Drive.kKinematics,
             robotDrive::getWheelSpeeds,
-            new PIDController(Drive.kPVel, 0, 0),
-            new PIDController(Drive.kPVel, 0, 0),
+            leftController,
+            rightController,
             // RamseteCommand passes volts to the callback
-            robotDrive::tankDriveVolts,
+            (leftVolts, rightVolts) -> {
+              tankDriveVolts(leftVolts, rightVolts);
+
+              leftMeasurement.setNumber(getWheelSpeeds().leftMetersPerSecond);
+              leftReference.setNumber(leftController.getSetpoint());
+
+              rightMeasurement.setNumber(getWheelSpeeds().rightMetersPerSecond);
+              rightReference.setNumber(rightController.getSetpoint());
+            },
             robotDrive);
 
     // Run path following command, then stop at the end.

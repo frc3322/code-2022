@@ -70,10 +70,12 @@ public class RobotContainer {
     // drivetrain.putTrajOnFieldWidget(
     //     Trajectories.FourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
     drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.tarmacToShoot, "Tarmac To Shoot");
-    drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.shootToHumanPlayer, "Shoot To Human Player");
-    drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
-    // drivetrain.putTrajOnFieldWidget(
-    //     Trajectories.FourBallAuto.shootToWallBall, "Shoot To Wall Ball");
+    // drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.shootToHumanPlayer, "Shoot To Human Player");
+    // drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
+    drivetrain.putTrajOnFieldWidget(
+        Trajectories.RightSide.ThreeBallAuto.shootToWallBall, "Shoot To Wall Ball");
+    drivetrain.putTrajOnFieldWidget(
+      Trajectories.RightSide.ThreeBallAuto.wallBallToShoot, "Wall Ball To Shoot");
   }
 
   private void configureButtonBindings() {

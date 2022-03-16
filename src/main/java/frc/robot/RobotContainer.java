@@ -75,9 +75,13 @@ public class RobotContainer {
     // drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.tarmacToShoot, "Tarmac To Shoot");
     // drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.shootToHumanPlayer, "Shoot To Human Player");
     // drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
-    // drivetrain.putTrajOnFieldWidget(
-    //     Trajectories.FourBallAuto.shootToWallBall, "Shoot To Wall Ball");
+    // drivetrain.putTrajOnFieldWidget(Trajectories.FourBallAuto.shootToWallBall, "Shoot To Wall Ball");
     // drivetrain.putTrajOnFieldWidget(Trajectories.AltFourBall.goToWallBall, "Go to wall ball");
+
+    drivetrain.putTrajOnFieldWidget(Trajectories.AltFourBall.initToWallToShoot, "InitToWallBallToShoot");
+    drivetrain.putTrajOnFieldWidget(Trajectories.AltFourBall.shootToOutsideTarmacToHPS, "shootToOutsideTarmacToHPS");
+    drivetrain.putTrajOnFieldWidget(Trajectories.AltFourBall.HPSToFinalShoot, "HPSToFinalShoot");
+    
   }
 
   private void configureButtonBindings() {
@@ -274,12 +278,12 @@ public class RobotContainer {
     }
   }
 
-  //Adi's 4 ball auto
-  //Adjust 1st arc
-  //Straighten path from shoot to HPS and back
-  //drive faster
-  //get really coords from field asap
-  //visit thors moms house
+  /*TODO:
+  Adjust 1st arc
+  Straighten path from shoot to HPS and back
+  drive faster, DONE, test on ground
+  get real coords from field asap
+  visit thors moms house immediately */
 
   private class AltFourBallAuto extends SequentialCommandGroup {
 
@@ -289,6 +293,7 @@ public class RobotContainer {
           () ->
           drivetrain.resetGyro(Trajectories.AltFourBall.initPose.getRotation().getDegrees())),
           new InstantCommand(() -> drivetrain.resetOdometry(Trajectories.AltFourBall.initPose)),
+          
           drivetrain
               .getRamseteCommand(drivetrain, Trajectories.AltFourBall.initToWallToShoot)
               .alongWith(digestiveSystem.getIntakeDownCommand()),

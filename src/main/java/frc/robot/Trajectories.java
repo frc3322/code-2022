@@ -83,10 +83,52 @@ public final class Trajectories {
               List.of(new Translation2d(8.986, 6.625)),
               getLastPose(ballToShoot),
               AutoConstants.reversedConfig);
+
+    //   public static final Trajectory tarmacToWallBall = null;
+    //   //wallBallToShoot
+    //   public static final Trajectory wallBallShootToHPS = null;
+    //   public static final Trajectory HPSToFinalShoot = null;
+
+    
     }
   }
 
   private static Pose2d getLastPose(Trajectory trajectory) {
     return trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters;
   }
+
+  
+  public static final class AltFourBall {
+
+    public static final Pose2d initPose =
+    new Pose2d(new Translation2d(7.728, 6.372), new Rotation2d(Units.degreesToRadians(90)));
+
+    public static final Trajectory initToWallToShoot = TrajectoryGenerator.generateTrajectory(
+      List.of(initPose, new Pose2d(8.372, 7.632, new Rotation2d(Units.degreesToRadians(16))), new Pose2d(9.529,6.132, new Rotation2d(Units.degreesToRadians(-123)))),
+      AutoConstants.config);
+
+    public static final Trajectory shootToOutsideTarmacToHPS = TrajectoryGenerator.generateTrajectory(
+        List.of(getLastPose(initToWallToShoot), new Pose2d(10.793,6.405, new Rotation2d(Units.degreesToRadians(-360))),new Pose2d(14.676,6.717, new Rotation2d(Units.degreesToRadians(37)))),
+        AutoConstants.config);
+
+    public static final Trajectory HPSToFinalShoot = TrajectoryGenerator.generateTrajectory(
+        List.of(getLastPose(shootToOutsideTarmacToHPS), new Pose2d(9.729,5.893, new Rotation2d(Units.degreesToRadians(37)))),
+        AutoConstants.reversedConfig);
+    
+    //not needed
+    // public static final Trajectory goToWallBall = TrajectoryGenerator.generateTrajectory(
+    //   List.of(altinitPose, new Pose2d(8.372, 7.632, new Rotation2d(Units.degreesToRadians(16)))),
+    //   AutoConstants.config); 
+   
+    //not needed
+    // public static final Trajectory FinalShootPos = TrajectoryGenerator.generateTrajectory(
+    //     List.of(getLastPose(HPSToFinalShoot), new Pose2d(9.728,5.892, new Rotation2d(Units.degreesToRadians(-130)))),
+    //     AutoConstants.config);
+
+    //not needed
+    // public static final Trajectory tarmacToHPS = TrajectoryGenerator.generateTrajectory(
+    //     List.of(getLastPose(shootToOutsideTarmac), new Pose2d(14.651,6.754, new Rotation2d(Units.degreesToRadians(-320)))),
+    //     AutoConstants.config);
+
+    }
 }

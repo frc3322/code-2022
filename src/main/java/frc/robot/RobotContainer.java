@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +22,7 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DigestiveSystem;
 import frc.robot.subsystems.Drivetrain;
 import io.github.oblarg.oblog.Logger;
+import frc.robot.Trajectories.*;
 
 public class RobotContainer {
 
@@ -59,6 +61,7 @@ public class RobotContainer {
     autonChooser.setDefaultOption("Two Ball (Positionable)", new TwoBallPositionableAuto());
     autonChooser.addOption("Three Ball", new ThreeBallAuto());
     autonChooser.addOption("Four Ball", new FourBallAuto());
+    autonChooser.addOption("Alt Four Ball", new AltFourBallAuto());
 
     SmartDashboard.putData("Select Autonomous", autonChooser);
 
@@ -69,11 +72,12 @@ public class RobotContainer {
     //     Trajectories.FourBallAuto.shootToHumanPlayer, "Shoot To Human Player");
     // drivetrain.putTrajOnFieldWidget(
     //     Trajectories.FourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
-    drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.tarmacToShoot, "Tarmac To Shoot");
-    drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.shootToHumanPlayer, "Shoot To Human Player");
-    drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
+    // drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.tarmacToShoot, "Tarmac To Shoot");
+    // drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.shootToHumanPlayer, "Shoot To Human Player");
+    // drivetrain.putTrajOnFieldWidget(Trajectories.RightSide.FourBallAuto.humanPlayerToShoot, "Human Player To Shoot");
     // drivetrain.putTrajOnFieldWidget(
     //     Trajectories.FourBallAuto.shootToWallBall, "Shoot To Wall Ball");
+    // drivetrain.putTrajOnFieldWidget(Trajectories.AltFourBall.goToWallBall, "Go to wall ball");
   }
 
   private void configureButtonBindings() {
@@ -267,6 +271,37 @@ public class RobotContainer {
           drivetrain.getRamseteCommand(drivetrain, Trajectories.RightSide.FourBallAuto.humanPlayerToShoot)
             .alongWith(digestiveSystem.getIntakeUpCommand()),
           getAutoShootCommand(2, true));
+    }
+  }
+
+  //Adi's 4 ball auto
+  //Adjust 1st arc
+  //Straighten path from shoot to HPS and back
+  //drive faster
+  //get really coords from field asap
+  //visit thors moms house
+
+  private class AltFourBallAuto extends SequentialCommandGroup {
+
+    private AltFourBallAuto() {
+      addCommands(
+        new InstantCommand(
+          () ->
+          drivetrain.resetGyro(Trajectories.AltFourBall.initPose.getRotation().getDegrees())),
+          new InstantCommand(() -> drivetrain.resetOdometry(Trajectories.AltFourBall.initPose)),
+          drivetrain
+              .getRamseteCommand(drivetrain, Trajectories.AltFourBall.initToWallToShoot)
+              .alongWith(digestiveSystem.getIntakeDownCommand()),
+          getAutoShootCommand(2, true),
+          drivetrain
+              .getRamseteCommand(drivetrain, Trajectories.AltFourBall.shootToOutsideTarmacToHPS),
+          drivetrain
+              .getRamseteCommand(drivetrain, Trajectories.AltFourBall.HPSToFinalShoot)
+              .alongWith(digestiveSystem.getIntakeUpCommand()),
+          drivetrain.profiledTurnToAngleCommand(() -> -140).withTimeout(1),
+          getAutoShootCommand(2, true)
+              
+        );
     }
   }
 

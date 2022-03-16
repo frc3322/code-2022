@@ -1,4 +1,13 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [30]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -22,6 +31,8 @@
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[20]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[21]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[22]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[23]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
@@ -42,19 +53,19 @@
       "/SmartDashboard/Field": {
         "Ball To Human Player": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Ball To Human Player Absolute": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Ball To Human Player Adjusted": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Human Player Pickup Balls": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Human Player To Shoot": {
           "arrows": false,
@@ -62,50 +73,42 @@
         },
         "Human Player To Shoot Absolute": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Human Player To Shoot Adjusted": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Robot": {
-          "arrowSize": 61,
-          "length": 0.9017000198364258,
-          "width": 0.9207500219345093
+          "selectable": false
         },
         "Shoot To Human Player": {
           "arrows": false,
-          "color": [
-            0.0,
-            255.0,
-            149.9999542236328,
-            255.0
-          ],
+          "selectable": false,
           "style": "Track"
         },
         "Shoot To Wall Ball": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Tarmac To Ball": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Tarmac To Ball Absolute": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Tarmac To Ball Adjusted": {
           "arrows": false,
-          "style": "Track"
+          "style": ""
         },
         "Tarmac To Shoot": {
           "arrows": false,
+          "selectable": false,
           "style": "Track"
         },
-        "height": 8.229599952697754,
-        "units": "meters",
-        "width": 16.459199905395508,
+        "image": "C:\\Users\\advai\\Desktop\\field.jpg",
         "window": {
           "visible": true
         }
@@ -119,42 +122,10 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
-      "DigestiveSystem": {
+      "Drivetrain": {
         "open": true
       },
       "open": true
-    }
-  },
-  "Plot": {
-    "Plot <0>": {
-      "plots": [
-        {
-          "height": 385,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/drive test/turnAfterScale"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/drive test/turnBeforeScale"
-            }
-          ]
-        }
-      ],
-      "window": {
-        "visible": false
-      }
     }
   }
 }

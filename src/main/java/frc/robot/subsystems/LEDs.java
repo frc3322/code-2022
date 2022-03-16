@@ -47,6 +47,7 @@ public class LEDs extends SubsystemBase {
     ANGLE_AND_DIST
   }
 
+  // Color constants here: https://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf 
   private final double SOLIDRED = 0.61;
   private final double SOLIDBLUE = 0.85;
   private final double SOLIDGREEN = 0.71;
@@ -69,7 +70,6 @@ public class LEDs extends SubsystemBase {
   }
 
   public void setCondition(Modes mode, BooleanSupplier condition) {
-    if (!stateMap.containsKey(mode)) return;
     stateMap.get(mode).setCondition(condition);
   }
 

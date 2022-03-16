@@ -71,9 +71,9 @@ public final class Constants {
 
     public static final boolean kGyroReversed = true;
 
-    public static final double ksVolts = 0.1474; // 0.20747   0.22
-    public static final double kvVoltSecondsPerMeter = 2.7911; // 2.819 1.98
-    public static final double kaVoltSecondsSquaredPerMeter = 0.68337; // 0.30444  0.2
+    public static final double ksVolts = 0.1474; // 0.1474
+    public static final double kvVoltSecondsPerMeter = 2.4; // 2.7911
+    public static final double kaVoltSecondsSquaredPerMeter = 0.68337; // 0.68337
 
     // TODO: Find these values
 
@@ -86,7 +86,7 @@ public final class Constants {
     public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
     public static final double kDriveGearing = 10.71; // 8
 
-    public static final double kPVel = 1.8422; // 8.5  1.8422
+    public static final double kPVel = 1.9; // 1.8422
   }
 
   public static final class AutoConstants {

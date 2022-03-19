@@ -26,6 +26,7 @@ import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
 
@@ -36,6 +37,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   private final CANSparkMax transfer = new CANSparkMax(CAN.transfer, MotorType.kBrushless);
   private final CANSparkMax flywheelL = new CANSparkMax(CAN.flywheelL, MotorType.kBrushless);
   private final CANSparkMax flywheelR = new CANSparkMax(CAN.flywheelR, MotorType.kBrushless);
+  private final CANSparkMax kicker = new CANSparkMax(CAN.kicker, MotorType.kBrushless);
   private final CANSparkMax intakeExternal =
       new CANSparkMax(CAN.extIntakeTurn, MotorType.kBrushless);
   private final CANSparkMax intakeExternalLift =
@@ -46,26 +48,34 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   private final Encoder flywheelShaftEncoder =
       new Encoder(4, 3 /*, false, Encoder.EncodingType.k4X*/);
 
+  private final Encoder kickerShaftEncoder =
+      new Encoder(6, 5);
+
   // Create break beam sensors
   private final DigitalInput breakBeamMouth = new DigitalInput(DIO.breakBeamA);
   private final DigitalInput breakBeamStomach = new DigitalInput(DIO.breakBeamB);
 
   // Controllers
-  PIDController flywheelPID = new PIDController(0.0015, 0, 0); // 0.00009 0.0012
+  PIDController flywheelPID = new PIDController(Shooter.Flywheel.kPVel, 0, 0); // 0.00009 0.0012
 
   SimpleMotorFeedforward flywheelFF =
-      new SimpleMotorFeedforward(Shooter.ksVolts, Shooter.kvVoltSecondsPerRotation);
+      new SimpleMotorFeedforward(Shooter.Flywheel.ksVolts, Shooter.Flywheel.kvVoltSecondsPerRotation);
+
+  PIDController kickerPID = new PIDController(Shooter.Kicker.kPVel, 0, 0);
+
+  SimpleMotorFeedforward kickerFF =
+      new SimpleMotorFeedforward(Shooter.Kicker.ksVolts, Shooter.Kicker.kvVoltSecondsPerRotation);
 
   // Flywheel sim
   private FlywheelSim flywheelSimulator;
   private EncoderSim flywheelEncoderSim;
 
   // Flywheel measurements
-  @Log private double flywheelVelRPM;
-  private double lastFlywheelVelRPM;
-  @Log private double flywheelAccelRPMPerS;
-  @Log private double flywheelVelRPMShaftEnc;
-  @Log private double flywheelPositionShaftEnc;
+  // @Log private double flywheelVelRPM;
+  // private double lastFlywheelVelRPM;
+  // @Log private double flywheelAccelRPMPerS;
+  // @Log private double flywheelVelRPMShaftEnc;
+  // @Log private double flywheelPositionShaftEnc;
 
   private LinearFilter accelFilter = LinearFilter.movingAverage(40);
 
@@ -75,6 +85,13 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   @Log private double flywheelPIDEffort;
   @Log private double flywheelTotalEffort;
   @Log private double flywheelVoltage;
+
+  // Kicker control inputs
+  @Log private double kickerTargetVelRPM = Shooter.Kicker.kKickerVelRPM;
+  @Log private double kickerFFEffort;
+  @Log private double kickerPIDEffort;
+  @Log private double kickerTotalEffort;
+  @Log private double kickerVoltage;
 
   // Intake and transfer control inputs
   @Log private double intakeSpeedVolts;
@@ -97,29 +114,33 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     transfer.restoreFactoryDefaults();
     flywheelL.restoreFactoryDefaults();
     flywheelR.restoreFactoryDefaults();
+    kicker.restoreFactoryDefaults();
 
     intake.setIdleMode(IdleMode.kCoast);
     intake.setInverted(true);
     transfer.setIdleMode(IdleMode.kBrake);
     flywheelL.setIdleMode(IdleMode.kCoast);
     flywheelR.setIdleMode(IdleMode.kCoast);
-    // intakeExternal.follow(intake);
+    kicker.setIdleMode(IdleMode.kCoast);
     intakeExternal.setIdleMode(IdleMode.kCoast);
     intakeExternalLift.setIdleMode(IdleMode.kBrake);
-    intakeExternalLift.setSmartCurrentLimit(10);
+    intakeExternalLift.setSmartCurrentLimit(15);
 
+    // Config encoders
     flywheelShaftEncoder.setDistancePerPulse(1. / 2048.);
     flywheelShaftEncoder.setSamplesToAverage(4);
+
+    kickerShaftEncoder.setDistancePerPulse(1. / 2048.);
+    kickerShaftEncoder.setSamplesToAverage(4);
 
     // Default to auto transfer balls from intake using beam breaks
     setDefaultCommand(new RunCommand(this::digestBalls, this));
 
     // Set up sim values
     if (RobotBase.isSimulation()) {
-
       flywheelSimulator =
           new FlywheelSim(
-              Shooter.kFlywheelPlant, Shooter.kFlywheelGearbox, Shooter.kFlywheelGearing);
+              Shooter.Flywheel.kFlywheelPlant, Shooter.Flywheel.kGearbox, Shooter.Flywheel.kGearing);
 
       flywheelEncoderSim = new EncoderSim(flywheelShaftEncoder);
     }
@@ -130,20 +151,15 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public Command getShootCommand(DoubleSupplier RPM) {
     return new InstantCommand(() -> supplyFlywheelTargetSpeedRPM(RPM))
         // () -> flywheelTargetVelRPM))
-        .andThen(new RunCommand(() -> setSpinUpFlywheelCustomFreq(true)));
+        .andThen(new RunCommand(() -> setSpinUpShooterCustomFreq(true)));
   }
 
   public Command spinUpCommand(DoubleSupplier RPM) {
     return new InstantCommand(() -> supplyFlywheelTargetSpeedRPM(RPM))
-        .andThen(new InstantCommand(() -> setSpinUpFlywheelCustomFreq(true)));
+        .andThen(new InstantCommand(() -> setSpinUpShooterCustomFreq(true)));
   }
 
-  public Command getShooterPurgeCommand() {
-    return new InstantCommand(() -> supplyFlywheelTargetSpeedRPM(() -> 500))
-        .andThen(new RunCommand(() -> spinUpFlywheelToTargetRPM()));
-  }
-
-  // Only use in auton, volatile when called in succession
+  // Only use in auton, up and down get reversed when cancelled while running
   public Command getIntakeDownCommand() {
     return new StartEndCommand(
             () -> setIntakeExternalLiftSpeedVolts(-7), () -> setIntakeExternalLiftSpeedVolts(-2.5))
@@ -187,12 +203,10 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   // Flywheel control set-up methods
 
-  // @Config
-  public void setSpinUpFlywheelCustomFreq(boolean bool) {
+  public void setSpinUpShooterCustomFreq(boolean bool) {
     spinFlywheelCustomFreq = bool;
   }
 
-  // @Config
   public void setFlywheelPID(double P, double I, double D) {
     flywheelPID.setPID(P, I, D);
   }
@@ -206,18 +220,34 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelTargetVelRPM = RPMsource.getAsDouble();
   }
 
+  // Kicker control set-up methods
+
+  // @Config
+  public void setKickerPID(double P, double I, double D) {
+    kickerPID.setPID(P, I, D);
+  }
+
+  // @Config
+  public void setKickerTargetVelRPM(double RPM) {
+    kickerTargetVelRPM = RPM;
+  }
+
   // Methods to calculate control inputs
 
-  public void spinUpFlywheelToTargetRPM() {
+  public void spinUpShooterToTargetRPM() {
 
     // Calculate control values
-    flywheelFFEffort = flywheelFF.calculate(flywheelTargetVelRPM / 60);
-    flywheelFFEffort *= Robot.isSimulation() ? 1 : 0.95;
+    flywheelFFEffort = flywheelFF.calculate(flywheelTargetVelRPM / 60) * (Robot.isSimulation() ? 1 : 0.95);
     flywheelPIDEffort = flywheelPID.calculate(getFlywheelVelRPM(), flywheelTargetVelRPM);
     flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
 
+    kickerFFEffort = kickerFF.calculate(kickerTargetVelRPM / 60);
+    kickerPIDEffort = kickerPID.calculate(getKickerVelRPM(), kickerTargetVelRPM);
+    kickerTotalEffort = kickerFFEffort + kickerPIDEffort;
+
     // Use output
     setFlywheelVoltage(flywheelTotalEffort);
+    setKickerVoltage(kickerTotalEffort);
 
     if (Robot.isSimulation()) {
       updateSim();
@@ -226,7 +256,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   public void spinUpCustomFreqFunc() {
     if (spinFlywheelCustomFreq) {
-      spinUpFlywheelToTargetRPM();
+      spinUpShooterToTargetRPM();
     }
   }
 
@@ -238,7 +268,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   @Log
   public boolean flywheelAtTargetVelRPM() {
-    if (Math.abs(flywheelVelRPM - flywheelTargetVelRPM) < 100 /* && flywheelAccelRPMPerS < 30*/) {
+    if (Math.abs(getFlywheelVelRPM() - flywheelTargetVelRPM) < 100 /* && flywheelAccelRPMPerS < 30*/) {
       return true;
     } else {
       return false;
@@ -299,11 +329,21 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelR.setVoltage(-voltage);
   }
 
+  public void setKickerVoltage(double voltage) {
+    kickerVoltage = voltage;
+    kicker.setVoltage(voltage);
+  }
+
   // Measurement methods
 
   @Log
   public double getFlywheelVelRPM() {
     return flywheelShaftEncoder.getRate() * 60;
+  }
+
+  @Log
+  public double getKickerVelRPM() {
+    return kickerShaftEncoder.getRate() * 60;
   }
 
   @Log
@@ -318,9 +358,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
     // Calculate sim values
     flywheelEncoderSim.setRate(flywheelSimulator.getAngularVelocityRPM() / 60);
-
-    // Update encoder after sim value is set
-    flywheelVelRPMShaftEnc = getFlywheelVelRPM();
   }
 
   // Periodic functions
@@ -332,11 +369,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     // Calculate flywheel measurements
     ballInMouth = !breakBeamMouth.get();
     stomachFull = !breakBeamStomach.get();
-    flywheelVelRPM = flywheelMotorEncoder.getVelocity();
-    flywheelVelRPMShaftEnc = getFlywheelVelRPM();
-    flywheelPositionShaftEnc = getFlywheelPosition();
-    flywheelAccelRPMPerS = accelFilter.calculate((flywheelVelRPM - lastFlywheelVelRPM) / 0.02);
-    lastFlywheelVelRPM = flywheelVelRPM;
+
   }
 
   @Override

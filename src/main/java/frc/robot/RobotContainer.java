@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -81,6 +83,8 @@ public class RobotContainer {
     drivetrain.putTrajOnFieldWidget(Trajectories.AltFourBall.initToWallToShoot, "InitToWallBallToShoot");
     drivetrain.putTrajOnFieldWidget(Trajectories.AltFourBall.shootToOutsideTarmacToHPS, "shootToOutsideTarmacToHPS");
     drivetrain.putTrajOnFieldWidget(Trajectories.AltFourBall.HPSToFinalShoot, "HPSToFinalShoot");
+
+    SmartDashboard.putNumber("Shooter Target RPM", 0);
     
   }
 
@@ -88,19 +92,11 @@ public class RobotContainer {
 
     driverController.rightBumper().whenHeld(new ShootCommand(true));
     driverController.a().whenHeld(new ShootCommand(1250, true));
+    driverController.b().whenHeld(new ShootCommand(() -> SmartDashboard.getNumber("Shooter Target RPM", 0), true));
     driverController
         .leftBumper()
         .and(new Trigger(() -> !digestiveSystem.getStomachFull()))
         .whileActiveOnce(digestiveSystem.getIntakeCommand());
-
-    testController
-        .y()
-        .whenPressed(
-            new InstantCommand(
-                    () ->
-                        drivetrain.resetGyro(
-                            Trajectories.RightSide.initPose.getRotation().getDegrees()))
-                .andThen(() -> drivetrain.resetOdometry(Trajectories.RightSide.initPose)));
 
     driverController
         .x()
@@ -115,11 +111,6 @@ public class RobotContainer {
                   digestiveSystem.setTransferSpeedProp(0);
                 },
                 digestiveSystem));
-
-    driverController
-        .start()
-        .whenHeld(digestiveSystem.getShooterPurgeCommand())
-        .whenReleased(() -> digestiveSystem.setFlywheelVoltage(0));
 
     secondController
         .leftBumper()
@@ -141,6 +132,16 @@ public class RobotContainer {
         .a()
         .whenPressed(() -> climber.climb(0.75))
         .whenReleased(() -> climber.climb(0));
+
+    testController
+    .y()
+    .whenPressed(
+        new InstantCommand(
+                () ->
+                    drivetrain.resetGyro(
+                        Trajectories.RightSide.initPose.getRotation().getDegrees()))
+            .andThen(() -> drivetrain.resetOdometry(Trajectories.RightSide.initPose)));
+
   }
 
   public Command getAutonomousCommand() {
@@ -189,13 +190,22 @@ public class RobotContainer {
           waitUntilSpedCommand.andThen(() -> feedCommand.schedule()));
     }
 
+    private ShootCommand(DoubleSupplier RPMTargetSource, Boolean stopShooterAtEnd) {
+      this.stopShooterAtEnd = stopShooterAtEnd;
+
+      addCommands(
+          digestiveSystem.getShootCommand(RPMTargetSource),
+          waitUntilSpedCommand.andThen(() -> feedCommand.schedule()));
+    }
+
     @Override
     public void end(boolean interrupted) {
       feedCommand.cancel();
 
       if (stopShooterAtEnd) {
-        digestiveSystem.setSpinUpFlywheelCustomFreq(false);
+        digestiveSystem.setSpinUpShooterCustomFreq(false);
         digestiveSystem.setFlywheelVoltage(0);
+        digestiveSystem.setKickerVoltage(0);
       }
     }
   }

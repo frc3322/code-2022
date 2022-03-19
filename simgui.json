@@ -5,6 +5,9 @@
         "header": {
           "open": true
         }
+      },
+      "window": {
+        "visible": false
       }
     }
   },
@@ -33,6 +36,7 @@
       "/LiveWindow/Ungrouped/PIDController[21]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[22]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[23]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[24]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
@@ -63,6 +67,10 @@
           "arrows": false,
           "style": ""
         },
+        "HPSToFinalShoot": {
+          "arrows": false,
+          "style": "Track"
+        },
         "Human Player Pickup Balls": {
           "arrows": false,
           "style": ""
@@ -78,6 +86,10 @@
         "Human Player To Shoot Adjusted": {
           "arrows": false,
           "style": ""
+        },
+        "InitToWallBallToShoot": {
+          "arrows": false,
+          "style": "Track"
         },
         "Robot": {
           "selectable": false
@@ -114,22 +126,18 @@
         },
         "height": 8.229599952697754,
         "image": "C:\\Users\\twhel\\Downloads\\field.png",
+        "shootToOutsideTarmacToHPS": {
+          "arrows": false,
+          "style": "Track"
+        },
         "units": "inches",
-        "width": 16.459199905395508,
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Select Autonomous": {
-        "window": {
-          "visible": true
-        }
+        "width": 16.459199905395508
       }
     }
   },
   "NetworkTables": {
     "Shuffleboard": {
-      "Drivetrain": {
+      "DigestiveSystem": {
         "open": true
       },
       "open": true

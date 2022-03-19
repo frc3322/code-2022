@@ -296,7 +296,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (Robot.isReal()) {
       leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
-      rightVolts += Math.copySign(Constants.Drive.ksVolts, rightVolts);
+      rightVolts += Math.copySign(Math.abs(rightVolts) > 0.2 ? Constants.Drive.ksVolts + 0.35 : Constants.Drive.ksVolts, rightVolts);
     }
 
     leftVolts = MathUtil.clamp(leftVolts, -12, 12);
@@ -408,7 +408,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public void turnToLimelight() {
-    double PID = turnToAngleController.calculate(getLimelightAngleX(), 0); // 3.5
+    double PID = turnToAngleController.calculate(getLimelightAngleX(), 2); // 3.5
     double ks = Math.copySign(Constants.Drive.ksVolts, PID);
     double effort = Robot.isReal() ? PID + 0.5 * ks : PID;
     tankDriveVolts(effort, -effort);
@@ -426,7 +426,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   // Only for LEDs
   public Boolean getLimelightAligned() {
-    return Math.abs(limelightAngleX) < limelightThreshold;
+    return Math.abs(limelightAngleX-2) < limelightThreshold;
   }
 
   // @Config

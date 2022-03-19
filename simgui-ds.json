@@ -1,7 +1,12 @@
 {
-  "Keyboard 0 Settings": {
+  "FMS": {
     "window": {
-      "visible": true
+      "visible": false
+    }
+  },
+  "Joysticks": {
+    "window": {
+      "visible": false
     }
   },
   "System Joysticks": {
@@ -30,9 +35,14 @@
         }
       ],
       "axisCount": 6,
-      "buttonCount": 4,
+      "buttonCount": 9,
       "buttonKeys": [
-        -1,
+        90,
+        88,
+        67,
+        86,
+        49,
+        50,
         -1,
         -1,
         -1

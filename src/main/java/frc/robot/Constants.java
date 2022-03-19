@@ -16,23 +16,42 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 public final class Constants {
 
   public static final class Shooter {
-    public static final double ksVolts = 0; // 0.10413 0.012354, -0.033976
-    public static final double kvVoltSecondsPerRotation =
-        0.13672; // 0.012655, 0.13123  / (2 * Math.PI)
-    public static final double kaVoltSecondsSquaredPerRotation =
-        0.066727; // 0.00050103, 0.013611  / (2 * Math.PI)
+    public static final class Flywheel {
+        public static final double ksVolts = 0; // 0.10413
+        public static final double kvVoltSecondsPerRotation = 0.13672;
+        public static final double kaVoltSecondsSquaredPerRotation = 0.066727;
+        public static final double kvVoltSecondsPerRadian = kvVoltSecondsPerRotation / (2 * Math.PI);
+        public static final double kaVoltSecondsSquaredPerRadian =
+            kaVoltSecondsSquaredPerRotation / (2 * Math.PI);
 
-    public static final double kvVoltSecondsPerRadian = kvVoltSecondsPerRotation / (2 * Math.PI);
-    public static final double kaVoltSecondsSquaredPerRadian =
-        kaVoltSecondsSquaredPerRotation / (2 * Math.PI);
+        public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
+            LinearSystemId.identifyVelocitySystem(
+                kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
 
-    public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
-        LinearSystemId.identifyVelocitySystem(
-            kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
+        public static final DCMotor kGearbox = DCMotor.getNEO(2);
 
-    public static final DCMotor kFlywheelGearbox = DCMotor.getNEO(2);
+        public static final double kGearing = 1;
 
-    public static final double kFlywheelGearing = 1;
+        public static final double kPVel = 0.0015;
+    }
+
+    public static final class Kicker {
+      public static final double ksVolts = 0.090165;
+      public static final double kvVoltSecondsPerRotation = 0.12437;
+      public static final double kaVoltSecondsSquaredPerRotation = 0.0090948;
+
+      public static final double kvVoltSecondsPerRadian = kvVoltSecondsPerRotation / (2 * Math.PI);
+      public static final double kaVoltSecondsSquaredPerRadian =
+          kaVoltSecondsSquaredPerRotation / (2 * Math.PI);
+
+      public static final DCMotor kGearbox = DCMotor.getNEO(1);
+
+      public static final double kGearing = 1;
+
+      public static final double kPVel = 0.001;
+
+      public static final double kKickerVelRPM = 4500;
+    }
   }
 
   public static final class CAN {
@@ -45,6 +64,7 @@ public final class Constants {
 
     public static final int flywheelL = 10;
     public static final int flywheelR = 5;
+    public static final int kicker = 12;
     public static final int transfer = 36;
     public static final int intake = 50;
 

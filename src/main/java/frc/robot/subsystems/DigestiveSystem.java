@@ -26,7 +26,6 @@ import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
 
@@ -48,8 +47,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   private final Encoder flywheelShaftEncoder =
       new Encoder(4, 3 /*, false, Encoder.EncodingType.k4X*/);
 
-  private final Encoder kickerShaftEncoder =
-      new Encoder(6, 5);
+  private final Encoder kickerShaftEncoder = new Encoder(6, 5);
 
   // Create break beam sensors
   private final DigitalInput breakBeamMouth = new DigitalInput(DIO.breakBeamA);
@@ -59,7 +57,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   PIDController flywheelPID = new PIDController(Shooter.Flywheel.kPVel, 0, 0); // 0.00009 0.0012
 
   SimpleMotorFeedforward flywheelFF =
-      new SimpleMotorFeedforward(Shooter.Flywheel.ksVolts, Shooter.Flywheel.kvVoltSecondsPerRotation);
+      new SimpleMotorFeedforward(
+          Shooter.Flywheel.ksVolts, Shooter.Flywheel.kvVoltSecondsPerRotation);
 
   PIDController kickerPID = new PIDController(Shooter.Kicker.kPVel, 0, 0);
 
@@ -140,7 +139,9 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     if (RobotBase.isSimulation()) {
       flywheelSimulator =
           new FlywheelSim(
-              Shooter.Flywheel.kFlywheelPlant, Shooter.Flywheel.kGearbox, Shooter.Flywheel.kGearing);
+              Shooter.Flywheel.kFlywheelPlant,
+              Shooter.Flywheel.kGearbox,
+              Shooter.Flywheel.kGearing);
 
       flywheelEncoderSim = new EncoderSim(flywheelShaftEncoder);
     }
@@ -157,6 +158,13 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public Command spinUpCommand(DoubleSupplier RPM) {
     return new InstantCommand(() -> supplyFlywheelTargetSpeedRPM(RPM))
         .andThen(new InstantCommand(() -> setSpinUpShooterCustomFreq(true)));
+  }
+
+  public Command feedCommand() {
+    return new StartEndCommand(
+      () -> setTransferSpeedVolts(6),
+      () -> setTransferSpeedVolts(0),
+      this);
   }
 
   // Only use in auton, up and down get reversed when cancelled while running
@@ -237,7 +245,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public void spinUpShooterToTargetRPM() {
 
     // Calculate control values
-    flywheelFFEffort = flywheelFF.calculate(flywheelTargetVelRPM / 60) * (Robot.isSimulation() ? 1 : 0.95);
+    flywheelFFEffort =
+        flywheelFF.calculate(flywheelTargetVelRPM / 60) * (Robot.isSimulation() ? 1 : 0.95);
     flywheelPIDEffort = flywheelPID.calculate(getFlywheelVelRPM(), flywheelTargetVelRPM);
     flywheelTotalEffort = flywheelFFEffort + flywheelPIDEffort;
 
@@ -261,14 +270,15 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   }
 
   private void digestBalls() {
-    setTransferSpeedProp(ballInMouth && !stomachFull ? 0.5 : 0);
+    setTransferSpeedVolts(ballInMouth && !stomachFull ? 6 : 0);
   }
 
   // Check whether flywheel is within tolerance of setpoint
 
   @Log
   public boolean flywheelAtTargetVelRPM() {
-    if (Math.abs(getFlywheelVelRPM() - flywheelTargetVelRPM) < 100 /* && flywheelAccelRPMPerS < 30*/) {
+    if (Math.abs(getFlywheelVelRPM() - flywheelTargetVelRPM)
+        < 100 /* && flywheelAccelRPMPerS < 30*/) {
       return true;
     } else {
       return false;
@@ -369,7 +379,6 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     // Calculate flywheel measurements
     ballInMouth = !breakBeamMouth.get();
     stomachFull = !breakBeamStomach.get();
-
   }
 
   @Override

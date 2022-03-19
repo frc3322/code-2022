@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -19,6 +20,8 @@ public class Climber extends SubsystemBase implements Loggable {
   private final CANSparkMax ClimberR = new CANSparkMax(CAN.climberL, MotorType.kBrushless);
   private final CANSparkMax ClimberL = new CANSparkMax(CAN.climberR, MotorType.kBrushless);
 
+  private final CANSparkMax traverse = new CANSparkMax(CAN.traverse, MotorType.kBrushless);
+
   private final RelativeEncoder ClimberR_ENC;
   private final RelativeEncoder ClimberL_ENC;
 
@@ -26,6 +29,7 @@ public class Climber extends SubsystemBase implements Loggable {
   @Log private double rEncVal;
   @Log private double propL;
   @Log private double propR;
+  @Log private double propT;
 
   // private final DigitalInput bottomLimit = new DigitalInput(DIO.breakBeamA);
   // private final DigitalInput topLimit = new DigitalInput(DIO.breakBeamB);
@@ -35,8 +39,10 @@ public class Climber extends SubsystemBase implements Loggable {
 
     ClimberR.restoreFactoryDefaults();
     ClimberL.restoreFactoryDefaults();
+    traverse.restoreFactoryDefaults();
     ClimberL.setIdleMode(IdleMode.kBrake);
     ClimberR.setIdleMode(IdleMode.kBrake);
+    traverse.setIdleMode(IdleMode.kBrake);
 
     ClimberL.setInverted(true);
     // ClimberR.follow(ClimberL, true);
@@ -63,6 +69,14 @@ public class Climber extends SubsystemBase implements Loggable {
   public void climb(double pwr) {
     ClimberL.set(pwr);
     ClimberR.set(pwr);
+
+    propL = pwr;
+    propR = pwr;
+  }
+
+  public void pivotTraverse(double pwr) {
+    traverse.set(pwr);
+    propT = pwr;
   }
 
   public void supplyClimbInputs(DoubleSupplier pwrL, DoubleSupplier pwrR) {

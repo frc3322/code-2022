@@ -188,7 +188,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (RobotBase.isSimulation()) {
 
-      limelightAngleX = 0;
+      limelightAngleX = Drive.shootOffset;
       limelightAngleY = 10; // Reasonable non-zero angle for testing
 
       drivetrainSimulator =
@@ -250,7 +250,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double limelightTV =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
 
-    
     if (Robot.isReal()) {
       limelightAngleX = -limelightTX; // llpython[0]
       limelightAngleY = limelightTY; // llpython[1]
@@ -296,7 +295,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (Robot.isReal()) {
       leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
-      rightVolts += Math.copySign(Math.abs(rightVolts) > 0.2 ? Constants.Drive.ksVolts + 0.35 : Constants.Drive.ksVolts, rightVolts);
+      rightVolts +=
+          Math.copySign(
+              Math.abs(rightVolts) > 0.2 ? Constants.Drive.ksVolts + 0.35 : Constants.Drive.ksVolts,
+              rightVolts);
     }
 
     leftVolts = MathUtil.clamp(leftVolts, -12, 12);
@@ -353,12 +355,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return angAccel;
   }
 
-  public double getLLDistMeters(){
-    double angleToGoalRadians = getLimelightAngleY() * Math.PI/180;
-    double distanceToGoalIN = 71/Math.tan(angleToGoalRadians);
+  public double getLLDistMeters() {
+    double angleToGoalRadians = getLimelightAngleY() * Math.PI / 180;
+    double distanceToGoalIN = 71 / Math.tan(angleToGoalRadians);
     return distanceToGoalIN * 0.0254;
   }
-  
+
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(
         wheelDirection * FL_ENC.getVelocity(), wheelDirection * FR_ENC.getVelocity());
@@ -408,9 +410,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public void turnToLimelight() {
-    double PID = turnToAngleController.calculate(getLimelightAngleX(), 2); // 3.5
+    double PID = turnToAngleController.calculate(getLimelightAngleX(), Drive.shootOffset); // 3.5
     double ks = Math.copySign(Constants.Drive.ksVolts, PID);
-    double effort = Robot.isReal() ? PID + 0.5 * ks : PID;
+    double effort = Robot.isReal() ? PID + ks : PID;
     tankDriveVolts(effort, -effort);
   }
 
@@ -426,7 +428,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   // Only for LEDs
   public Boolean getLimelightAligned() {
-    return Math.abs(limelightAngleX-2) < limelightThreshold;
+    return Math.abs(limelightAngleX - 2) < limelightThreshold;
   }
 
   // @Config

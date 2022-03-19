@@ -37,7 +37,13 @@
       "/LiveWindow/Ungrouped/PIDController[22]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[23]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[24]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[25]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[26]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[27]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[28]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[29]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[30]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
@@ -67,6 +73,14 @@
           "arrows": false,
           "style": ""
         },
+        "Bounce To HPS": {
+          "arrows": false,
+          "style": "Track"
+        },
+        "HPS to shoot": {
+          "arrows": false,
+          "style": "Track"
+        },
         "HPSToFinalShoot": {
           "arrows": false,
           "style": "Track"
@@ -87,12 +101,24 @@
           "arrows": false,
           "style": ""
         },
+        "Init to Wall to Shoot": {
+          "arrows": false,
+          "style": "Track"
+        },
         "InitToWallBallToShoot": {
           "arrows": false,
           "style": "Track"
         },
         "Robot": {
           "selectable": false
+        },
+        "Shoot To Bounce": {
+          "arrows": false,
+          "style": "Track"
+        },
+        "Shoot To HPS": {
+          "arrows": false,
+          "style": "Track"
         },
         "Shoot To Human Player": {
           "arrows": false,
@@ -130,7 +156,7 @@
           "arrows": false,
           "style": "Track"
         },
-        "units": "inches",
+        "units": "meters",
         "width": 16.459199905395508,
         "window": {
           "visible": true
@@ -145,6 +171,9 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
+      "Climber": {
+        "open": true
+      },
       "open": true
     }
   },

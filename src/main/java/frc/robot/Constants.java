@@ -17,22 +17,22 @@ public final class Constants {
 
   public static final class Shooter {
     public static final class Flywheel {
-        public static final double ksVolts = 0; // 0.10413
-        public static final double kvVoltSecondsPerRotation = 0.13672;
-        public static final double kaVoltSecondsSquaredPerRotation = 0.066727;
-        public static final double kvVoltSecondsPerRadian = kvVoltSecondsPerRotation / (2 * Math.PI);
-        public static final double kaVoltSecondsSquaredPerRadian =
-            kaVoltSecondsSquaredPerRotation / (2 * Math.PI);
+      public static final double ksVolts = 0; // 0.10413
+      public static final double kvVoltSecondsPerRotation = 0.13672;
+      public static final double kaVoltSecondsSquaredPerRotation = 0.066727;
+      public static final double kvVoltSecondsPerRadian = kvVoltSecondsPerRotation / (2 * Math.PI);
+      public static final double kaVoltSecondsSquaredPerRadian =
+          kaVoltSecondsSquaredPerRotation / (2 * Math.PI);
 
-        public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
-            LinearSystemId.identifyVelocitySystem(
-                kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
+      public static final LinearSystem<N1, N1, N1> kFlywheelPlant =
+          LinearSystemId.identifyVelocitySystem(
+              kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
 
-        public static final DCMotor kGearbox = DCMotor.getNEO(2);
+      public static final DCMotor kGearbox = DCMotor.getNEO(2);
 
-        public static final double kGearing = 1;
+      public static final double kGearing = 1;
 
-        public static final double kPVel = 0.0015;
+      public static final double kPVel = 0.0015;
     }
 
     public static final class Kicker {
@@ -73,6 +73,7 @@ public final class Constants {
 
     public static final int climberL = 45;
     public static final int climberR = 40;
+    public static final int traverse = 42;
   }
 
   public static final class DIO {
@@ -107,11 +108,13 @@ public final class Constants {
     public static final double kDriveGearing = 10.71; // 8
 
     public static final double kPVel = 1.9; // 1.8422
+
+    public static final double shootOffset = 2.0;
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 1.7;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 1.7;
+    public static final double kMaxSpeedMetersPerSecond = 3.3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1.8;
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and
     // seconds

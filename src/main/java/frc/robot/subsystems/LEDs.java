@@ -47,7 +47,7 @@ public class LEDs extends SubsystemBase {
     ANGLE_AND_DIST
   }
 
-  // Color constants here: https://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf 
+  // Color constants here: https://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf
   private final double SOLIDRED = 0.61;
   private final double SOLIDBLUE = 0.85;
   private final double SOLIDGREEN = 0.71;

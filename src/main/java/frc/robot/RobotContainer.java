@@ -142,6 +142,15 @@ public class RobotContainer {
                         Trajectories.RightSide.initPose.getRotation().getDegrees()))
             .andThen(() -> drivetrain.resetOdometry(Trajectories.RightSide.initPose)));
 
+    driverController
+    .y()
+    .whenPressed(
+        new InstantCommand(
+                () ->
+                    drivetrain.resetGyro(
+                        Trajectories.AltFourBall.initPose.getRotation().getDegrees()))
+            .andThen(() -> drivetrain.resetOdometry(Trajectories.AltFourBall.initPose)));
+
   }
 
   public Command getAutonomousCommand() {

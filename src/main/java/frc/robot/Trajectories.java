@@ -101,11 +101,16 @@ public final class Trajectories {
   public static final class AltFourBall {
 
     public static final Pose2d initPose =
-    new Pose2d(new Translation2d(7.903, 6.411), new Rotation2d(Units.degreesToRadians(100)));
+    new Pose2d(new Translation2d(8.316, 5.792), new Rotation2d(Units.degreesToRadians(113.8)));
+
+    // public static final Trajectory initToWallToShoot = TrajectoryGenerator.generateTrajectory(
+    //   List.of(initPose, new Pose2d(8.791, 7.485, new Rotation2d(Units.degreesToRadians(39.5))), new Pose2d(12.067, 6.59, new Rotation2d(Units.degreesToRadians(-152.3)))),
+    //   AutoConstants.config);
 
     public static final Trajectory initToWallToShoot = TrajectoryGenerator.generateTrajectory(
-      List.of(initPose, new Pose2d(8.572, 7.702, new Rotation2d(Units.degreesToRadians(12))), new Pose2d(9.529,6.132, new Rotation2d(Units.degreesToRadians(-123)))),
-      AutoConstants.config);
+        initPose, List.of(new Translation2d(8.791, 7.485), new Translation2d(10.381, 7.5)), new Pose2d(12.067, 6.59, new Rotation2d(Units.degreesToRadians(-152.3))),
+        AutoConstants.config);
+
 
     public static final Trajectory shootToOutsideTarmacToHPS = TrajectoryGenerator.generateTrajectory(
         List.of(new Pose2d(9.592,6.298, new Rotation2d(Units.degreesToRadians(10.6))), new Pose2d(10.793,6.405, new Rotation2d(Units.degreesToRadians(-360))),new Pose2d(14.941,6.917, new Rotation2d(Units.degreesToRadians(38)))),

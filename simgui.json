@@ -131,16 +131,24 @@
           "style": "Track"
         },
         "units": "inches",
-        "width": 16.459199905395508
+        "width": 16.459199905395508,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Select Autonomous": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },
   "NetworkTables": {
     "Shuffleboard": {
-      "DigestiveSystem": {
-        "open": true
-      },
       "open": true
     }
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

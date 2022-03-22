@@ -162,9 +162,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   public Command feedCommand() {
     return new StartEndCommand(
-      () -> setTransferSpeedVolts(6),
-      () -> setTransferSpeedVolts(0),
-      this);
+        () -> setTransferSpeedVolts(6), () -> setTransferSpeedVolts(0), this);
   }
 
   // Only use in auton, up and down get reversed when cancelled while running

@@ -108,8 +108,6 @@ public final class Constants {
     public static final double kDriveGearing = 10.71; // 8
 
     public static final double kPVel = 1.9; // 1.8422
-
-    public static final double shootOffset = 2.0;
   }
 
   public static final class AutoConstants {
@@ -151,6 +149,14 @@ public final class Constants {
             .setReversed(true);
 
     public static final double flywheelIdleRPM = 3000;
+  }
+
+  public static class Limelight {
+    public static final double shootOffset = 2.0;
+
+    public static final double mountingAngleDegrees = 22.0;
+    public static final double mountingHeightInches = 35.5;
+    public static final double visionTargetHeightInches = 102.5;
   }
 
   public static class XBOX {

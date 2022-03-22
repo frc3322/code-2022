@@ -101,7 +101,9 @@ public final class Trajectories {
             AutoConstants.config);
 
     public static final Pose2d shootPose =
-        new Pose2d(getLastPose(initToWallToShoot).getTranslation(), new Rotation2d(Units.degreesToRadians(-152.3)));
+        new Pose2d(
+            getLastPose(initToWallToShoot).getTranslation(),
+            new Rotation2d(Units.degreesToRadians(-152.3)));
 
     public static final Trajectory shootToBounce =
         TrajectoryGenerator.generateTrajectory(

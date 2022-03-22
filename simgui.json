@@ -44,6 +44,7 @@
       "/LiveWindow/Ungrouped/PIDController[29]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[30]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[31]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
@@ -173,11 +174,13 @@
     "Shuffleboard": {
       "Climber": {
         "open": true
+      }
+    },
+    "SmartDashboard": {
+      "Distance test": {
+        "open": true
       },
       "open": true
     }
-  },
-  "NetworkTables View": {
-    "visible": false
   }
 }

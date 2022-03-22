@@ -48,7 +48,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
-import frc.robot.LerpLLYtoRPM;
+import frc.robot.Constants.Limelight;
+import frc.robot.ShooterParams;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
@@ -180,15 +181,17 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     robotDrive.setSafetyEnabled(false);
 
-    // set drivetrain current limit to prevent brown out
-    // FL.setSmartCurrentLimit(30, 40);
-    // FR.setSmartCurrentLimit(30, 40);
-    // BL.setSmartCurrentLimit(30, 40);
-    // BR.setSmartCurrentLimit(30, 40);
+    LEDs.get()
+        .setCondition(LEDs.Modes.ANGLE_GOOD, () -> getLimelightAligned() && limelightHasTarget);
+
+    SmartDashboard.putNumber("Distance test/1", angleToDistMeters(18.5 + Limelight.mountingAngleDegrees));
+    SmartDashboard.putNumber("Distance test/2", angleToDistMeters(16.4 + Limelight.mountingAngleDegrees));
+    SmartDashboard.putNumber("Distance test/3", angleToDistMeters(14 + Limelight.mountingAngleDegrees));
+    SmartDashboard.putNumber("Distance test/4", angleToDistMeters(11.5 + Limelight.mountingAngleDegrees));
 
     if (RobotBase.isSimulation()) {
 
-      limelightAngleX = Drive.shootOffset;
+      limelightAngleX = Limelight.shootOffset;
       limelightAngleY = 10; // Reasonable non-zero angle for testing
 
       drivetrainSimulator =
@@ -208,8 +211,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
       wheelDirection = 1;
     }
-    LEDs.get()
-        .setCondition(LEDs.Modes.ANGLE_GOOD, () -> getLimelightAligned() && limelightHasTarget);
+
   }
 
   @Override
@@ -233,7 +235,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     yPosition = odometry.getPoseMeters().getY();
 
     SmartDashboard.putNumber(
-        "TARGET RPM RIGHT HERE LOOK", LerpLLYtoRPM.getRPMFromSupplier(() -> limelightAngleY));
+        "TARGET RPM RIGHT HERE LOOK", ShooterParams.getRPMFromAngleSupplier(() -> limelightAngleY));
 
     double[] llpython =
         NetworkTableInstance.getDefault()
@@ -355,10 +357,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return angAccel;
   }
 
-  public double getLLDistMeters() {
-    double angleToGoalRadians = getLimelightAngleY() * Math.PI / 180;
-    double distanceToGoalIN = 71 / Math.tan(angleToGoalRadians);
-    return distanceToGoalIN * 0.0254;
+  @Log
+  public double angleToDistMeters(double angleY) {
+    double angleRadians = Units.degreesToRadians(angleY);
+    double distanceToGoalInches = (Limelight.visionTargetHeightInches - Limelight.mountingHeightInches) / Math.tan(angleRadians);
+    SmartDashboard.putNumber("Distance to Goal Inches", distanceToGoalInches);
+    return Units.inchesToMeters(distanceToGoalInches);
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
@@ -410,15 +414,14 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public void turnToLimelight() {
-    double PID = turnToAngleController.calculate(getLimelightAngleX(), Drive.shootOffset); // 3.5
+    double PID = turnToAngleController.calculate(getLimelightAngleX(), ShooterParams.getShootOffsetFromAngle(getLimelightAngleY()));
     double ks = Math.copySign(Constants.Drive.ksVolts, PID);
     double effort = Robot.isReal() ? PID + ks : PID;
     tankDriveVolts(effort, -effort);
   }
 
   public Command getTurnToLimelightCommand() {
-    return new RunCommand(this::turnToLimelight, this)
-    /*.withInterrupt(() -> turnToAngleController.atSetpoint())*/ ;
+    return new RunCommand(this::turnToLimelight, this);
   }
 
   @Log

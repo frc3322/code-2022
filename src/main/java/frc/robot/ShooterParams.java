@@ -11,19 +11,13 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.DoubleSupplier;
 
+import frc.robot.Constants.Limelight;
+
 /** Add your docs here. */
-public class LerpLLYtoRPM {
-  private LerpLLYtoRPM() {}
+public class ShooterParams {
+  private ShooterParams() {}
 
-  private static final TreeMap<Double, Double> table =
-      // new TreeMap<>(
-      //     Map.ofEntries(
-      //         entry(8.07, 2725.0),
-      //         entry(4.0, 2870.0),
-      //         entry(2.81, 3100.0),
-      //         entry(1.53, 3350.0),
-      //         entry(-2.0, 3400.0)));
-
+  private static final TreeMap<Double, Double> angleToRPMTable =
       new TreeMap<>(
           Map.ofEntries(
               entry(18.5, 1260.0),
@@ -50,9 +44,16 @@ public class LerpLLYtoRPM {
               entry(-8.4, 2650.0),
               entry(-8.9, 2750.0)));
 
-  public static Double getRPM(double limelightAngleY) {
-    Entry<Double, Double> ceiling = table.ceilingEntry(limelightAngleY);
-    Entry<Double, Double> floor = table.floorEntry(limelightAngleY);
+  private static final TreeMap<Double, Double> angleToShootOffsetTable =
+      new TreeMap<>(
+          Map.ofEntries(
+              entry(19.2, 2.0),
+              entry(1.0, 2.0),
+              entry(-5.0, 0.0)));
+
+  private static Double lookUpValue(double value, TreeMap<Double, Double> table) {
+    Entry<Double, Double> ceiling = table.ceilingEntry(value);
+    Entry<Double, Double> floor = table.floorEntry(value);
 
     if (ceiling == null) return floor.getValue();
     if (floor == null) return ceiling.getValue();
@@ -61,11 +62,23 @@ public class LerpLLYtoRPM {
     return interpolate(
         floor.getValue(),
         ceiling.getValue(),
-        (limelightAngleY - floor.getKey()) / (ceiling.getKey() - floor.getKey()));
+        (value - floor.getKey()) / (ceiling.getKey() - floor.getKey()));
   }
 
-  public static Double getRPMFromSupplier(DoubleSupplier limelightAngleY) {
-    return getRPM(limelightAngleY.getAsDouble());
+  public static Double getRPMFromAngle(double angle) {
+    return lookUpValue(angle, angleToRPMTable);
+  }
+
+  public static Double getRPMFromAngleSupplier(DoubleSupplier angle) {
+    return getRPMFromAngle(angle.getAsDouble());
+  }
+
+  public static Double getShootOffsetFromAngle(double angle) {
+    return lookUpValue(angle, angleToShootOffsetTable);
+  }
+
+  public static Double getShootOffsetFromAngleSupplier(DoubleSupplier angle) {
+    return getShootOffsetFromAngle(angle.getAsDouble());
   }
 
   private static Double interpolate(double y1, double y2, double t) {

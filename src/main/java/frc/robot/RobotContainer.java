@@ -22,8 +22,6 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DigestiveSystem;
 import frc.robot.subsystems.Drivetrain;
 import io.github.oblarg.oblog.Logger;
-
-import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
 public class RobotContainer {
@@ -53,7 +51,10 @@ public class RobotContainer {
 
   private final Command traverseCommand =
       new RunCommand(
-        () -> climber.pivotTraverse(secondController.getRightTriggerAxis() - secondController.getLeftTriggerAxis()), climber);
+          () ->
+              climber.pivotTraverse(
+                  secondController.getRightTriggerAxis() - secondController.getLeftTriggerAxis()),
+          climber);
 
   public RobotContainer() {
 
@@ -75,8 +76,7 @@ public class RobotContainer {
 
     // Trajectories
 
-    drivetrain.putTrajOnFieldWidget(
-        Trajectories.FiveBall.ShootToHPS, "Shoot To HPS");
+    drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.ShootToHPS, "Shoot To HPS");
 
     SmartDashboard.putNumber("Shooter Target RPM", 0);
   }
@@ -120,13 +120,22 @@ public class RobotContainer {
 
     secondController
         .y()
-        .whenPressed(() -> climber.climb(-0.5))
+        .whenHeld(new RunCommand(() -> climber.climb(-0.5)))
         .whenReleased(() -> climber.climb(0));
 
     secondController
         .a()
-        .whenPressed(() -> climber.climb(0.75))
+        .whenHeld(new RunCommand(() -> climber.climb(0.75)))
         .whenReleased(() -> climber.climb(0));
+
+    secondController
+        .x()
+        .toggleWhenPressed(
+            new RunCommand(() -> climber.putTraverseUpright())
+                .withInterrupt(
+                    () ->
+                        secondController.getLeftTriggerAxis() > 0.1
+                            || secondController.getRightTriggerAxis() > 0.1));
 
     testController
         .y()
@@ -175,7 +184,7 @@ public class RobotContainer {
 
       addCommands(
           digestiveSystem.getShootCommand(
-              () -> LerpLLYtoRPM.getRPMFromSupplier(() -> drivetrain.getLimelightAngleY())),
+              () -> ShooterParams.getRPMFromAngleSupplier(() -> drivetrain.getLimelightAngleY())),
           drivetrain.getTurnToLimelightCommand(),
           waitUntilAlignedAndSpedCommand.andThen(() -> feedCommand.schedule()));
     }
@@ -336,19 +345,13 @@ public class RobotContainer {
                       .andThen(digestiveSystem.getIntakeUpCommand())),
           drivetrain.profiledTurnToAngleCommand(() -> -152.3),
           getAutoShootCommand(3, true)
-            .alongWith(
-              new SequentialCommandGroup(
-                new WaitCommand(1),
-                digestiveSystem.getIntakeDownCommand()//,
-                // new InstantCommand(() -> feedCommand.schedule()),
-                // new WaitCommand(1),
-                // new InstantCommand(() -> feedCommand.cancel())
-              )
-            ),
+              .alongWith(
+                  new SequentialCommandGroup(
+                      new WaitCommand(1), digestiveSystem.getIntakeDownCommand())),
           drivetrain
               .getRamseteCommand(drivetrain, Trajectories.FiveBall.ShootToHPS)
               .alongWith(digestiveSystem.getIntakeDownCommand()),
-          new WaitCommand(1),
+          // new WaitCommand(1),
           drivetrain
               .getRamseteCommand(drivetrain, Trajectories.FiveBall.HPStoShoot)
               .alongWith(digestiveSystem.getIntakeUpCommand()),
@@ -360,5 +363,11 @@ public class RobotContainer {
 
   public void updateLogger() {
     Logger.updateEntries();
+  }
+
+  // Reset climb encoders
+
+  public void resetClimbEncoders() {
+    climber.resetEncoders();
   }
 }

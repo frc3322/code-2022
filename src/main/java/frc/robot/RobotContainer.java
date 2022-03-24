@@ -184,7 +184,7 @@ public class RobotContainer {
 
       addCommands(
           digestiveSystem.getShootCommand(
-              () -> ShooterParams.getRPMFromAngleSupplier(() -> drivetrain.getLimelightAngleY())),
+              () -> ShooterParams.getRPMFromDistanceMetersSupplier(() -> drivetrain.getDistanceToGoalMeters())),
           drivetrain.getTurnToLimelightCommand(),
           waitUntilAlignedAndSpedCommand.andThen(() -> feedCommand.schedule()));
     }

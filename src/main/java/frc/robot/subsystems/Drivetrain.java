@@ -235,7 +235,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     yPosition = odometry.getPoseMeters().getY();
 
     SmartDashboard.putNumber(
-        "TARGET RPM RIGHT HERE LOOK", ShooterParams.getRPMFromAngleSupplier(() -> limelightAngleY));
+        "TARGET RPM RIGHT HERE LOOK", ShooterParams.getRPMFromDistanceMeters(getDistanceToGoalMeters()));
 
     double[] llpython =
         NetworkTableInstance.getDefault()
@@ -357,12 +357,15 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     return angAccel;
   }
 
-  @Log
   public double angleToDistMeters(double angleY) {
     double angleRadians = Units.degreesToRadians(angleY);
     double distanceToGoalInches = (Limelight.visionTargetHeightInches - Limelight.mountingHeightInches) / Math.tan(angleRadians);
     SmartDashboard.putNumber("Distance to Goal Inches", distanceToGoalInches);
     return Units.inchesToMeters(distanceToGoalInches);
+  }
+
+  public double getDistanceToGoalMeters() {
+    return angleToDistMeters(limelightAngleY + Limelight.mountingAngleDegrees);
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
@@ -414,7 +417,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public void turnToLimelight() {
-    double PID = turnToAngleController.calculate(getLimelightAngleX(), ShooterParams.getShootOffsetFromAngle(getLimelightAngleY()));
+    double PID = turnToAngleController.calculate(getLimelightAngleX(), ShooterParams.getShootOffsetFromDistanceMeters(getDistanceToGoalMeters()));
     double ks = Math.copySign(Constants.Drive.ksVolts, PID);
     double effort = Robot.isReal() ? PID + ks : PID;
     tankDriveVolts(effort, -effort);

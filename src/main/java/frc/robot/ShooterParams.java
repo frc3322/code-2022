@@ -17,39 +17,30 @@ import frc.robot.Constants.Limelight;
 public class ShooterParams {
   private ShooterParams() {}
 
-  private static final TreeMap<Double, Double> angleToRPMTable =
+  private static final TreeMap<Double, Double> distanceMetersToRPMTable =
       new TreeMap<>(
           Map.ofEntries(
-              entry(18.5, 1260.0),
-              entry(16.4, 1325.0),
-              entry(14.0, 1400.0),
-              entry(11.5, 1475.0),
-              entry(8.7, 1600.0 - 50.0),
-              entry(5.4, 1650.0 - 50.0),
-              entry(4.45, 1750.0 - 50.0),
-              entry(3.8, 1775.0 - 50.0),
-              entry(2.95, 1800.0 - 50.0),
-              entry(1.92, 1825.0 - 50.0),
-              entry(1.45, 1910.0 - 50.0),
-              entry(0.4, 1925.0 - 50.0),
-              entry(-0.26, 1950.0 - 50.0),
-              entry(-1.59, 1980.0 - 50.0),
-              entry(-2.75, 2030.0 - 50.0),
-              entry(-3.3, 2175.0),
-              entry(-4.0, 2250.0),
-              entry(-4.6, 2275.0),
-              entry(-5.8, 2300.0),
-              entry(-6.5, 2425.0),
-              entry(-7.4, 2610.0),
-              entry(-8.4, 2650.0),
-              entry(-8.9, 2750.0)));
+              entry(1.944, 1260.0),
+              entry(2.202, 1375.0),
+              entry(2.421, 1450.0),
+              entry(2.844, 1500.0),
+              entry(3.734, 1600.0),
+              entry(4.068, 1750.0),
+              entry(4.191, 1850.0),
+              entry(4.342, 2000.0),
+              entry(4.433, 2100.0),
+              entry(4.753, 2250.0),
+              entry(4.999, 2350.0),
+              entry(5.238, 2500.0),
+              entry(5.566, 2650.0),
+              entry(5.858, 3000.0)));
 
-  private static final TreeMap<Double, Double> angleToShootOffsetTable =
+  private static final TreeMap<Double, Double> distanceMetersToShootOffsetDegreesTable =
       new TreeMap<>(
           Map.ofEntries(
-              entry(19.2, 2.0),
-              entry(1.0, 2.0),
-              entry(-5.0, 0.0)));
+              entry(1.944, 2.0),
+              entry(4.009, 2.0),
+              entry(5.566, 0.0)));
 
   private static Double lookUpValue(double value, TreeMap<Double, Double> table) {
     Entry<Double, Double> ceiling = table.ceilingEntry(value);
@@ -65,20 +56,20 @@ public class ShooterParams {
         (value - floor.getKey()) / (ceiling.getKey() - floor.getKey()));
   }
 
-  public static Double getRPMFromAngle(double angle) {
-    return lookUpValue(angle, angleToRPMTable);
+  public static Double getRPMFromDistanceMeters(double distanceMeters) {
+    return lookUpValue(distanceMeters, distanceMetersToRPMTable);
   }
 
-  public static Double getRPMFromAngleSupplier(DoubleSupplier angle) {
-    return getRPMFromAngle(angle.getAsDouble());
+  public static Double getRPMFromDistanceMetersSupplier(DoubleSupplier distanceMeters) {
+    return getRPMFromDistanceMeters(distanceMeters.getAsDouble());
   }
 
-  public static Double getShootOffsetFromAngle(double angle) {
-    return lookUpValue(angle, angleToShootOffsetTable);
+  public static Double getShootOffsetFromDistanceMeters(double distanceMeters) {
+    return lookUpValue(distanceMeters, distanceMetersToShootOffsetDegreesTable);
   }
 
-  public static Double getShootOffsetFromAngleSupplier(DoubleSupplier angle) {
-    return getShootOffsetFromAngle(angle.getAsDouble());
+  public static Double getShootOffsetFromDistanceMetersSupplier(DoubleSupplier distanceMeters) {
+    return getShootOffsetFromDistanceMeters(distanceMeters.getAsDouble());
   }
 
   private static Double interpolate(double y1, double y2, double t) {

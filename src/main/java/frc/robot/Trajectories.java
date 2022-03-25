@@ -97,7 +97,7 @@ public final class Trajectories {
         TrajectoryGenerator.generateTrajectory(
             initPose,
             List.of(new Translation2d(8.6, 7.6)),
-            new Pose2d(12.03, 6.6, new Rotation2d(Units.degreesToRadians(-60))),
+            new Pose2d(12.25, 6.75, new Rotation2d(Units.degreesToRadians(-60))),
             AutoConstants.config);
 
     public static final Pose2d shootPose =
@@ -116,7 +116,16 @@ public final class Trajectories {
         TrajectoryGenerator.generateTrajectory(
             List.of(
                 getLastPose(shootToBounce),
-                new Pose2d(15.15, 6.9, new Rotation2d(Units.degreesToRadians(43)))),
+                new Pose2d(15.2, 6.95, new Rotation2d(Units.degreesToRadians(43)))),
+            AutoConstants.config);
+
+    public static final Trajectory slightForward =
+        TrajectoryGenerator.generateTrajectory(
+            List.of(
+                new Pose2d(
+                    getLastPose(initToWallToShoot).getTranslation(),
+                    new Rotation2d(Units.degreesToRadians(-152.3))),
+                new Pose2d(12.0, 6.63, new Rotation2d(Units.degreesToRadians(-152.3)))),
             AutoConstants.config);
 
     public static final Trajectory ShootToHPS =
@@ -132,6 +141,7 @@ public final class Trajectories {
             List.of(new Translation2d(12.34, 5.73)),
             shootPose,
             AutoConstants.reversedConfig);
+
   }
 
   public static final class AltFourBall {

@@ -53,7 +53,7 @@ public class RobotContainer {
       new RunCommand(
           () ->
               climber.pivotTraverse(
-                  secondController.getRightTriggerAxis() - secondController.getLeftTriggerAxis()),
+                  0.5 * secondController.getLeftTriggerAxis() - 0.5 * secondController.getRightTriggerAxis()),
           climber);
 
   public RobotContainer() {
@@ -75,8 +75,9 @@ public class RobotContainer {
     SmartDashboard.putData("Select Autonomous", autonChooser);
 
     // Trajectories
-
+    drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.initToWallToShoot, "Init to Shoot");
     drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.ShootToHPS, "Shoot To HPS");
+    drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.slightForward, "Slight Forward");
 
     SmartDashboard.putNumber("Shooter Target RPM", 0);
   }
@@ -108,8 +109,7 @@ public class RobotContainer {
                 digestiveSystem));
 
     secondController
-        .leftBumper()
-        .and(secondController.rightBumper())
+        .rightBumper()
         .whileActiveOnce(
             new RunCommand(
                 () ->
@@ -137,8 +137,18 @@ public class RobotContainer {
                         secondController.getLeftTriggerAxis() > 0.1
                             || secondController.getRightTriggerAxis() > 0.1));
 
-    testController
-        .y()
+    secondController
+        .leftBumper()
+        .whileActiveOnce(
+            new RunCommand(
+                () ->
+                    climber.supplyClimbInputs(
+                        () -> MathUtil.applyDeadband(secondController.getRightY(), 0.07),
+                        () -> MathUtil.applyDeadband(secondController.getRightY(), 0.07))))
+        .whenInactive(() -> climber.climb(0));
+
+    driverController
+        .start()
         .whenPressed(
             new InstantCommand(
                     () ->
@@ -184,7 +194,9 @@ public class RobotContainer {
 
       addCommands(
           digestiveSystem.getShootCommand(
-              () -> ShooterParams.getRPMFromDistanceMetersSupplier(() -> drivetrain.getDistanceToGoalMeters())),
+              () ->
+                  ShooterParams.getRPMFromDistanceMetersSupplier(
+                      () -> drivetrain.getDistanceToGoalMeters())),
           drivetrain.getTurnToLimelightCommand(),
           waitUntilAlignedAndSpedCommand.andThen(() -> feedCommand.schedule()));
     }
@@ -344,6 +356,7 @@ public class RobotContainer {
                       .andThen(new WaitCommand(3))
                       .andThen(digestiveSystem.getIntakeUpCommand())),
           drivetrain.profiledTurnToAngleCommand(() -> -152.3),
+          new StartEndCommand(() -> drivetrain.tankDriveVolts(4, 4), () -> drivetrain.tankDriveVolts(0, 0)).withTimeout(0.2),
           getAutoShootCommand(3, true)
               .alongWith(
                   new SequentialCommandGroup(

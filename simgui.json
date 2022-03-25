@@ -45,6 +45,8 @@
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[30]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[31]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[32]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[33]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
@@ -101,6 +103,10 @@
         "Human Player To Shoot Adjusted": {
           "arrows": false,
           "style": ""
+        },
+        "Init to Shoot": {
+          "arrows": false,
+          "style": "Track"
         },
         "Init to Wall to Shoot": {
           "arrows": false,
@@ -182,5 +188,8 @@
       },
       "open": true
     }
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

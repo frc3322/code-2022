@@ -28,9 +28,9 @@ public class Climber extends SubsystemBase implements Loggable {
 
   private final RelativeEncoder traverse_ENC;
 
-  private final PIDController traversePID = new PIDController(0, 0, 0);
+  private final PIDController traversePID = new PIDController(0.04, 0, 0);
 
-  private final double traverseUprightPos = 0.5;
+  private final double traverseUprightPos = -9.8;
 
   @Log private double lEncVal;
   @Log private double rEncVal;
@@ -61,7 +61,7 @@ public class Climber extends SubsystemBase implements Loggable {
     traversePID.disableContinuousInput();
   }
 
-  @Config
+  // @Config
   public void setTraversePID(double kp, double ki, double kd) {
     traversePID.setPID(kp, ki, kd);
   }
@@ -91,11 +91,11 @@ public class Climber extends SubsystemBase implements Loggable {
     double lPwr = pwr;
     double rPwr = pwr;
 
-    if (lEncVal > rEncVal) {
-      rPwr += 0.1;
-    } else if (rEncVal > lEncVal) {
-      lPwr += 0.1;
-    }
+    // if (lEncVal > rEncVal) {
+    //   rPwr += 0.1;
+    // } else if (rEncVal > lEncVal) {
+    //   lPwr += 0.1;
+    // }
 
     setPropL(lPwr);
     setPropR(rPwr);

@@ -11,8 +11,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.DoubleSupplier;
 
-import frc.robot.Constants.Limelight;
-
 /** Add your docs here. */
 public class ShooterParams {
   private ShooterParams() {}
@@ -36,11 +34,7 @@ public class ShooterParams {
               entry(5.858, 3000.0)));
 
   private static final TreeMap<Double, Double> distanceMetersToShootOffsetDegreesTable =
-      new TreeMap<>(
-          Map.ofEntries(
-              entry(1.944, 2.0),
-              entry(4.009, 2.0),
-              entry(5.566, 0.0)));
+      new TreeMap<>(Map.ofEntries(entry(1.944, 2.0), entry(4.009, 2.0), entry(5.566, 0.0)));
 
   private static Double lookUpValue(double value, TreeMap<Double, Double> table) {
     Entry<Double, Double> ceiling = table.ceilingEntry(value);

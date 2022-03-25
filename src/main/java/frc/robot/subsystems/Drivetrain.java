@@ -49,9 +49,9 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
 import frc.robot.Constants.Limelight;
-import frc.robot.ShooterParams;
 import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
+import frc.robot.ShooterParams;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
@@ -130,7 +130,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double yPosition;
 
   private LinearFilter accelFilter = LinearFilter.movingAverage(40);
-  SlewRateLimiter accelLimit = new SlewRateLimiter(2);
+  SlewRateLimiter accelLimit = new SlewRateLimiter(1);
   SlewRateLimiter turnLimit = new SlewRateLimiter(2);
 
   @Log private boolean profiledTurnToAngleAtGoal;
@@ -184,11 +184,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     LEDs.get()
         .setCondition(LEDs.Modes.ANGLE_GOOD, () -> getLimelightAligned() && limelightHasTarget);
 
-    SmartDashboard.putNumber("Distance test/1", angleToDistMeters(18.5 + Limelight.mountingAngleDegrees));
-    SmartDashboard.putNumber("Distance test/2", angleToDistMeters(16.4 + Limelight.mountingAngleDegrees));
-    SmartDashboard.putNumber("Distance test/3", angleToDistMeters(14 + Limelight.mountingAngleDegrees));
-    SmartDashboard.putNumber("Distance test/4", angleToDistMeters(11.5 + Limelight.mountingAngleDegrees));
-
     if (RobotBase.isSimulation()) {
 
       limelightAngleX = Limelight.shootOffset;
@@ -211,7 +206,6 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
       wheelDirection = 1;
     }
-
   }
 
   @Override
@@ -235,7 +229,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     yPosition = odometry.getPoseMeters().getY();
 
     SmartDashboard.putNumber(
-        "TARGET RPM RIGHT HERE LOOK", ShooterParams.getRPMFromDistanceMeters(getDistanceToGoalMeters()));
+        "TARGET RPM RIGHT HERE LOOK",
+        ShooterParams.getRPMFromDistanceMeters(getDistanceToGoalMeters()));
 
     double[] llpython =
         NetworkTableInstance.getDefault()
@@ -291,16 +286,14 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     turn = 0.5 * turn + 0.5 * Math.pow(turn, 3);
 
     WheelSpeeds curveDriveSpeedsProp =
-        DifferentialDrive.arcadeDriveIK(accelLimit.calculate(speed), turn, false);
+        DifferentialDrive.arcadeDriveIK(
+            accelLimit.calculate(speed), turnLimit.calculate(turn), false);
     double leftVolts = curveDriveSpeedsProp.left * 12;
     double rightVolts = curveDriveSpeedsProp.right * 12;
 
     if (Robot.isReal()) {
       leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
-      rightVolts +=
-          Math.copySign(
-              Math.abs(rightVolts) > 0.2 ? Constants.Drive.ksVolts + 0.35 : Constants.Drive.ksVolts,
-              rightVolts);
+      rightVolts += Math.copySign(Constants.Drive.ksVolts, rightVolts);
     }
 
     leftVolts = MathUtil.clamp(leftVolts, -12, 12);
@@ -359,7 +352,9 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   public double angleToDistMeters(double angleY) {
     double angleRadians = Units.degreesToRadians(angleY);
-    double distanceToGoalInches = (Limelight.visionTargetHeightInches - Limelight.mountingHeightInches) / Math.tan(angleRadians);
+    double distanceToGoalInches =
+        (Limelight.visionTargetHeightInches - Limelight.mountingHeightInches)
+            / Math.tan(angleRadians);
     SmartDashboard.putNumber("Distance to Goal Inches", distanceToGoalInches);
     return Units.inchesToMeters(distanceToGoalInches);
   }
@@ -417,9 +412,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   }
 
   public void turnToLimelight() {
-    double PID = turnToAngleController.calculate(getLimelightAngleX(), ShooterParams.getShootOffsetFromDistanceMeters(getDistanceToGoalMeters()));
+    double PID =
+        turnToAngleController.calculate(
+            getLimelightAngleX(),
+            ShooterParams.getShootOffsetFromDistanceMeters(getDistanceToGoalMeters()));
     double ks = Math.copySign(Constants.Drive.ksVolts, PID);
-    double effort = Robot.isReal() ? PID + ks : PID;
+    double effort = Robot.isReal() ? PID + 0.3 * ks : PID;
     tankDriveVolts(effort, -effort);
   }
 

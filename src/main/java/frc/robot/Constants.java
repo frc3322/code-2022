@@ -32,7 +32,7 @@ public final class Constants {
 
       public static final double kGearing = 1;
 
-      public static final double kPVel = 0.0015;
+      public static final double kPVel = 0.0019;
     }
 
     public static final class Kicker {
@@ -111,8 +111,8 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3.3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 1.3;
+    public static final double kMaxSpeedMetersPerSecond = 3.5;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1.4; //1.3
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and
     // seconds
@@ -155,6 +155,7 @@ public final class Constants {
     public static final double shootOffset = 2.0;
 
     public static final double mountingAngleDegrees = 22.0;
+    public static final double oldMountingAngleDegrees = 22.5;
     public static final double mountingHeightInches = 35.5;
     public static final double visionTargetHeightInches = 102.5;
   }

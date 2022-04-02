@@ -44,7 +44,8 @@ public class LEDs extends SubsystemBase {
     BASE,
     ANGLE_GOOD,
     DIST_GOOD,
-    ANGLE_AND_DIST
+    ANGLE_AND_DIST,
+    TRANSFER_FULL
   }
 
   // Color constants here: https://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf
@@ -57,14 +58,15 @@ public class LEDs extends SubsystemBase {
   private final Spark blinkin = new Spark(0);
   // First state listed is default, last state listed is highest priority
   private Modes[] priority =
-      new Modes[] {Modes.BASE, Modes.ANGLE_GOOD, Modes.DIST_GOOD, Modes.ANGLE_AND_DIST};
+      new Modes[] {Modes.BASE, Modes.ANGLE_GOOD, Modes.TRANSFER_FULL, Modes.DIST_GOOD, Modes.ANGLE_AND_DIST};
 
   private HashMap<Modes, State> stateMap = new HashMap<>();
 
   /** Creates a new LEDs. */
   public LEDs() {
-    stateMap.put(Modes.BASE, State.defaultState(SOLIDRED));
-    stateMap.put(Modes.ANGLE_GOOD, State.conditionalState(SOLIDGREEN));
+    stateMap.put(Modes.BASE, State.defaultState(SOLIDBLUE));
+    stateMap.put(Modes.ANGLE_GOOD, State.conditionalState(RAINBOW));
+    stateMap.put(Modes.TRANSFER_FULL, State.conditionalState(SOLIDGREEN));
     stateMap.put(Modes.DIST_GOOD, State.conditionalState(SOLIDBLUE));
     stateMap.put(Modes.ANGLE_AND_DIST, State.conditionalState(RAINBOW));
   }

@@ -53,8 +53,7 @@ public class RobotContainer {
       new RunCommand(
           () ->
               climber.pivotTraverse(
-                  0.5 * secondController.getLeftTriggerAxis()
-                      - 0.5 * secondController.getRightTriggerAxis()),
+                  0.5 * secondController.getLeftTriggerAxis() - 0.5 * secondController.getRightTriggerAxis()),
           climber);
 
   public RobotContainer() {
@@ -73,13 +72,15 @@ public class RobotContainer {
     SmartDashboard.putData("Select Autonomous", autonChooser);
 
     // Trajectories
-
-    // Five ball
+    
+    //Five ball
     drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.initToWallToShoot, "Init to Shoot");
     drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.ShootToHPS, "Shoot To HPS");
+    drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.HPStoFarShoot, "HPS To Far Shoot");
     drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.slightForward, "Slight Forward");
 
-    // Four ball
+    //Four ball
+
 
     SmartDashboard.putNumber("Shooter Target RPM", 0);
   }
@@ -188,7 +189,7 @@ public class RobotContainer {
       addCommands(
           digestiveSystem.getShootCommand(
               () ->
-                  ShooterParams.getRPMFromDistanceMetersSupplier(
+                  ShooterParams.getOldRPMFromDistanceMetersSupplier(
                       () -> drivetrain.getDistanceToGoalMeters())),
           drivetrain.getTurnToLimelightCommand(),
           waitUntilAlignedAndSpedCommand.andThen(() -> feedCommand.schedule()));
@@ -253,7 +254,7 @@ public class RobotContainer {
               () -> drivetrain.resetOdometry(Trajectories.straightForward.getInitialPose())),
           drivetrain.getRamseteCommand(drivetrain, Trajectories.straightForward),
           digestiveSystem.getIntakeUpCommand(),
-          drivetrain.getProfiledTurnToAngleCommand(() -> 170).withTimeout(1),
+          drivetrain.profiledTurnToAngleCommand(() -> 170).withTimeout(1),
           getAutoShootCommand(8, true));
       // new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
 
@@ -283,25 +284,21 @@ public class RobotContainer {
                       .getIntakeDownCommand()
                       .andThen(new WaitCommand(3))
                       .andThen(digestiveSystem.getIntakeUpCommand())),
-          drivetrain.getProfiledTurnToAngleCommand(
-              () -> Trajectories.FiveBall.shootPose.getRotation().getDegrees()),
+          drivetrain.profiledTurnToAngleCommand(() -> -152.3),
           drivetrain.getRamseteCommand(drivetrain, Trajectories.FiveBall.slightForward),
-          getAutoShootCommand(3, true)
+          getAutoShootCommand(2, true)
               .alongWith(
                   new SequentialCommandGroup(
-                      new WaitCommand(1), digestiveSystem.getIntakeDownCommand())),
-          drivetrain.getProfiledTurnToAngleCommand(
-              () -> Trajectories.FiveBall.ShootToHPS.getInitialPose().getRotation().getDegrees()),
+                      new WaitCommand(0.15), digestiveSystem.getIntakeDownCommand())),
           drivetrain
               .getRamseteCommand(drivetrain, Trajectories.FiveBall.ShootToHPS)
               .alongWith(digestiveSystem.getIntakeDownCommand()),
           // new WaitCommand(1),
           drivetrain
-              .getRamseteCommand(drivetrain, Trajectories.FiveBall.HPStoShoot)
-              .alongWith(digestiveSystem.getIntakeUpCommand()),
-          drivetrain.getProfiledTurnToAngleCommand(
-              () -> Trajectories.FiveBall.shootPose.getRotation().getDegrees()),
-          getAutoShootCommand(2, true));
+              .getRamseteCommand(drivetrain, Trajectories.FiveBall.HPStoFarShoot),
+              drivetrain.profiledTurnToAngleCommand(() -> 185.4).withTimeout(1),
+          getAutoShootCommand(2, true)
+            .alongWith(digestiveSystem.getIntakeUpCommand()));
     }
   }
 

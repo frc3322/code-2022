@@ -135,6 +135,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     // Default to auto transfer balls from intake using beam breaks
     setDefaultCommand(new RunCommand(this::digestBalls, this));
 
+    LEDs.get().setCondition(LEDs.Modes.TRANSFER_FULL, () -> getStomachFull());
+
     // Set up sim values
     if (RobotBase.isSimulation()) {
       flywheelSimulator =

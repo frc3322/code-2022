@@ -90,7 +90,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
       new ProfiledPIDController(4, 0, 0.0006, new TrapezoidProfile.Constraints(10.0, 15.0));
   // P = 12, D = 0.06
 
-  private final PIDController turnToAngleController = new PIDController(0.18, 0, 0.007);
+  private final PIDController turnToAngleController = new PIDController(0.17, 0, 0.009);
 
   // Drivetrain sim
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -169,7 +169,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
 
     SmartDashboard.putData(
-        "turnToAngleProfiled", (SequentialCommandGroup) getProfiledTurnToAngleCommand(() -> 195.6));
+        "turnToAngleProfiled", (SequentialCommandGroup) profiledTurnToAngleCommand(() -> 195.6));
     SmartDashboard.putData("turnToLimelight", (RunCommand) getTurnToLimelightCommand());
     SmartDashboard.putNumber("TurnToAngle/kP", 0);
 
@@ -230,7 +230,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     SmartDashboard.putNumber(
         "TARGET RPM RIGHT HERE LOOK",
-        ShooterParams.getRPMFromDistanceMeters(getDistanceToGoalMeters()));
+        ShooterParams.getOldRPMFromDistanceMeters(getDistanceToGoalMeters()));
 
     double[] llpython =
         NetworkTableInstance.getDefault()
@@ -464,7 +464,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     tankDriveVolts(-(FF + PID), FF + PID);
   }
 
-  public Command getProfiledTurnToAngleCommand(DoubleSupplier goalSource) {
+  public Command profiledTurnToAngleCommand(DoubleSupplier goalSource) {
     return new InstantCommand(() -> setProfiledTurnToAngleGoalSource(goalSource))
         .andThen(
             new RunCommand(() -> profiledTurnToAngle(), this)

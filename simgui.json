@@ -80,6 +80,14 @@
           "arrows": false,
           "style": "Track"
         },
+        "HPS To Far Shoot": {
+          "arrows": false,
+          "style": "Track"
+        },
+        "HPS To Shoot": {
+          "arrows": false,
+          "style": "Track"
+        },
         "HPS to shoot": {
           "arrows": false,
           "style": "Track"
@@ -190,7 +198,9 @@
       "Distance test": {
         "open": true
       },
-      "open": true
+      "NightTime": {
+        "open": true
+      }
     }
   },
   "NetworkTables View": {

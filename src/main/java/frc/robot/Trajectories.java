@@ -36,8 +36,8 @@ public final class Trajectories {
     public static final Trajectory initToWallToShoot =
         TrajectoryGenerator.generateTrajectory(
             initPose,
-            List.of(new Translation2d(8.6, 7.6)),
-            new Pose2d(12.25, 6.75, new Rotation2d(Units.degreesToRadians(-60))),
+            List.of(new Translation2d(8.6, 7.6), new Translation2d(10.5, 7.73)),
+            new Pose2d(12.50, 6.85, new Rotation2d(Units.degreesToRadians(-60))),
             AutoConstants.config);
 
     public static final Pose2d shootPose =
@@ -45,23 +45,46 @@ public final class Trajectories {
             getLastPose(initToWallToShoot).getTranslation(),
             new Rotation2d(Units.degreesToRadians(-152.3)));
 
-    public static final Pose2d HPSpose =
-        new Pose2d(15.2, 6.95, new Rotation2d(Units.degreesToRadians(43)));
+    public static final Pose2d HPSpose = 
+    new Pose2d(15.27, 7.02, new Rotation2d(Units.degreesToRadians(43)));
 
     public static final Trajectory slightForward =
         TrajectoryGenerator.generateTrajectory(
-            List.of(shootPose, getColinearPose(shootPose, 0.5)), AutoConstants.config);
+            List.of(
+                shootPose,
+                getColinearPose(shootPose, 0.35)),
+            AutoConstants.config);
 
     public static final Trajectory ShootToHPS =
         TrajectoryGenerator.generateTrajectory(
-            List.of(new Pose2d(getLastPose(slightForward).getTranslation(), new Rotation2d(Units.degreesToRadians(-10))),
-            HPSpose),
+            getLastPose(slightForward),
+            List.of(new Translation2d(12.34, 5.73)),
+            HPSpose,
             AutoConstants.config);
 
     public static final Trajectory HPStoShoot =
         TrajectoryGenerator.generateTrajectory(
-            List.of(HPSpose,
-            new Pose2d(shootPose.getTranslation(), new Rotation2d(Units.degreesToRadians(-10)))),
+            HPSpose,
+            List.of(new Translation2d(12.75, 5.6)),
+            shootPose,
             AutoConstants.reversedConfig);
+
+    public static final Trajectory HPStoFarShoot =
+        // TrajectoryGenerator.generateTrajectory(
+        //     HPSpose,
+        //     List.of(new Translation2d(14.5, 6.0), new Translation2d(13.7, 6.2)),
+        //     new Pose2d(13.82, 7.0, new Rotation2d(Units.degreesToRadians(-155))),
+        //     AutoConstants.reversedConfig);
+
+            TrajectoryGenerator.generateTrajectory(
+            List.of(
+                HPSpose,    
+                getColinearPose(HPSpose, -1.4)),
+                
+                
+            AutoConstants.reversedConfig);
+            //new Pose2d(14.40, 5.95, new Rotation2d(Units.degreesToRadians(43.7)))),
+            // new Pose2d(14.39, 5.94, new Rotation2d(Units.degreesToRadians(175.4)))),
+
   }
 }

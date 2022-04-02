@@ -38,29 +38,29 @@ public class ShooterParams {
   private static final TreeMap<Double, Double> angleToRPMTableOld =
       new TreeMap<>(
           Map.ofEntries(
-              entry(18.5, 1260.0),
-              entry(16.4, 1325.0),
-              entry(14.0, 1400.0),
-              entry(11.5, 1475.0),
-              entry(8.7, 1550.0),
-              entry(5.4, 1600.0),
-              entry(4.45, 1700.0),
-              entry(3.8, 1725.0),
-              entry(2.95, 1750.0),
-              entry(1.92, 1775.0),
-              entry(1.45, 1860.0),
-              entry(0.4, 1875.0),
-              entry(-0.26, 1900.0),
-              entry(-1.59, 1930.0),
-              entry(-2.75, 1980.0),
-              entry(-3.3, 2175.0),
-              entry(-4.0, 2250.0),
-              entry(-4.6, 2275.0),
-              entry(-5.8, 2300.0),
-              entry(-6.5, 2425.0),
-              entry(-7.4, 2610.0),
-              entry(-8.4, 2650.0),
-              entry(-8.9, 2750.0)));
+              entry(angleToDistMeters(18.5, Limelight.oldMountingAngleDegrees), 1260.0),
+              entry(angleToDistMeters(16.4, Limelight.oldMountingAngleDegrees), 1325.0),
+              entry(angleToDistMeters(14.0, Limelight.oldMountingAngleDegrees), 1400.0),
+              entry(angleToDistMeters(11.5, Limelight.oldMountingAngleDegrees), 1475.0),
+              entry(angleToDistMeters(8.7, Limelight.oldMountingAngleDegrees), 1550.0),
+              entry(angleToDistMeters(5.4, Limelight.oldMountingAngleDegrees), 1600.0),
+              entry(angleToDistMeters(4.45, Limelight.oldMountingAngleDegrees), 1700.0),
+              entry(angleToDistMeters(3.8, Limelight.oldMountingAngleDegrees), 1725.0),
+              entry(angleToDistMeters(2.95, Limelight.oldMountingAngleDegrees), 1750.0),
+              entry(angleToDistMeters(1.92, Limelight.oldMountingAngleDegrees), 1775.0),
+              entry(angleToDistMeters(1.45, Limelight.oldMountingAngleDegrees), 1860.0),
+              entry(angleToDistMeters(0.4, Limelight.oldMountingAngleDegrees), 1875.0),
+              entry(angleToDistMeters(-0.26, Limelight.oldMountingAngleDegrees), 1900.0),
+              entry(angleToDistMeters(-1.59, Limelight.oldMountingAngleDegrees), 1930.0),
+              entry(angleToDistMeters(-2.75, Limelight.oldMountingAngleDegrees), 1980.0),
+              entry(angleToDistMeters(-3.3, Limelight.oldMountingAngleDegrees), 2175.0),
+              entry(angleToDistMeters(-4.0, Limelight.oldMountingAngleDegrees), 2250.0),
+              entry(angleToDistMeters(-4.6, Limelight.oldMountingAngleDegrees), 2275.0),
+              entry(angleToDistMeters(-5.8, Limelight.oldMountingAngleDegrees), 2300.0),
+              entry(angleToDistMeters(-6.5, Limelight.oldMountingAngleDegrees), 2425.0),
+              entry(angleToDistMeters(-7.4, Limelight.oldMountingAngleDegrees), 2610.0),
+              entry(angleToDistMeters(-8.4, Limelight.oldMountingAngleDegrees), 2650.0),
+              entry(angleToDistMeters(-8.9, Limelight.oldMountingAngleDegrees), 2750.0)));
 
   private static final TreeMap<Double, Double> distanceMetersToShootOffsetDegreesTable =
       new TreeMap<>(Map.ofEntries(entry(1.944, 2.0), entry(4.009, 2.0), entry(5.566, 0.0)));
@@ -99,15 +99,19 @@ public class ShooterParams {
     return getShootOffsetFromDistanceMeters(distanceMeters.getAsDouble());
   }
 
-  private static double distMetersToAngleDegrees(double distMeters, double mountingAngle) {
-    double angleRadians =
-        Math.atan(
-            (Limelight.visionTargetHeightInches - Limelight.mountingHeightInches) / distMeters);
-
-    return Units.radiansToDegrees(angleRadians);
+  private static double angleToDistMeters(double angleY, double mountingAngle) {
+    double angleRadians = Units.degreesToRadians(angleY + mountingAngle);
+    double distanceToGoalInches =
+        (Limelight.visionTargetHeightInches - Limelight.mountingHeightInches)
+            / Math.tan(angleRadians);
+    return Units.inchesToMeters(distanceToGoalInches);
   }
 
   public static Double getOldRPMFromDistanceMeters(Double distanceMeters) {
-    return lookUpValue(distMetersToAngleDegrees(distanceMeters, 22.0), angleToRPMTableOld);
+    return lookUpValue(distanceMeters, angleToRPMTableOld);
+  }
+
+  public static Double getOldRPMFromDistanceMetersSupplier(DoubleSupplier distanceMeters) {
+    return getOldRPMFromDistanceMeters(distanceMeters.getAsDouble());
   }
 }

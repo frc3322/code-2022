@@ -136,6 +136,10 @@
           "arrows": false,
           "style": ""
         },
+        "Slight Forward": {
+          "arrows": false,
+          "style": "Track"
+        },
         "Tarmac To Ball": {
           "arrows": false,
           "style": ""

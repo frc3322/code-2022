@@ -169,7 +169,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
 
     SmartDashboard.putData(
-        "turnToAngleProfiled", (SequentialCommandGroup) profiledTurnToAngleCommand(() -> 195.6));
+        "turnToAngleProfiled", (SequentialCommandGroup) getProfiledTurnToAngleCommand(() -> 195.6));
     SmartDashboard.putData("turnToLimelight", (RunCommand) getTurnToLimelightCommand());
     SmartDashboard.putNumber("TurnToAngle/kP", 0);
 
@@ -464,7 +464,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     tankDriveVolts(-(FF + PID), FF + PID);
   }
 
-  public Command profiledTurnToAngleCommand(DoubleSupplier goalSource) {
+  public Command getProfiledTurnToAngleCommand(DoubleSupplier goalSource) {
     return new InstantCommand(() -> setProfiledTurnToAngleGoalSource(goalSource))
         .andThen(
             new RunCommand(() -> profiledTurnToAngle(), this)

@@ -88,7 +88,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     driverController.rightBumper().whenHeld(new ShootCommand(true));
-    driverController.a().whenHeld(new ShootCommand(1250, true));
+    driverController.a().whenHeld(new ShootCommand(500, true));
     driverController
         .b()
         .whenHeld(new ShootCommand(() -> SmartDashboard.getNumber("Shooter Target RPM", 0), true));

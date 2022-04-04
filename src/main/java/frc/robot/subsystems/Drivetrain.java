@@ -230,7 +230,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     SmartDashboard.putNumber(
         "TARGET RPM RIGHT HERE LOOK",
-        ShooterParams.getOldRPMFromDistanceMeters(getDistanceToGoalMeters()));
+        ShooterParams.getRPMFromDistanceMeters(getDistanceToGoalMeters()));
 
     double[] llpython =
         NetworkTableInstance.getDefault()

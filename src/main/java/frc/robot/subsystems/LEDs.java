@@ -58,7 +58,9 @@ public class LEDs extends SubsystemBase {
   private final Spark blinkin = new Spark(0);
   // First state listed is default, last state listed is highest priority
   private Modes[] priority =
-      new Modes[] {Modes.BASE, Modes.ANGLE_GOOD, Modes.TRANSFER_FULL, Modes.DIST_GOOD, Modes.ANGLE_AND_DIST};
+      new Modes[] {
+        Modes.BASE, Modes.ANGLE_GOOD, Modes.TRANSFER_FULL, Modes.DIST_GOOD, Modes.ANGLE_AND_DIST
+      };
 
   private HashMap<Modes, State> stateMap = new HashMap<>();
 

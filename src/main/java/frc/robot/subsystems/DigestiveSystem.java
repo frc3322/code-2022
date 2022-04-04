@@ -157,7 +157,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
         .andThen(new RunCommand(() -> setSpinUpShooterCustomFreq(true)));
   }
 
-  public Command spinUpCommand(DoubleSupplier RPM) {
+  public Command getSpinUpCommand(DoubleSupplier RPM) {
     return new InstantCommand(() -> supplyFlywheelTargetSpeedRPM(RPM))
         .andThen(new InstantCommand(() -> setSpinUpShooterCustomFreq(true)));
   }

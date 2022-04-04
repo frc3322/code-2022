@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -32,8 +31,6 @@ public class Robot extends TimedRobot {
     addPeriodic(() -> robotContainer.spinUpFlywheelCustomFreq(), 0.01, 0.005);
     this.setNetworkTablesFlushEnabled(true);
     robotContainer.resetClimbEncoders();
-
-    SmartDashboard.putNumber("NightTime/Catboys", 0);
   }
 
   /**
@@ -52,9 +49,6 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     robotContainer.updateLogger();
-
-    SmartDashboard.putNumber("NightTime/Comprehendable horror", ShooterParams.getRPMFromDistanceMeters(SmartDashboard.getNumber("NightTime/Catboys", 0)));
-    SmartDashboard.putNumber("NightTime/Horrors beyond comprehension", ShooterParams.getOldRPMFromDistanceMeters(SmartDashboard.getNumber("NightTime/Catboys", 0)));
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -88,6 +82,7 @@ public class Robot extends TimedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
     robotContainer.resetClimbEncoders();
   }
 

@@ -25,6 +25,7 @@ import frc.robot.Constants.CAN;
 import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
 import frc.robot.Robot;
+import frc.robot.ShooterParams;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
@@ -152,9 +153,9 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   // Digestive system commands
 
   public Command getShootCommand(DoubleSupplier RPM) {
-    return new InstantCommand(() -> supplyFlywheelTargetSpeedRPM(RPM))
+    return new RunCommand(() -> supplyFlywheelTargetSpeedRPM(RPM))
         // () -> flywheelTargetVelRPM))
-        .andThen(new RunCommand(() -> setSpinUpShooterCustomFreq(true)));
+        .alongWith(new InstantCommand(() -> setSpinUpShooterCustomFreq(true)));
   }
 
   public Command getSpinUpCommand(DoubleSupplier RPM) {

@@ -90,7 +90,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
       new ProfiledPIDController(4, 0, 0.0006, new TrapezoidProfile.Constraints(10.0, 15.0));
   // P = 12, D = 0.06
 
-  private final PIDController turnToAngleController = new PIDController(0.17, 0, 0.009);
+  private final PIDController turnToAngleController = new PIDController(0.15, 0, 0.012);
 
   // Drivetrain sim
   private DifferentialDrivetrainSim drivetrainSimulator;
@@ -293,7 +293,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (Robot.isReal()) {
       leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
-      rightVolts += Math.copySign(Constants.Drive.ksVolts, rightVolts);
+      rightVolts += Math.copySign(Math.abs(rightVolts) > 0.16 ? Constants.Drive.ksVolts + 0.5 : Constants.Drive.ksVolts, rightVolts);
     }
 
     leftVolts = MathUtil.clamp(leftVolts, -12, 12);
@@ -432,7 +432,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   // Only for LEDs
   public Boolean getLimelightAligned() {
-    return Math.abs(limelightAngleX - 2) < limelightThreshold;
+    return Math.abs(limelightAngleX - ShooterParams.getShootOffsetFromDistanceMeters(getDistanceToGoalMeters())) < limelightThreshold;
   }
 
   // @Config

@@ -270,7 +270,7 @@ public class RobotContainer {
               () ->
                   drivetrain.resetGyro(Trajectories.FiveBall.initPose.getRotation().getDegrees())),
           new InstantCommand(() -> drivetrain.resetOdometry(Trajectories.FiveBall.initPose)),
-          digestiveSystem.getSpinUpCommand(() -> 1000.0),
+          digestiveSystem.getSpinUpCommand(() -> 1900.0),
           drivetrain
               .getRamseteCommand(drivetrain, Trajectories.FiveBall.initToWallToShoot)
               .alongWith(
@@ -278,12 +278,12 @@ public class RobotContainer {
                       .getIntakeDownCommand()
                       .andThen(new WaitCommand(3))
                       .andThen(digestiveSystem.getIntakeUpCommand())),
-          drivetrain.profiledTurnToAngleCommand(() -> -152.3),
-          getAutoShootCommand(2, false),
-          drivetrain
-              .getRamseteCommand(drivetrain, Trajectories.FiveBall.slightForward)
-              .alongWith(digestiveSystem.getIntakeDownCommand()),
-          getAutoShootCommand(1, true),
+          drivetrain.profiledTurnToAngleCommand(() -> -148),
+          getAutoShootCommand(1.5, false),
+          // drivetrain
+          //     .getRamseteCommand(drivetrain, Trajectories.FiveBall.slightForward)
+          //     .alongWith(digestiveSystem.getIntakeDownCommand()),
+          // getAutoShootCommand(1, true),
           //   .alongWith(
           //       new SequentialCommandGroup(
           //           new WaitCommand(0.15), digestiveSystem.getIntakeDownCommand())),
@@ -293,8 +293,8 @@ public class RobotContainer {
           // new WaitCommand(1),
           drivetrain
               .getRamseteCommand(drivetrain, Trajectories.FiveBall.HPStoFarShoot)
-              .alongWith(digestiveSystem.getSpinUpCommand(() -> 1000.0)),
-          drivetrain.profiledTurnToAngleCommand(() -> 200).withTimeout(2),
+              .alongWith(digestiveSystem.getSpinUpCommand(() -> 2400.0)),
+          drivetrain.profiledTurnToAngleCommand(() -> 195).withTimeout(2),
           getAutoShootCommand(2, true).alongWith(digestiveSystem.getIntakeUpCommand()));
     }
   }

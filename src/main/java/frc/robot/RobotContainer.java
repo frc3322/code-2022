@@ -67,7 +67,7 @@ public class RobotContainer {
     climber.setDefaultCommand(traverseCommand);
 
     autonChooser.setDefaultOption("Two Ball (Positionable)", new TwoBallPositionableAuto());
-    autonChooser.addOption("Five Ball Auto", new FiveBallAuto());
+    autonChooser.addOption("Four Ball Auto", new FourBallAuto());
 
     SmartDashboard.putData("Select Autonomous", autonChooser);
 
@@ -75,9 +75,9 @@ public class RobotContainer {
 
     // Five ball
     drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.initToWallToShoot, "Init to Shoot");
-    // drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.ShootToHPS, "Shoot To HPS");
-    // drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.HPStoFarShoot, "HPS To Far Shoot");
-    drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.slightForward, "Slight Forward");
+    drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.ShootToHPS, "Shoot To HPS");
+    drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.HPStoFarShoot, "HPS To Far Shoot");
+    // drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.slightForward, "Slight Forward");
 
     // drivetrain.putTrajOnFieldWidget(Trajectories.FiveBall.altInitToWallToShoot, "Alt Init to Wall
     // to Shoot");
@@ -88,7 +88,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     driverController.rightBumper().whenHeld(new ShootCommand(true));
-    driverController.a().whenHeld(new ShootCommand(500, true));
+    driverController.a().whenHeld(new ShootCommand(100, true));
     driverController
         .b()
         .whenHeld(new ShootCommand(() -> SmartDashboard.getNumber("Shooter Target RPM", 0), true));
@@ -261,10 +261,10 @@ public class RobotContainer {
   get real coords from field asap
   visit thors moms house immediately */
 
-  private class FiveBallAuto extends SequentialCommandGroup {
+  private class FourBallAuto extends SequentialCommandGroup {
     private final Command feedCommand = digestiveSystem.feedCommand();
 
-    private FiveBallAuto() {
+    private FourBallAuto() {
       addCommands(
           new InstantCommand(
               () ->

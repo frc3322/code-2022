@@ -87,6 +87,12 @@
         },
         "HPS To Far Shoot": {
           "arrows": false,
+          "color": [
+            0.0,
+            202.50001525878906,
+            255.0,
+            255.0
+          ],
           "style": "Track"
         },
         "HPS To Shoot": {
@@ -141,6 +147,12 @@
         },
         "Shoot To HPS": {
           "arrows": false,
+          "color": [
+            0.9117646217346191,
+            0.0,
+            1.0,
+            255.0
+          ],
           "style": "Track"
         },
         "Shoot To Human Player": {
@@ -190,7 +202,10 @@
           "style": "Track"
         },
         "units": "meters",
-        "width": 16.459199905395508
+        "width": 16.459199905395508,
+        "window": {
+          "visible": true
+        }
       },
       "/SmartDashboard/Select Autonomous": {
         "window": {

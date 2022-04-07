@@ -168,6 +168,18 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
         () -> setTransferSpeedVolts(6), () -> setTransferSpeedVolts(0), this);
   }
 
+  public Command lowGoalShootCommand() {
+    return new StartEndCommand(
+      () -> {
+        setKickerVoltage(2);
+        setFlywheelVoltage(1);
+      },
+      () -> {
+        setKickerVoltage(0);
+        setFlywheelVoltage(0);
+      }).alongWith(feedCommand());
+  }
+
   // Only use in auton, up and down get reversed when cancelled while running
   public Command getIntakeDownCommand() {
     return new StartEndCommand(

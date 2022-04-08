@@ -130,7 +130,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
   @Log private double yPosition;
 
   private LinearFilter accelFilter = LinearFilter.movingAverage(40);
-  SlewRateLimiter accelLimit = new SlewRateLimiter(1);
+  SlewRateLimiter accelLimit = new SlewRateLimiter(1.2);
   SlewRateLimiter turnLimit = new SlewRateLimiter(2);
 
   @Log private boolean profiledTurnToAngleAtGoal;

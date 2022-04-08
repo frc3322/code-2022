@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
@@ -171,13 +172,13 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public Command lowGoalShootCommand() {
     return new StartEndCommand(
       () -> {
-        setKickerVoltage(2);
-        setFlywheelVoltage(1);
+        setKickerVoltage(-2);
+        setFlywheelVoltage(3.3);
       },
       () -> {
         setKickerVoltage(0);
         setFlywheelVoltage(0);
-      }).alongWith(feedCommand());
+      }).alongWith(new WaitCommand(0.5).andThen(feedCommand()));
   }
 
   // Only use in auton, up and down get reversed when cancelled while running

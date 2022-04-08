@@ -195,8 +195,20 @@
           "arrows": false,
           "style": "Track"
         },
+        "first ball to HPS": {
+          "arrows": false,
+          "style": "Track"
+        },
         "height": 8.229599952697754,
-        "image": "C:\\Users\\twhel\\Downloads\\field.png",
+        "hps to shoot": {
+          "arrows": false,
+          "style": "Track"
+        },
+        "image": "C:\\Users\\robots\\Downloads\\field.png",
+        "init to first ball": {
+          "arrows": false,
+          "style": "Track"
+        },
         "shootToOutsideTarmacToHPS": {
           "arrows": false,
           "style": "Track"
@@ -246,7 +258,7 @@
               "autoFit": true
             }
           ],
-          "height": 385,
+          "height": -6,
           "series": [
             {
               "color": [

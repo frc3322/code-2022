@@ -228,7 +228,10 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
-      "DigestiveSystem": {
+      "Shoot Tuning": {
+        "RPM Table": {
+          "open": true
+        },
         "open": true
       },
       "open": true

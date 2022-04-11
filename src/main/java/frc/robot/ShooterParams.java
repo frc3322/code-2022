@@ -6,7 +6,16 @@ package frc.robot;
 
 import static java.util.Map.entry;
 
+import java.util.List;
+
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.Limelight;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -19,6 +28,12 @@ import java.util.function.DoubleSupplier;
 /** Add your docs here. */
 public class ShooterParams implements Loggable {
   private static double psiOffset = 0;
+  private static ShuffleboardTab shooterTuning = Shuffleboard.getTab("Shoot Tuning");
+  private static ShuffleboardLayout rpmTable = shooterTuning    
+      .getLayout("RPM Table", BuiltInLayouts.kGrid)
+      .withSize(2, 5);
+
+  private static TreeMap<Double, NetworkTableEntry> shooterTableValues = new TreeMap<>(Map.ofEntries());
 
   private static final TreeMap<Double, Double> distanceMetersToRPMTable =
       new TreeMap<>(
@@ -33,36 +48,23 @@ public class ShooterParams implements Loggable {
             entry(8.0, 2550.0),
             entry(9.0, 2650.0)));
 
-  private static final TreeMap<Double, Double> distanceMetersToRPMTableBad =
-      new TreeMap<>(
-          Map.ofEntries(
-              entry(1.96, 1260.0 - 100.0),
-              entry(2.11, 1325.0 - 100.0),
-              entry(2.30, 1400.0 - 100.0),
-              entry(2.52, 1475.0 - 125.0),
-              entry(2.81, 1550.0 - 125.0),
-              entry(3.21, 1600.0 - 150.0),
-              entry(3.35, 1700.0 - 150.0),
-              entry(3.44, 1725.0 - 150.0),
-              entry(3.58, 1750.0 - 150.0),
-              entry(3.75, 1775.0 - 150.0),
-              entry(3.83, 1860.0 - 150.0),
-              entry(4.03, 1875.0 - 150.0),
-              entry(4.16, 1900.0 - 150.0),
-              entry(4.45, 1930.0 - 150.0),
-              entry(4.74, 1980.0 - 150.0),
-              entry(4.89, 2175.0 - 180 - 150.0),
-              entry(5.09, 2250.0 - 200 - 150.0),
-              entry(5.27, 2275.0 - 200 - 150.0),
-              entry(5.67, 2300.0 - 200 - 150.0),
-              entry(5.93, 2425.0 - 150 - 150.0),
-              entry(6.31, 2610.0 - 100 - 150.0),
-              entry(6.78, 2650.0 - 100 - 150.0),
-              entry(7.03, 2750.0 - 100 - 150.0),
-              entry(7.5, 2910.0),
-              entry(7.75, 3010.0)));
-
   private ShooterParams() {}
+
+  public static void putShooterTuningsOnShuffleboard() {
+    for(Map.Entry<Double, Double> entry : distanceMetersToRPMTable.entrySet()) {
+      Double key = entry.getKey();
+      NetworkTableEntry networkTableEntry = rpmTable.addPersistent(key + " meters", entry.getValue()).getEntry();
+      SmartDashboard.putNumber("KEY", key);
+      shooterTableValues.put(key, networkTableEntry);
+    }
+  }
+
+  public static void updateShooterTunings() {
+
+    for(Map.Entry<Double, Double> entry : distanceMetersToRPMTable.entrySet()) {
+      entry.setValue(shooterTableValues.get(entry.getKey()).getValue().getDouble());
+    }
+  }
 
   private static final TreeMap<Double, Double> distanceMetersToShootOffsetDegreesTable =
       new TreeMap<>(Map.ofEntries(entry(1.944, 2.0), entry(4.009, 2.0), entry(5.566, 0.0)));

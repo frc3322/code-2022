@@ -160,6 +160,16 @@ public class RobotContainer {
                         drivetrain.resetGyro(
                             Trajectories.FourBall.initPose.getRotation().getDegrees()))
                 .andThen(() -> drivetrain.resetOdometry(Trajectories.FourBall.initPose)));
+
+    secondController
+        .upperPOV()
+        .whenPressed(() -> ShooterParams.setPSIOffset(ShooterParams.getPSIOffset() + 50.0));
+
+    secondController
+        .lowerPOV()
+        .whenPressed(() -> ShooterParams.setPSIOffset(ShooterParams.getPSIOffset() - 50.0));
+
+    new Trigger(() -> driverController.getRightTriggerAxis() > 0.2).whileActiveOnce(new InstantCommand(()->digestiveSystem.setIntakeSpeedVolts(8))).whenInactive(new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
   }
 
   public Command getAutonomousCommand() {
@@ -249,8 +259,8 @@ public class RobotContainer {
               () -> drivetrain.resetOdometry(Trajectories.straightForward.getInitialPose())),
           drivetrain.getRamseteCommand(drivetrain, Trajectories.straightForward),
           digestiveSystem.getIntakeUpCommand(),
-          drivetrain.profiledTurnToAngleCommand(() -> 170).withTimeout(1),
-          getAutoShootCommand(8, true));
+          drivetrain.profiledTurnToAngleCommand(() -> 180).withTimeout(1),
+          new ShootCommand(2200, true));
       // new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
 
     }

@@ -168,6 +168,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     // second
     FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
 
+    FL.burnFlash();
+    FR.burnFlash();
+    BL.burnFlash();
+    BR.burnFlash();
+
     SmartDashboard.putData(
         "turnToAngleProfiled", (SequentialCommandGroup) profiledTurnToAngleCommand(() -> 195.6));
     SmartDashboard.putData("turnToLimelight", (RunCommand) getTurnToLimelightCommand());

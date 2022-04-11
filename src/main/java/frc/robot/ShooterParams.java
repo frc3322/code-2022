@@ -8,15 +8,32 @@ import static java.util.Map.entry;
 
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.Limelight;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.DoubleSupplier;
 
 /** Add your docs here. */
-public class ShooterParams {
+public class ShooterParams implements Loggable {
+  private static double psiOffset = 0;
 
   private static final TreeMap<Double, Double> distanceMetersToRPMTable =
+      new TreeMap<>(
+          Map.ofEntries(
+            entry(1.0, 1300.0),
+            entry(2.0, 1350.0),
+            entry(3.0, 1430.0),
+            entry(4.0, 1600.0),
+            entry(5.0, 1950.0),
+            entry(6.0, 2300.0),
+            entry(7.0, 2400.0),
+            entry(8.0, 2550.0),
+            entry(9.0, 2650.0)));
+
+  private static final TreeMap<Double, Double> distanceMetersToRPMTableBad =
       new TreeMap<>(
           Map.ofEntries(
               entry(1.96, 1260.0 - 100.0),
@@ -69,7 +86,7 @@ public class ShooterParams {
   }
 
   public static Double getRPMFromDistanceMeters(double distanceMeters) {
-    return lookUpValue(distanceMeters, distanceMetersToRPMTable);
+    return lookUpValue(distanceMeters, distanceMetersToRPMTable) + psiOffset;
   }
 
   public static Double getRPMFromDistanceMetersSupplier(DoubleSupplier distanceMeters) {
@@ -90,5 +107,13 @@ public class ShooterParams {
         (Limelight.visionTargetHeightInches - Limelight.mountingHeightInches)
             / Math.tan(angleRadians);
     return Units.inchesToMeters(distanceToGoalInches);
+  }
+
+  public static double getPSIOffset() {
+    return psiOffset;
+  }
+
+  public static void setPSIOffset(double offset) {
+    psiOffset = offset;
   }
 }

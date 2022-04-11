@@ -127,6 +127,14 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     intakeExternalLift.setIdleMode(IdleMode.kBrake);
     intakeExternalLift.setSmartCurrentLimit(15);
 
+    intake.burnFlash();
+    transfer.burnFlash();
+    flywheelL.burnFlash();
+    flywheelR.burnFlash();
+    kicker.burnFlash();
+    intakeExternal.burnFlash();
+    intakeExternalLift.burnFlash();
+
     // Config encoders
     flywheelShaftEncoder.setDistancePerPulse(1. / 2048.);
     flywheelShaftEncoder.setSamplesToAverage(4);

@@ -216,10 +216,10 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
-      "DigestiveSystem": {
-        "open": true
-      },
-      "Drivetrain": {
+      "Shoot Tuning": {
+        "RPM Table": {
+          "open": true
+        },
         "open": true
       },
       "open": true

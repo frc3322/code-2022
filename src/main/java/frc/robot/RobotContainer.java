@@ -159,7 +159,6 @@ public class RobotContainer {
                             Trajectories.FiveBall.initPose.getRotation().getDegrees()))
                 .andThen(() -> drivetrain.resetOdometry(Trajectories.FiveBall.initPose)));
 
-    testController.a().whenPressed(new InstantCommand(() -> ShooterParams.updateShooterTunings()));
   }
 
   public Command getAutonomousCommand() {

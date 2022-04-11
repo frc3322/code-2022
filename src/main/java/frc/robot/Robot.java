@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.Shooter;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -31,6 +32,8 @@ public class Robot extends TimedRobot {
     addPeriodic(() -> robotContainer.spinUpFlywheelCustomFreq(), 0.01, 0.005);
     this.setNetworkTablesFlushEnabled(true);
     robotContainer.resetClimbEncoders();
+
+    ShooterParams.putShooterTuningsOnShuffleboard();
   }
 
   /**
@@ -49,6 +52,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     robotContainer.updateLogger();
+    ShooterParams.updateShooterTunings();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -79,6 +83,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }

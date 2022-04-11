@@ -42,21 +42,22 @@ public class ShooterParams {
               entry(6.0, 2200.0),
               entry(7.0, 2650.0)));
 
-  private ShooterParams() {
-    for(Map.Entry<Double, Double> entry : distanceMetersToRPMTable.entrySet()) {
-      NetworkTableEntry networkTableEntry = rpmTable.addPersistent(entry.getKey() + " meters", entry.getValue()).getEntry();
-      Double key = entry.getKey();
-      shooterTableValues.entrySet().add(Map.entry(key, networkTableEntry));
-    }
+  private ShooterParams() {}
 
-    SmartDashboard.putNumber("Shooter First tuning", shooterTableValues.get(1.0).getValue().getDouble());
+  public static void putShooterTuningsOnShuffleboard() {
+    for(Map.Entry<Double, Double> entry : distanceMetersToRPMTable.entrySet()) {
+      Double key = entry.getKey();
+      NetworkTableEntry networkTableEntry = rpmTable.addPersistent(key + " meters", entry.getValue()).getEntry();
+      SmartDashboard.putNumber("KEY", key);
+      shooterTableValues.put(key, networkTableEntry);
+    }
   }
 
   public static void updateShooterTunings() {
 
-    // for(Map.Entry<Double, Double> entry : distanceMetersToRPMTable.entrySet()) {
-    //   entry.setValue(shooterTableValues.get(entry.getKey()).getValue().getDouble());
-    // }
+    for(Map.Entry<Double, Double> entry : distanceMetersToRPMTable.entrySet()) {
+      entry.setValue(shooterTableValues.get(entry.getKey()).getValue().getDouble());
+    }
   }
 
   private static final TreeMap<Double, Double> distanceMetersToShootOffsetDegreesTable =

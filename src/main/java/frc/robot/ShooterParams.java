@@ -54,7 +54,6 @@ public class ShooterParams implements Loggable {
     for(Map.Entry<Double, Double> entry : distanceMetersToRPMTable.entrySet()) {
       Double key = entry.getKey();
       NetworkTableEntry networkTableEntry = rpmTable.addPersistent(key + " meters", entry.getValue()).getEntry();
-      SmartDashboard.putNumber("KEY", key);
       shooterTableValues.put(key, networkTableEntry);
     }
   }

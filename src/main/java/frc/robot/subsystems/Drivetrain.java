@@ -53,6 +53,7 @@ import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import frc.robot.ShooterParams;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -339,6 +340,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double angVel = (getHeadingRad() - lastHeadingRad) / 0.02;
     lastHeadingRad = getHeadingRad();
     return angVel;
+  }
+
+  @Config
+  public void setLimelightAngleY(double angle) {
+    limelightAngleY = angle;
   }
 
   public double getLimelightAngleX() {

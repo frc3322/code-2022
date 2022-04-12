@@ -33,7 +33,7 @@ public class ShooterParams implements Loggable {
       .getLayout("RPM Table", BuiltInLayouts.kGrid)
       .withSize(2, 5);
 
-  private static TreeMap<Double, NetworkTableEntry> shooterTableValues = new TreeMap<>(Map.ofEntries());
+  private static TreeMap<Double, NetworkTableEntry> rpmTableValues = new TreeMap<>(Map.ofEntries());
 
   private static final TreeMap<Double, Double> distanceMetersToRPMTable =
       new TreeMap<>(
@@ -54,14 +54,21 @@ public class ShooterParams implements Loggable {
     for(Map.Entry<Double, Double> entry : distanceMetersToRPMTable.entrySet()) {
       Double key = entry.getKey();
       NetworkTableEntry networkTableEntry = rpmTable.addPersistent(key + " meters", entry.getValue()).getEntry();
-      shooterTableValues.put(key, networkTableEntry);
+      rpmTableValues.put(key, networkTableEntry);
     }
   }
 
   public static void updateShooterTunings() {
 
     for(Map.Entry<Double, Double> entry : distanceMetersToRPMTable.entrySet()) {
-      entry.setValue(shooterTableValues.get(entry.getKey()).getValue().getDouble());
+      entry.setValue(rpmTableValues.get(entry.getKey()).getValue().getDouble());
+    }
+  }
+
+  public static void offsetShootTunings(double offset) {
+    for(Entry<Double, NetworkTableEntry> entry : rpmTableValues.entrySet()) {
+      NetworkTableEntry networkTableEntry = entry.getValue();
+      networkTableEntry.setDouble(networkTableEntry.getValue().getDouble() + offset);
     }
   }
 

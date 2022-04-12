@@ -228,6 +228,9 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
+      "Drivetrain": {
+        "open": true
+      },
       "Shoot Tuning": {
         "RPM Table": {
           "open": true
@@ -245,7 +248,8 @@
       },
       "NightTime": {
         "open": true
-      }
+      },
+      "open": true
     }
   },
   "Plot": {
@@ -257,7 +261,7 @@
               "autoFit": true
             }
           ],
-          "height": -6,
+          "height": 385,
           "series": [
             {
               "color": [

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Shooter;
 import frc.robot.Trajectories.*;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DigestiveSystem;
@@ -163,11 +164,11 @@ public class RobotContainer {
 
     secondController
         .upperPOV()
-        .whenPressed(() -> ShooterParams.setPSIOffset(ShooterParams.getPSIOffset() + 50.0));
+        .whenPressed(() -> ShooterParams.offsetShootTunings(50));
 
     secondController
         .lowerPOV()
-        .whenPressed(() -> ShooterParams.setPSIOffset(ShooterParams.getPSIOffset() - 50.0));
+        .whenPressed(() -> ShooterParams.offsetShootTunings(-50));
 
     new Trigger(() -> driverController.getRightTriggerAxis() > 0.2).whileActiveOnce(new InstantCommand(()->digestiveSystem.setIntakeSpeedVolts(8))).whenInactive(new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
   }

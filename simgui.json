@@ -204,7 +204,7 @@
           "arrows": false,
           "style": "Track"
         },
-        "image": "C:\\Users\\robots\\Downloads\\field.png",
+        "image": "C:\\Users\\twhel\\Downloads\\field.png",
         "init to first ball": {
           "arrows": false,
           "style": "Track"
@@ -228,13 +228,13 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
-      "Drivetrain": {
-        "open": true
-      },
       "Shoot Tuning": {
         "RPM Table": {
           "open": true
         },
+        "open": true
+      },
+      "Shooter Tuning": {
         "open": true
       },
       "open": true

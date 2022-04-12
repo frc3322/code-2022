@@ -27,7 +27,7 @@ import java.util.function.DoubleSupplier;
 
 /** Add your docs here. */
 public class ShooterParams implements Loggable {
-  private static double psiOffset = 0;
+
   private static ShuffleboardTab shooterTuning = Shuffleboard.getTab("Shoot Tuning");
   private static ShuffleboardLayout rpmTable = shooterTuning    
       .getLayout("RPM Table", BuiltInLayouts.kGrid)
@@ -94,7 +94,7 @@ public class ShooterParams implements Loggable {
   }
 
   public static Double getRPMFromDistanceMeters(double distanceMeters) {
-    return lookUpValue(distanceMeters, distanceMetersToRPMTable) + psiOffset;
+    return lookUpValue(distanceMeters, distanceMetersToRPMTable);
   }
 
   public static Double getRPMFromDistanceMetersSupplier(DoubleSupplier distanceMeters) {
@@ -115,13 +115,5 @@ public class ShooterParams implements Loggable {
         (Limelight.visionTargetHeightInches - Limelight.mountingHeightInches)
             / Math.tan(angleRadians);
     return Units.inchesToMeters(distanceToGoalInches);
-  }
-
-  public static double getPSIOffset() {
-    return psiOffset;
-  }
-
-  public static void setPSIOffset(double offset) {
-    psiOffset = offset;
   }
 }

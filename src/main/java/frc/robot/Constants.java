@@ -154,8 +154,9 @@ public final class Constants {
   public static class Limelight {
     public static final double shootOffset = 2.0;
 
-    public static final double mountingAngleDegrees = 23.0;
-    public static final double oldMountingAngleDegrees = 22.5;
+    // Turns out this was not constant
+    public static double mountingAngleDegrees = 23.0;
+    
     public static final double mountingHeightInches = 35.5;
     public static final double visionTargetHeightInches = 102.5;
   }

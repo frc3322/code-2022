@@ -28,7 +28,7 @@ import java.util.function.DoubleSupplier;
 /** Add your docs here. */
 public class ShooterParams implements Loggable {
 
-  private static ShuffleboardTab shooterTuning = Shuffleboard.getTab("Shoot Tuning");
+  private static ShuffleboardTab shooterTuning = Shuffleboard.getTab("Shooter Tuning");
   private static ShuffleboardLayout rpmTable = shooterTuning    
       .getLayout("RPM Table", BuiltInLayouts.kGrid)
       .withSize(2, 5);

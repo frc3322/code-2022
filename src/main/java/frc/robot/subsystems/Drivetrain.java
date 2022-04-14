@@ -53,6 +53,7 @@ import frc.robot.RelativeEncoderSim;
 import frc.robot.Robot;
 import frc.robot.ShooterParams;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -298,7 +299,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (Robot.isReal()) {
       leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
-      rightVolts += Math.copySign(Math.abs(rightVolts) > 0.2 ? Constants.Drive.ksVolts + 0.21 : Constants.Drive.ksVolts, rightVolts);
+      rightVolts +=
+          Math.copySign(
+              Math.abs(rightVolts) > 0.2 ? Constants.Drive.ksVolts + 0.21 : Constants.Drive.ksVolts,
+              rightVolts);
     }
 
     leftVolts = MathUtil.clamp(leftVolts, -12, 12);
@@ -343,6 +347,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double angVel = (getHeadingRad() - lastHeadingRad) / 0.02;
     lastHeadingRad = getHeadingRad();
     return angVel;
+  }
+
+  @Config
+  public void setLimelightAngleY(double angle) {
+    limelightAngleY = angle;
   }
 
   public double getLimelightAngleX() {
@@ -442,7 +451,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
   // Only for LEDs
   public Boolean getLimelightAligned() {
-    return Math.abs(limelightAngleX - ShooterParams.getShootOffsetFromDistanceMeters(getDistanceToGoalMeters())) < limelightThreshold;
+    return Math.abs(
+            limelightAngleX
+                - ShooterParams.getShootOffsetFromDistanceMeters(getDistanceToGoalMeters()))
+        < limelightThreshold;
   }
 
   // @Config

@@ -204,7 +204,7 @@
           "arrows": false,
           "style": "Track"
         },
-        "image": "C:\\Users\\robots\\Downloads\\field.png",
+        "image": "C:\\Users\\twhel\\Downloads\\field.png",
         "init to first ball": {
           "arrows": false,
           "style": "Track"
@@ -234,6 +234,9 @@
         },
         "open": true
       },
+      "Shooter Tuning": {
+        "open": true
+      },
       "open": true
     },
     "SmartDashboard": {
@@ -245,7 +248,8 @@
       },
       "NightTime": {
         "open": true
-      }
+      },
+      "open": true
     }
   },
   "Plot": {
@@ -257,7 +261,7 @@
               "autoFit": true
             }
           ],
-          "height": -6,
+          "height": 385,
           "series": [
             {
               "color": [

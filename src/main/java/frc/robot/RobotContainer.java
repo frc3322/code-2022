@@ -161,17 +161,16 @@ public class RobotContainer {
                             Trajectories.FourBall.initPose.getRotation().getDegrees()))
                 .andThen(() -> drivetrain.resetOdometry(Trajectories.FourBall.initPose)));
 
-    secondController
-        .upperPOV()
-        .whenPressed(() -> ShooterParams.setPSIOffset(ShooterParams.getPSIOffset() + 50.0));
+    secondController.upperPOV().whenPressed(() -> ShooterParams.offsetShootTunings(50));
 
-    secondController
-        .lowerPOV()
-        .whenPressed(() -> ShooterParams.setPSIOffset(ShooterParams.getPSIOffset() - 50.0));
+    secondController.lowerPOV().whenPressed(() -> ShooterParams.offsetShootTunings(-50));
 
-    new Trigger(() -> driverController.getRightTriggerAxis() > 0.2).whileActiveOnce(new InstantCommand(()->digestiveSystem.setIntakeSpeedVolts(8))).whenInactive(new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
-  
-    new Trigger(() -> driverController.getLeftTriggerAxis() > 0.2).whileActiveOnce(new ShootCommand(ShooterParams.getRPMFromDistanceMeters(3), true));
+    new Trigger(() -> driverController.getRightTriggerAxis() > 0.2)
+        .whileActiveOnce(new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(8)))
+        .whenInactive(new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
+
+    new Trigger(() -> driverController.getLeftTriggerAxis() > 0.2)
+        .whileActiveOnce(new ShootCommand(ShooterParams.getRPMFromDistanceMeters(3), true));
   }
 
   public Command getAutonomousCommand() {
@@ -185,8 +184,8 @@ public class RobotContainer {
         new Trigger(
             () ->
                 (drivetrain.getTurnToAngleAtSetpoint()
-                    && digestiveSystem.flywheelAtTargetVelRPM() 
-                        && drivetrain.getLimelightHasTarget()));
+                    && digestiveSystem.flywheelAtTargetVelRPM()
+                    && drivetrain.getLimelightHasTarget()));
 
     private final Trigger sped = new Trigger(() -> digestiveSystem.flywheelAtTargetVelRPM());
 
@@ -320,23 +319,23 @@ public class RobotContainer {
       addCommands(
           new InstantCommand(
               () ->
-                  drivetrain.resetGyro(Trajectories.altFourBall.initPose.getRotation().getDegrees())),
+                  drivetrain.resetGyro(
+                      Trajectories.altFourBall.initPose.getRotation().getDegrees())),
           new InstantCommand(() -> drivetrain.resetOdometry(Trajectories.altFourBall.initPose)),
           digestiveSystem.getSpinUpCommand(() -> 1900.0),
           drivetrain
               .getRamseteCommand(drivetrain, Trajectories.altFourBall.initToFirstBall)
-              .alongWith(
-                  digestiveSystem
-                      .getIntakeDownCommand()),
+              .alongWith(digestiveSystem.getIntakeDownCommand()),
           drivetrain.profiledTurnToAngleCommand(() -> 204),
-          getAutoShootCommand(1.5, false)
-            .alongWith(digestiveSystem.getIntakeUpCommand()),
+          getAutoShootCommand(1.5, false).alongWith(digestiveSystem.getIntakeUpCommand()),
           drivetrain.profiledTurnToAngleCommand(() -> 24),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.altFourBall.firstBallToHPS)
-              .alongWith(digestiveSystem.getIntakeDownCommand()),          
+          drivetrain
+              .getRamseteCommand(drivetrain, Trajectories.altFourBall.firstBallToHPS)
+              .alongWith(digestiveSystem.getIntakeDownCommand()),
           drivetrain.getRamseteCommand(drivetrain, Trajectories.altFourBall.slightBackward),
-          //new WaitCommand(1),
-          drivetrain.getRamseteCommand(drivetrain, Trajectories.altFourBall.HPStoShoot)
+          // new WaitCommand(1),
+          drivetrain
+              .getRamseteCommand(drivetrain, Trajectories.altFourBall.HPStoShoot)
               .alongWith(digestiveSystem.getSpinUpCommand(() -> 2400.0)),
           drivetrain.profiledTurnToAngleCommand(() -> 208).withTimeout(2),
           getAutoShootCommand(2, true).alongWith(digestiveSystem.getIntakeUpCommand()));

@@ -97,12 +97,22 @@ public final class Trajectories {
 
     public static final Pose2d HPSpose = FourBall.HPSpose;
 
-    public static final Trajectory initToFirstBall = TrajectoryGenerator.generateTrajectory(
-        List.of(initPose, getColinearPose(initPose, 2)), AutoConstants.config);
+    public static final Trajectory initToFirstBall =
+        TrajectoryGenerator.generateTrajectory(
+            List.of(initPose, getColinearPose(initPose, 2)), AutoConstants.config);
 
-    public static final Trajectory firstBallToHPS = TrajectoryGenerator.generateTrajectory(List.of(getLastPose(initToFirstBall), getColinearPose(HPSpose, -0.1)), AutoConstants.config);
-    public static final Trajectory slightBackward = TrajectoryGenerator.generateTrajectory(List.of(getLastPose(firstBallToHPS), getColinearPose(getLastPose(firstBallToHPS), -0.4)), AutoConstants.reversedConfig);
+    public static final Trajectory firstBallToHPS =
+        TrajectoryGenerator.generateTrajectory(
+            List.of(getLastPose(initToFirstBall), getColinearPose(HPSpose, -0.1)),
+            AutoConstants.config);
+    public static final Trajectory slightBackward =
+        TrajectoryGenerator.generateTrajectory(
+            List.of(
+                getLastPose(firstBallToHPS), getColinearPose(getLastPose(firstBallToHPS), -0.4)),
+            AutoConstants.reversedConfig);
 
-    public static final Trajectory HPStoShoot = TrajectoryGenerator.generateTrajectory(List.of(HPSpose, getColinearPose(HPSpose, -2.0)), AutoConstants.reversedConfig);
+    public static final Trajectory HPStoShoot =
+        TrajectoryGenerator.generateTrajectory(
+            List.of(HPSpose, getColinearPose(HPSpose, -2.0)), AutoConstants.reversedConfig);
   }
 }

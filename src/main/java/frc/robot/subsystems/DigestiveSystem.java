@@ -26,7 +26,6 @@ import frc.robot.Constants.CAN;
 import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
 import frc.robot.Robot;
-import frc.robot.ShooterParams;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
@@ -180,14 +179,15 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   public Command lowGoalShootCommand() {
     return new StartEndCommand(
-      () -> {
-        setKickerVoltage(2); //2
-        setFlywheelVoltage(3); //3.35
-      },
-      () -> {
-        setKickerVoltage(0);
-        setFlywheelVoltage(0);
-      }).alongWith(new WaitCommand(0.5).andThen(feedCommand()));
+            () -> {
+              setKickerVoltage(2); // 2
+              setFlywheelVoltage(3); // 3.35
+            },
+            () -> {
+              setKickerVoltage(0);
+              setFlywheelVoltage(0);
+            })
+        .alongWith(new WaitCommand(0.5).andThen(feedCommand()));
   }
 
   // Only use in auton, up and down get reversed when cancelled while running
@@ -195,7 +195,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return new StartEndCommand(
             () -> {
               setIntakeExternalLiftSpeedVolts(-7);
-              setIntakeExternalSpeedVolts(8);}, 
+              setIntakeExternalSpeedVolts(8);
+            },
             () -> setIntakeExternalLiftSpeedVolts(-2.5))
         .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(10)))
         .withTimeout(0.3);
@@ -203,8 +204,10 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
   public Command getIntakeUpCommand() {
     return new StartEndCommand(
-            () -> {setIntakeExternalLiftSpeedVolts(4);
-              setIntakeExternalSpeedVolts(0);}, 
+            () -> {
+              setIntakeExternalLiftSpeedVolts(4);
+              setIntakeExternalSpeedVolts(0);
+            },
             () -> setIntakeExternalLiftSpeedVolts(0))
         .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(0)))
         .withTimeout(0.45);

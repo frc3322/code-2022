@@ -52,7 +52,7 @@ public class Climber extends SubsystemBase implements Loggable {
     traverse.setIdleMode(IdleMode.kBrake);
 
     climberL.setInverted(true);
-    
+
     climberR.burnFlash();
     climberL.burnFlash();
     traverse.burnFlash();

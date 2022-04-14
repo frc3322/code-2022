@@ -41,8 +41,8 @@ public class RobotContainer {
   private final Command driveCommand =
       new RunCommand(
           () -> {
-            double speed = MathUtil.applyDeadband(-driverController.getLeftY(), 0.07);
-            double turn = MathUtil.applyDeadband(driverController.getRightX(), 0.07);
+            double speed = MathUtil.applyDeadband(-driverController.getLeftY(), 0.09);
+            double turn = MathUtil.applyDeadband(driverController.getRightX(), 0.08);
 
             drivetrain.drive(speed, turn);
           },
@@ -119,8 +119,8 @@ public class RobotContainer {
             new RunCommand(
                 () ->
                     climber.supplyClimbInputs(
-                        () -> MathUtil.applyDeadband(secondController.getRightY(), 0.07),
-                        () -> MathUtil.applyDeadband(secondController.getLeftY(), 0.07))))
+                        () -> MathUtil.applyDeadband(secondController.getRightY(), 0.09),
+                        () -> MathUtil.applyDeadband(secondController.getLeftY(), 0.09))))
         .whenInactive(() -> climber.climb(0));
 
     secondController
@@ -170,6 +170,8 @@ public class RobotContainer {
         .whenPressed(() -> ShooterParams.setPSIOffset(ShooterParams.getPSIOffset() - 50.0));
 
     new Trigger(() -> driverController.getRightTriggerAxis() > 0.2).whileActiveOnce(new InstantCommand(()->digestiveSystem.setIntakeSpeedVolts(8))).whenInactive(new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
+  
+    new Trigger(() -> driverController.getLeftTriggerAxis() > 0.2).whileActiveOnce(new ShootCommand(ShooterParams.getRPMFromDistanceMeters(3), true));
   }
 
   public Command getAutonomousCommand() {
@@ -183,7 +185,8 @@ public class RobotContainer {
         new Trigger(
             () ->
                 (drivetrain.getTurnToAngleAtSetpoint()
-                    && digestiveSystem.flywheelAtTargetVelRPM()));
+                    && digestiveSystem.flywheelAtTargetVelRPM() 
+                        && drivetrain.getLimelightHasTarget()));
 
     private final Trigger sped = new Trigger(() -> digestiveSystem.flywheelAtTargetVelRPM());
 
@@ -258,9 +261,9 @@ public class RobotContainer {
           new InstantCommand(
               () -> drivetrain.resetOdometry(Trajectories.straightForward.getInitialPose())),
           drivetrain.getRamseteCommand(drivetrain, Trajectories.straightForward),
-          digestiveSystem.getIntakeUpCommand(),
+          digestiveSystem.getIntakeDownCommand(),
           drivetrain.profiledTurnToAngleCommand(() -> 180).withTimeout(1),
-          new ShootCommand(2200, true));
+          getAutoShootCommand(2, true).alongWith(digestiveSystem.getIntakeUpCommand()));
       // new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
 
     }

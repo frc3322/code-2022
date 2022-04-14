@@ -124,7 +124,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     flywheelR.setIdleMode(IdleMode.kCoast);
     kicker.setIdleMode(IdleMode.kCoast);
     intakeExternal.setIdleMode(IdleMode.kCoast);
-    intakeExternalLift.setIdleMode(IdleMode.kBrake);
+    intakeExternal.setInverted(true);
+    intakeExternalLift.setIdleMode(IdleMode.kCoast);
     intakeExternalLift.setSmartCurrentLimit(15);
 
     intake.burnFlash();
@@ -180,8 +181,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   public Command lowGoalShootCommand() {
     return new StartEndCommand(
       () -> {
-        setKickerVoltage(-2);
-        setFlywheelVoltage(3.3);
+        setKickerVoltage(2); //2
+        setFlywheelVoltage(3); //3.35
       },
       () -> {
         setKickerVoltage(0);
@@ -192,14 +193,19 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
   // Only use in auton, up and down get reversed when cancelled while running
   public Command getIntakeDownCommand() {
     return new StartEndCommand(
-            () -> setIntakeExternalLiftSpeedVolts(-7), () -> setIntakeExternalLiftSpeedVolts(-2.5))
+            () -> {
+              setIntakeExternalLiftSpeedVolts(-7);
+              setIntakeExternalSpeedVolts(8);}, 
+            () -> setIntakeExternalLiftSpeedVolts(-2.5))
         .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(10)))
         .withTimeout(0.3);
   }
 
   public Command getIntakeUpCommand() {
     return new StartEndCommand(
-            () -> setIntakeExternalLiftSpeedVolts(4), () -> setIntakeExternalLiftSpeedVolts(0))
+            () -> {setIntakeExternalLiftSpeedVolts(4);
+              setIntakeExternalSpeedVolts(0);}, 
+            () -> setIntakeExternalLiftSpeedVolts(0))
         .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(0)))
         .withTimeout(0.45);
   }

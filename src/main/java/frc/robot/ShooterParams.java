@@ -30,23 +30,22 @@ public class ShooterParams implements Loggable {
   private static double psiOffset = 0;
   private static ShuffleboardTab shooterTuning = Shuffleboard.getTab("Shoot Tuning");
   private static ShuffleboardLayout rpmTable = shooterTuning    
-      .getLayout("RPM Table", BuiltInLayouts.kGrid)
-      .withSize(2, 5);
+      .getLayout("RPM Table", BuiltInLayouts.kGrid);
 
   private static TreeMap<Double, NetworkTableEntry> shooterTableValues = new TreeMap<>(Map.ofEntries());
 
   private static final TreeMap<Double, Double> distanceMetersToRPMTable =
       new TreeMap<>(
           Map.ofEntries(
-            entry(1.0, 1300.0),
-            entry(2.0, 1350.0),
-            entry(3.0, 1430.0),
+            entry(1.0, 1160.0),
+            entry(2.0, 1210.0),
+            entry(3.0, 1380.0),
             entry(4.0, 1600.0),
-            entry(5.0, 1950.0),
-            entry(6.0, 2300.0),
-            entry(7.0, 2400.0),
-            entry(8.0, 2550.0),
-            entry(9.0, 2650.0)));
+            entry(5.0, 1850.0),
+            entry(6.0, 2000.0),
+            entry(7.0, 2230.0),
+            entry(8.0, 2500.0),
+            entry(9.0, 3100.0)));
 
   private ShooterParams() {}
 

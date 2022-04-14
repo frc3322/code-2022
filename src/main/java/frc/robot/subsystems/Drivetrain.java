@@ -298,7 +298,7 @@ public class Drivetrain extends SubsystemBase implements Loggable {
 
     if (Robot.isReal()) {
       leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
-      rightVolts += Math.copySign(Math.abs(rightVolts) > 0.17 ? Constants.Drive.ksVolts + 0.5 : Constants.Drive.ksVolts, rightVolts);
+      rightVolts += Math.copySign(Math.abs(rightVolts) > 0.2 ? Constants.Drive.ksVolts + 0.21 : Constants.Drive.ksVolts, rightVolts);
     }
 
     leftVolts = MathUtil.clamp(leftVolts, -12, 12);
@@ -313,6 +313,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
       leftVoltage = leftVolts;
       rightVoltage = rightVolts;
     }
+  }
+
+  public boolean getLimelightHasTarget() {
+    return limelightHasTarget;
   }
 
   public double getDrawnCurrentAmps() {

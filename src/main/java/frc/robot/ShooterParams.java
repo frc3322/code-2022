@@ -25,6 +25,9 @@ public class ShooterParams implements Loggable {
   private static ShuffleboardTab shooterTuning = Shuffleboard.getTab("Shooter Tuning");
   private static ShuffleboardLayout rpmTable =
       shooterTuning.getLayout("RPM Table", BuiltInLayouts.kGrid);
+  private static NetworkTableEntry psiOffset = Shuffleboard.getTab("Shooter Tuning")
+      .addPersistent("PSI Offset", 0)
+      .getEntry();
 
   private static TreeMap<Double, NetworkTableEntry> rpmTableValues = new TreeMap<>(Map.ofEntries());
 
@@ -64,6 +67,8 @@ public class ShooterParams implements Loggable {
       NetworkTableEntry networkTableEntry = entry.getValue();
       networkTableEntry.setDouble(networkTableEntry.getValue().getDouble() + offset);
     }
+
+    psiOffset.setDouble(psiOffset.getValue().getDouble() + offset);
   }
 
   private static final TreeMap<Double, Double> distanceMetersToShootOffsetDegreesTable =

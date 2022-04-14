@@ -16,6 +16,11 @@ public final class Trajectories {
           List.of(new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(1.6, 0, new Rotation2d(0))),
           AutoConstants.config);
 
+  public static final Trajectory straightBackward =
+      TrajectoryGenerator.generateTrajectory(
+          List.of(new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(-1.2, 0, new Rotation2d(0))),
+          AutoConstants.reversedConfig);
+
   private static Pose2d getLastPose(Trajectory trajectory) {
     return trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters;
   }

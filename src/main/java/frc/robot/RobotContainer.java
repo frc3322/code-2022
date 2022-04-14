@@ -67,8 +67,8 @@ public class RobotContainer {
     climber.setDefaultCommand(traverseCommand);
 
     autonChooser.setDefaultOption("Two Ball (Positionable)", new TwoBallPositionableAuto());
-    autonChooser.addOption("Four Ball Auto", new FourBallAuto());
-    autonChooser.addOption("Alt Four Ball Auto", new AltFourBallAuto());
+    autonChooser.addOption("Four Ball", new AltFourBallAuto());
+    autonChooser.addOption("One Ball (Positionable)", new OneBallPositionableAuto());
 
     SmartDashboard.putData("Select Autonomous", autonChooser);
 
@@ -251,7 +251,6 @@ public class RobotContainer {
   private class TwoBallPositionableAuto extends SequentialCommandGroup {
     private TwoBallPositionableAuto() {
       addCommands(
-          // new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(8)),
           digestiveSystem.getIntakeDownCommand(),
           new InstantCommand(
               () ->
@@ -260,11 +259,23 @@ public class RobotContainer {
           new InstantCommand(
               () -> drivetrain.resetOdometry(Trajectories.straightForward.getInitialPose())),
           drivetrain.getRamseteCommand(drivetrain, Trajectories.straightForward),
-          digestiveSystem.getIntakeDownCommand(),
-          drivetrain.profiledTurnToAngleCommand(() -> 180).withTimeout(1),
-          getAutoShootCommand(2, true).alongWith(digestiveSystem.getIntakeUpCommand()));
-      // new InstantCommand(() -> digestiveSystem.setIntakeSpeedVolts(0)));
+          digestiveSystem.getIntakeUpCommand(),
+          drivetrain.profiledTurnToAngleCommand(() -> 180).withTimeout(1.5),
+          getAutoShootCommand(2, true));
+    }
+  }
 
+  private class OneBallPositionableAuto extends SequentialCommandGroup {
+    private OneBallPositionableAuto() {
+      addCommands(
+          new InstantCommand(
+              () ->
+                  drivetrain.resetGyro(
+                      Trajectories.straightBackward.getInitialPose().getRotation().getDegrees())),
+          new InstantCommand(
+              () -> drivetrain.resetOdometry(Trajectories.straightBackward.getInitialPose())),
+          getAutoShootCommand(2, true),
+          drivetrain.getRamseteCommand(drivetrain, Trajectories.straightBackward));
     }
   }
 

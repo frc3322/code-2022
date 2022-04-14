@@ -33,7 +33,7 @@ public class Robot extends TimedRobot {
     robotContainer = new RobotContainer();
     addPeriodic(() -> robotContainer.spinUpFlywheelCustomFreq(), 0.01, 0.005);
     this.setNetworkTablesFlushEnabled(true);
-    robotContainer.resetClimbEncoders();
+    // robotContainer.resetClimbEncoders();
 
     ShooterParams.putShooterTuningsOnShuffleboard();
     limelightAngleEntry =

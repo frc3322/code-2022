@@ -27,6 +27,7 @@ import frc.robot.Constants.DIO;
 import frc.robot.Constants.Shooter;
 import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
 
@@ -364,12 +365,14 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     transferSpeedVolts = volts;
   }
 
+  @Config
   public void setFlywheelVoltage(double voltage) {
     flywheelVoltage = voltage;
     flywheelL.setVoltage(voltage);
     flywheelR.setVoltage(-voltage);
   }
 
+  @Config
   public void setKickerVoltage(double voltage) {
     kickerVoltage = voltage;
     kicker.setVoltage(voltage);

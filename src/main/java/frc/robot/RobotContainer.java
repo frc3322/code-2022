@@ -66,9 +66,9 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(driveCommand);
     climber.setDefaultCommand(traverseCommand);
 
-    autonChooser.setDefaultOption("Two Ball (Positionable)", new TwoBallPositionableAuto());
+    autonChooser.addOption("Two Ball (Positionable)", new TwoBallPositionableAuto());
     autonChooser.addOption("Four Ball", new AltFourBallAuto());
-    autonChooser.addOption("One Ball (Positionable)", new OneBallPositionableAuto());
+    autonChooser.setDefaultOption("One Ball (Positionable)", new OneBallPositionableAuto());
 
     SmartDashboard.putData("Select Autonomous", autonChooser);
 
@@ -185,7 +185,7 @@ public class RobotContainer {
             () ->
                 (drivetrain.getTurnToAngleAtSetpoint()
                     && digestiveSystem.flywheelAtTargetVelRPM()
-                    && drivetrain.getLimelightHasTarget()));
+                    /*&& drivetrain.getLimelightHasTarget()*/));
 
     private final Trigger sped = new Trigger(() -> digestiveSystem.flywheelAtTargetVelRPM());
 
@@ -274,7 +274,8 @@ public class RobotContainer {
                       Trajectories.straightBackward.getInitialPose().getRotation().getDegrees())),
           new InstantCommand(
               () -> drivetrain.resetOdometry(Trajectories.straightBackward.getInitialPose())),
-          getAutoShootCommand(2, true),
+          new WaitCommand(8),
+          new ShootCommand(1370, true).withTimeout(2),
           drivetrain.getRamseteCommand(drivetrain, Trajectories.straightBackward));
     }
   }

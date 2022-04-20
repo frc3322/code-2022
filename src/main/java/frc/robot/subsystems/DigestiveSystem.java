@@ -112,6 +112,8 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
 
     // Set up motors
     intake.restoreFactoryDefaults();
+    intakeExternal.restoreFactoryDefaults();
+    intakeExternalLift.restoreFactoryDefaults();
     transfer.restoreFactoryDefaults();
     flywheelL.restoreFactoryDefaults();
     flywheelR.restoreFactoryDefaults();
@@ -125,7 +127,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     kicker.setIdleMode(IdleMode.kCoast);
     intakeExternal.setIdleMode(IdleMode.kCoast);
     intakeExternal.setInverted(true);
-    intakeExternalLift.setIdleMode(IdleMode.kCoast);
+    intakeExternalLift.setIdleMode(IdleMode.kBrake);
     intakeExternalLift.setSmartCurrentLimit(15);
 
     intake.burnFlash();
@@ -219,7 +221,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return new StartEndCommand(
         () -> {
           setIntakeSpeedVolts(8);
-          setIntakeExternalSpeedVolts(10);
+          setIntakeExternalSpeedVolts(8);
           new StartEndCommand(
                   () -> setIntakeExternalLiftSpeedVolts(-7),
                   () -> setIntakeExternalLiftSpeedVolts(-2.5))

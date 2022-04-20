@@ -9,6 +9,11 @@
       "window": {
         "visible": false
       }
+    },
+    "Timing": {
+      "window": {
+        "visible": false
+      }
     }
   },
   "NTProvider": {
@@ -204,7 +209,7 @@
           "arrows": false,
           "style": "Track"
         },
-        "image": "C:\\Users\\twhel\\Downloads\\field.png",
+        "image": "C:\\Users\\robots\\Downloads\\field.png",
         "init to first ball": {
           "arrows": false,
           "style": "Track"
@@ -228,6 +233,9 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
+      "DigestiveSystem": {
+        "open": true
+      },
       "Shoot Tuning": {
         "RPM Table": {
           "open": true
@@ -248,12 +256,8 @@
       },
       "NightTime": {
         "open": true
-      },
-      "open": true
+      }
     }
-  },
-  "NetworkTables View": {
-    "visible": false
   },
   "Plot": {
     "Plot <0>": {
@@ -264,7 +268,7 @@
               "autoFit": true
             }
           ],
-          "height": 385,
+          "height": 337,
           "series": [
             {
               "color": [
@@ -277,7 +281,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }

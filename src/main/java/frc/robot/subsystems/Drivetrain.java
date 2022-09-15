@@ -8,6 +8,8 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.MathUtil;
@@ -158,6 +160,10 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     BR.follow(FR);
 
     FL.setInverted(true);
+    FR.setInverted(false);
+    BL.setInverted(false);
+    BR.setInverted(false);
+
 
     FL_ENC.setPositionConversionFactor(
         0.4788 / 10.71); // 10.71 gearing reduction and 0.4788 meters per rotation
@@ -168,6 +174,11 @@ public class Drivetrain extends SubsystemBase implements Loggable {
             / 60); // 10.71 gearing reduction and 0.4788 meters per rotation and convert to per
     // second
     FR_ENC.setVelocityConversionFactor(0.4788 / 10.71 / 60);
+
+    FL.setIdleMode(IdleMode.kBrake);
+    FR.setIdleMode(IdleMode.kBrake);
+    BL.setIdleMode(IdleMode.kBrake);
+    BR.setIdleMode(IdleMode.kBrake);
 
     FL.burnFlash();
     FR.burnFlash();
@@ -298,11 +309,12 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     double rightVolts = curveDriveSpeedsProp.right * 12;
 
     if (Robot.isReal()) {
-      leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
-      rightVolts +=
-          Math.copySign(
-              Math.abs(rightVolts) > 0.2 ? Constants.Drive.ksVolts + 0.21 : Constants.Drive.ksVolts,
-              rightVolts);
+      if (Math.abs(leftVolts) > 0.14) {
+        leftVolts += Math.copySign(Constants.Drive.ksVolts, leftVolts);
+      }
+      if (Math.abs(rightVolts) > 0.14) {
+        rightVolts +=  Math.copySign(Constants.Drive.ksVolts + 0.21, rightVolts);
+      }
     }
 
     leftVolts = MathUtil.clamp(leftVolts, -12, 12);
@@ -312,7 +324,8 @@ public class Drivetrain extends SubsystemBase implements Loggable {
     SmartDashboard.putNumber("drive test/rightVolts", rightVolts);
 
     tankDriveVolts(leftVolts, rightVolts);
-
+    // robotDrive.arcadeDrive(speed, turn);
+    
     if (Robot.isSimulation()) {
       leftVoltage = leftVolts;
       rightVoltage = rightVolts;

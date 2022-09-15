@@ -198,7 +198,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return new StartEndCommand(
             () -> {
               setIntakeExternalLiftSpeedVolts(-7);
-              setIntakeExternalSpeedVolts(8);
+              setIntakeExternalSpeedVolts(10);
             },
             () -> setIntakeExternalLiftSpeedVolts(-2.5))
         .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(10)))
@@ -211,7 +211,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
               setIntakeExternalLiftSpeedVolts(4);
               setIntakeExternalSpeedVolts(0);
             },
-            () -> setIntakeExternalLiftSpeedVolts(0))
+            () -> setIntakeExternalLiftSpeedVolts(0.2))
         .alongWith(new InstantCommand(() -> setIntakeSpeedVolts(0)))
         .withTimeout(0.45);
   }
@@ -221,7 +221,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
     return new StartEndCommand(
         () -> {
           setIntakeSpeedVolts(8);
-          setIntakeExternalSpeedVolts(8);
+          setIntakeExternalSpeedVolts(10);
           new StartEndCommand(
                   () -> setIntakeExternalLiftSpeedVolts(-7),
                   () -> setIntakeExternalLiftSpeedVolts(-2.5))
@@ -233,7 +233,7 @@ public class DigestiveSystem extends SubsystemBase implements Loggable {
           setIntakeExternalSpeedVolts(0);
           new StartEndCommand(
                   () -> setIntakeExternalLiftSpeedVolts(4),
-                  () -> setIntakeExternalLiftSpeedVolts(0))
+                  () -> setIntakeExternalLiftSpeedVolts(0.2))
               .withTimeout(0.4)
               .schedule();
         });

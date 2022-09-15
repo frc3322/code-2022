@@ -27,7 +27,7 @@ public class Climber extends SubsystemBase implements Loggable {
 
   private final RelativeEncoder traverse_ENC;
 
-  private final PIDController traversePID = new PIDController(0.04, 0, 0);
+  private final PIDController traversePID = new PIDController(0.06, 0, 0.01);
 
   private final double traverseUprightPos = -9.8;
 

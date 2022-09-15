@@ -233,7 +233,7 @@
   },
   "NetworkTables": {
     "Shuffleboard": {
-      "DigestiveSystem": {
+      "Drivetrain": {
         "open": true
       },
       "Shoot Tuning": {
